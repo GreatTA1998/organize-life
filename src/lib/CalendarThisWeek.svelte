@@ -99,6 +99,7 @@
   const timestampDivTopMargin = 24;
   let isShowingDockingArea = true;
   let stillRerendering = false
+  let noMoreFetches = false
   
   onMount(async () => {
     const today = DateTime.now()
@@ -114,7 +115,7 @@
   })
 
   function handleIntersect (ISODate) {
-    if (stillRerendering) {
+    if (noMoreFetches) {
       return false
     }
 
@@ -132,6 +133,13 @@
   }
 
   async function fetchPastTasks(ISODate) {
+    noMoreFetches = true
+    setTimeout(() => {
+      noMoreFetches = false
+      alert('Can fetch again now')
+    }, 3000)
+
+
     const dt = DateTime.fromISO(ISODate)
   
     const right = dt.minus({ days: cushion + 1 })
