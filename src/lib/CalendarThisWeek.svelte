@@ -24,7 +24,7 @@
     <div class="sticky-y-div flexbox">
       {#each $daysToRender as ISODate, i (ISODate)}
         {#if i === cushion}
-          <div use:lazyCallable={() => handleIntersect(ISODate)}></div>
+          <div use:lazyCallable={() => handleIntersect(ISODate)} style="border: 20px solid blue;"></div>
         {:else if i === $daysToRender.length - 1 - cushion}
           <div use:lazyCallable={() => fetchNewWeekOfFutureTasks(ISODate)}></div>
         {/if}
@@ -129,7 +129,7 @@
     const dt = DateTime.fromISO(ISODate)
   
     const right = dt.minus({ days: cushion + 1 })
-    const left = dt.minus({ days: cushion + size + cushion })
+    const left = dt.minus({ days: cushion + size + cushion })    
 
     const newWeekTasksArray = await Tasks.getByDateRange(
       $user.uid,
@@ -137,18 +137,14 @@
       right.toISODate()
     )
     
+    const oldScrollLeft = ScrollableContainer.scrollLeft
+    
     daysToRender.set(
       [...buildDates({ start: left, totalDays: size + cushion }), ...$daysToRender]
     )
     buildCalendarDataStructures({
       flatArray: [...newWeekTasksArray, ...$calendarTasks]
     })
-
-    // this is not slow because layout has not been changed yet
-    const oldScrollLeft = ScrollableContainer.scrollLeft
-
-    // await tick()
-
     requestAnimationFrame(() => {
       ScrollableContainer.scrollLeft = getShiftDueToNewColumns({ dayColumnWidth: 200 }) + oldScrollLeft
     })
