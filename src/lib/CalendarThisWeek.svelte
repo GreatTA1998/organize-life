@@ -133,7 +133,7 @@
 
     const newWeekTasksArray = await Tasks.getByDateRange(
       $user.uid,
-      left.toISODate(), // '2024-07-31',
+      left.toISODate(),
       right.toISODate()
     )
     
@@ -144,10 +144,13 @@
       flatArray: [...newWeekTasksArray, ...$calendarTasks]
     })
 
+    // this is not slow because layout has not been changed yet
+    const oldScrollLeft = ScrollableContainer.scrollLeft
+
     await tick()
 
     requestAnimationFrame(() => {
-      ScrollableContainer.scrollLeft = getShiftDueToNewColumns({ dayColumnWidth: 200 }) + ScrollableContainer.scrollLeft
+      ScrollableContainer.scrollLeft = getShiftDueToNewColumns({ dayColumnWidth: 200 }) + oldScrollLeft
     })
   }
 
