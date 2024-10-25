@@ -114,7 +114,7 @@
   })
 
   function handleIntersect (ISODate) {
-    if (!stillRerendering) {
+    if (stillRerendering) {
       return false
     }
 
