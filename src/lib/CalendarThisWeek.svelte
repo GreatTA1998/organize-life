@@ -170,7 +170,20 @@
 
     // callback is delayed as long as possible, but RIGHT before the next paint
 
-    setTimeout(() => {
+    // setTimeout(() => {
+    //   requestAnimationFrame(() => {
+    //     const totalAddedWidth = getShiftDueToNewColumns({ dayColumnWidth: 200 })
+
+    //     const newScrollLeft = totalAddedWidth + oldScrollLeft
+    //     ScrollableContainer.scrollLeft = newScrollLeft
+    //     console.log(`totalAddedWidth =${totalAddedWidth}, oldScrollLeft =${oldScrollLeft}, newScrollLeft = ${newScrollLeft}, ScrollableContainer.scrollLeft = ${ScrollableContainer.scrollLeft}`)
+
+    //     // alert(`totalAddedWidth =${totalAddedWidth}, oldScrollLeft =${oldScrollLeft}, newScrollLeft = ${newScrollLeft}, ScrollableContainer.scrollLeft = ${ScrollableContainer.scrollLeft}`)
+    //   })
+    // }, 1000)
+
+    requestAnimationFrame(() => {
+      // in this first frame, svelte will paint
       requestAnimationFrame(() => {
         const totalAddedWidth = getShiftDueToNewColumns({ dayColumnWidth: 200 })
 
@@ -180,7 +193,7 @@
 
         // alert(`totalAddedWidth =${totalAddedWidth}, oldScrollLeft =${oldScrollLeft}, newScrollLeft = ${newScrollLeft}, ScrollableContainer.scrollLeft = ${ScrollableContainer.scrollLeft}`)
       })
-    }, 1000)
+    })
   }
 
 
