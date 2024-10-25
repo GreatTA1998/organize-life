@@ -111,7 +111,7 @@
   id="loading-screen-logo-start"
   style="z-index: 99999; background: white; width: 100vw; height: 100vh"
   class="center"
-  class:invisible={!visible}
+  class:invisible={false}
 >
   <img
     src="/trueoutput-square-nobg.png"
