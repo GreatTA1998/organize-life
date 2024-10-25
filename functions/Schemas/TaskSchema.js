@@ -11,7 +11,7 @@ export default Joi.object({
     timeZone: Joi.string().required(),
     notify: Joi.string().required().allow(""),
     notes: Joi.string().required().allow(""),
-    TemplateID: Joi.string().required().allow(""),
+    templateID: Joi.string().required().allow(""),
     isDone: Joi.boolean().required(),
     imageDownloadURL: Joi.string().required().allow(""),
     imageFullPath: Joi.string().required().allow(""),

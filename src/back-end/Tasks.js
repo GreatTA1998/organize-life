@@ -8,6 +8,7 @@ import {
   where,
   setDoc,
   updateDoc,
+  deleteDoc,
 } from "firebase/firestore";
 
 const getByDateRange = (userUID, startDate, endDate) => {
@@ -37,16 +38,25 @@ const getUnscheduled = (userUID) => {
   );
 };
 
-const post = (userUID, task) => {
-  return setDoc(doc(db, "users", userUID, getRandomID()), task);
+const post = ({ userUID, task, taskID }) => {
+  return setDoc(doc(db, "users", userUID, 'tasks', taskID), task);
 };
 
-const update = (userUID, taskID, keyValueChanges) => {
-  return updateDoc(doc(db, "users", userUID, taskID), keyValueChanges);
+const update = ({ userUID, taskID, keyValueChanges }) => {
+  return updateDoc(doc(db, "users", userUID, 'tasks', taskID), keyValueChanges);
 };
 
-const remove = (userUID, taskID) =>
-  deleteDoc(doc(db, "users", userUID, taskID));
+const remove = async ({ userUID, taskID }) => {
+  deleteDoc(doc(db, "users", userUID, 'tasks', taskID));
+  const childrenSnapshot = await getDocs(query(collection(db, "users", userUID, "tasks"), where("parentID", "==", taskID)));
+  if (!childrenSnapshot.empty) {
+    const updatePromises = childrenSnapshot.docs.map(child =>
+      updateDoc(child.ref, { parentID: "" })
+    );
+    await Promise.all(updatePromises);
+  }
+  return;
+}
 
 const getTasksJSONByRange = async (uid, startDate, endDate) => {
   const neededProperties = [

@@ -1,10 +1,9 @@
 import { updateFirestoreDoc } from '/src/helpers/firestoreHelpers.js'
-
+import { DateTime } from 'luxon'
 const Schema = {
   startTime: "",
   notes: "",
-  reusableTemplateID: "",
-  lastRanRepeatISO: "",
+  templateID: "",
   parentID: "",
   name: "",
   orderValue: 0,
@@ -13,8 +12,8 @@ const Schema = {
   imageDownloadURL: "",
   imageFullPath: "",
   startDateISO: "",
-  iconUrl: "",
-  timeZone: "",
+  iconURL: "",
+  timeZone: DateTime.local().zoneName,
   notify: "", //string so "0" means notification at 0 minutes instead of false
 };
 

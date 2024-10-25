@@ -90,7 +90,7 @@ async function convertPeriodicTasksforUser(userID) {
         const iconUrl = iconUrlMap[taskData.iconDataURL] || "";
 
         const newTask = {
-            iconUrl,
+            iconURL,
             lastGeneratedTask,
             timeZone,
             name,

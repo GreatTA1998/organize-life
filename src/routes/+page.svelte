@@ -38,6 +38,7 @@
         </div>
 
         <div class="my-tab-container">
+          <!-- svelte-ignore a11y-click-events-have-key-events -->
           <div class="my-tab-item" on:click={() => currentIdx = 0} class:my-active-tab={currentIdx === 0}>
             <span class="material-symbols-outlined my-tab-icon">
               park
@@ -46,6 +47,7 @@
               Branching To-do
             </div>
           </div>
+          <!-- svelte-ignore a11y-click-events-have-key-events -->
           <div class="my-tab-item" on:click={() => currentIdx = 1} class:my-active-tab={currentIdx === 1}>
             <span class="material-symbols-outlined my-tab-icon">
               restart_alt
@@ -54,6 +56,7 @@
               Reusable Tasks
             </div>
           </div>
+          <!-- svelte-ignore a11y-click-events-have-key-events -->
           <div class="my-tab-item" on:click={() => currentIdx = 2} class:my-active-tab={currentIdx === 2}>
             <span class="material-symbols-outlined my-tab-icon">
               sports_score
@@ -62,6 +65,7 @@
               Uncertain Goals
             </div>
           </div>
+          <!-- svelte-ignore a11y-click-events-have-key-events -->
           <div class="my-tab-item" on:click={() => currentIdx = 3} class:my-active-tab={currentIdx === 3}>
             <span class="material-symbols-outlined my-tab-icon">
               Photo
@@ -75,6 +79,7 @@
         <div class="feature-showcase-container">
           <div class="video-container">
             {#if !isPlaying && !hasMobilePlayButtonAlready}
+              <!-- svelte-ignore a11y-click-events-have-key-events -->
               <div class="unmute-btn" on:click|stopPropagation={() => { 
                 VideoElem.muted = false; isSoundOff = false; VideoElem.play();
               }} style="z-index: 1;">
@@ -87,6 +92,7 @@
             <!-- I learnt to not f*ck with <video>'s default behaviors -->
             <!-- #key is a quickfix as video works on initial load, but not on subsequent `src` changes -->
             {#key currentIdx}
+              <!-- svelte-ignore a11y-media-has-caption -->
               <video 
                 src={fourAbilities[currentIdx].videoSrc}
                 poster={fourAbilities[currentIdx].poster}
@@ -117,6 +123,7 @@
           <div class="screenshot-caption">
             Example screenshot of my calendar
           </div>
+          <!-- svelte-ignore a11y-missing-attribute -->
           <img style="max-width: 80%; opacity: 1; filter: blur(0px); height: auto;" src="https://firebasestorage.googleapis.com/v0/b/project-y-2a061.appspot.com/o/homePageDemoVideos%2Fmy-screenshot-for-showcase.png?alt=media&token=9800c22f-875b-4df7-b364-2a122e22c842">
         </div>
 

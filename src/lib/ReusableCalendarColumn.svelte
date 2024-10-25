@@ -1,6 +1,6 @@
 <script>
   import { DateTime } from "luxon";
-  import { getFirestoreCollection } from "/src/helpers/firestoreHelpers.js";
+  import Templates from '/src/back-end/Templates'
   import {
     computeMillisecsDifference,
     ensureTwoDigits,
@@ -40,9 +40,7 @@
 
   onMount(async () => {
     // task template dropdown
-    const temp = await getFirestoreCollection(
-      `/users/${$user.uid}/periodicTasks`
-    );
+    const temp = await Templates.getAll({ userID: $user.uid, includeStats: false })
     reusableTaskTemplates = temp;
   });
 
@@ -204,7 +202,7 @@
           width: 94%;
         "
       >
-        {#if task.iconUrl}
+        {#if task.iconURL}
           <!-- TO-DO: think about how attaching photos to icon tasks work -->
           <ReusableIconTaskElement
             {task}

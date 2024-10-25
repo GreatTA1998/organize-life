@@ -7,15 +7,15 @@
   export let setIsPopupOpen  // magic that closes the popup 
   let isShowingPremiumPopup = false
 
-  function handleSelectIcon(iconUrl) {
-    updateTemplate({ templateID: template.id, keyValueChanges: { iconUrl } })
+  function handleSelectIcon(iconURL) {
+    updateTemplate({ templateID: template.id, keyValueChanges: { iconURL } })
     // setIsPopupOpen({ newVal: false })
   }
 
   function handleUnselectIcon() {
     updateTemplate({
       templateID: template.id,
-      keyValueChanges: { iconUrl: '' }
+      keyValueChanges: { iconURL: '' }
     })
   }
 
@@ -54,7 +54,7 @@
             on:click={() => handleSelectIcon(doodleIcon.url)}
             src={doodleIcon.url}
             style="width: 48px; height: 48px; cursor: pointer;"
-            class:orange-border={template.iconUrl === doodleIcon.url}
+            class:orange-border={template.iconURL === doodleIcon.url}
           />
           {#if doodleIcon.createdBy === $user.uid}
             <!-- svelte-ignore a11y-click-events-have-key-events -->
@@ -72,7 +72,7 @@
           {/if}
         </div>
       {/each}
-      {#if template.iconUrl}
+      {#if template.iconURL}
         <!-- svelte-ignore a11y-click-events-have-key-events -->
         <div on:click={handleUnselectIcon} class="remove-icon-button">
           X

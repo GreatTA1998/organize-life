@@ -3,7 +3,7 @@
   import ReusableRoundButton from '$lib/ReusableRoundButton.svelte'
   import { DateTime } from 'luxon'
   import Templates from '/src/back-end/Templates'
-  import { getRandomID } from '/src/utils.js'
+  import { getRandomID } from '/src/helpers/everythingElse.js'
   export let defaultOrderValue = 1
   export let crontab
   let isPopupOpen = false
@@ -22,7 +22,7 @@
       notify: '',
       startTime: '',
       lastGeneratedTask: DateTime.now().toFormat('yyyy-MM-dd'),
-      iconUrl: '',
+      iconURL: '',
       tags: ''
     }
     const templateID = getRandomID();

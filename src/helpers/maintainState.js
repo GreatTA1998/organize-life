@@ -28,10 +28,9 @@ export function createOnLocalState({ id, createdNode }) {
 }
 
 export function updateLocalState({ id, keyValueChanges }) {
-  // find the particular task
-  const a1 = get(todoTasks).filter((task) => task.id === id);
-  const a2 = get(calendarTasks).filter((task) => task.id === id);
-  const oldNode = a1.length === 1 ? a1[0] : a2[0];
+  const allTasks = [...get(todoTasks), ...get(calendarTasks)]
+  const oldNode = allTasks.find(task => task.id === id)
+  if(!oldNode) return;
 
   // compute what it'll be updated to
   const newNode = { ...oldNode };

@@ -44,14 +44,6 @@ export async function migrateUserDataToGoogleAccount (currentUID, googleUID) {
     await delayTime(10)
     console.log('done milestone')
   }
-
-  // copy the periodic tasks (implement when needed)
-  const allPeriodicTasks = await getFirestoreCollection(`/users/${currentUID}/periodicTasks`)
-  for (const periodicTaskDoc of allPeriodicTasks) {
-    await setFirestoreDoc(newAccountPath + `periodicTasks/${periodicTaskDoc.id}`, periodicTaskDoc)
-    await delayTime(10)
-    console.log('done periodic')
-  }
 }
 
 

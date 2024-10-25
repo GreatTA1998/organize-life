@@ -4,12 +4,13 @@
   import EditTemplatePopup from './components/EditTemplatePopup/EditTemplatePopup.svelte'
   import { updateTemplate } from '/src/store.js'
   import { getDisplayLength } from './utils.js'
-  import PeriodicTasks from '/src/back-end/PeriodicTasks'
+  import Templates from '/src/back-end/Templates/index.js'
   export let templates
   export let crontab
   let draggedTemplate
   const templateWidthInPx = 180
   const dayOfWeekSymbol = ['S', 'M', 'T', 'W', 'T', 'F', 'S']
+
 
   function handleDrop(newOrderValue) {
     updateTemplate({
@@ -46,9 +47,9 @@
         draggable="true"
         on:dragstart|self={(e) => (draggedTemplate = template)}
       >
-        {#if template.iconUrl}
+        {#if template.iconURL}
           <!-- svelte-ignore a11y-missing-attribute -->
-          <img src={template.iconUrl} style="width: 60px; height: 60px;" />
+          <img src={template.iconURL} style="width: 60px; height: 60px;" />
         {:else}
           <div style="width: 60px; height: 60px" />
         {/if}
@@ -57,7 +58,7 @@
           <div style="font-size: 16px; font-color: rgb(120, 120, 120)">
             {template.name}
           </div>
-          {#if PeriodicTasks.getPeriodFromCrontab(template.crontab)==="weekly"}
+          {#if Templates.getPeriodFromCrontab(template.crontab)==="weekly"}
           <div style="display: flex; margin-top: 4px;">
             {#each dayOfWeekSymbol as _, i}
               <div

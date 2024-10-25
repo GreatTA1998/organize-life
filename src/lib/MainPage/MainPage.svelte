@@ -12,7 +12,7 @@
   import PopupCustomerSupport from '$lib/PopupCustomerSupport.svelte'
   import NavbarAndContentWrapper from '$lib/NavbarAndContentWrapper.svelte'
   import DetailedCardPopup from '$lib/DetailedCardPopup/DetailedCardPopup.svelte'
-  import PeriodicTasks from '$lib/PeriodicTasks/PeriodicTasks.svelte'
+  import Templates from '$lib/Templates/Templates.svelte'
   import UncertainMilestones from '$lib/UncertainMilestones.svelte'
   import MultiPhotoUploader from '$lib/MultiPhotoUploader.svelte'
   import {
@@ -291,7 +291,9 @@
 
   <!-- WEEK MODE -->
   <div slot="content" style="display: flex; flex-grow: 1; height: 100%;">
-    <div style="display: {currentMode === 'Week' ? 'flex' : 'none'}; width: 100%;">
+    <div
+      style="display: {currentMode === 'Week' ? 'flex' : 'none'}; width: 100%;"
+    >
       <!-- 1st flex child -->
       <NewThisWeekTodo
         on:new-root-task={(e) => createTaskNode(e.detail)}
@@ -302,8 +304,7 @@
           updateTaskNode({
             id: e.detail.id,
             keyValueChanges: { isDone: e.detail.isDone }
-          })
-        }
+          })}
       />
 
       <!-- 2nd flex child -->
@@ -317,17 +318,15 @@
           updateTaskNode({
             id: e.detail.id,
             keyValueChanges: e.detail.keyValueChanges
-          })
-        }
+          })}
         on:task-dragged={(e) => changeTaskDeadline(e.detail)}
         on:task-checkbox-change={(e) =>
           updateTaskNode({
             id: e.detail.id,
             keyValueChanges: { isDone: e.detail.isDone }
-          })
-        }
+          })}
       />
-   </div>
+    </div>
 
     <!-- END OF WEEK MODE SECTION -->
 
@@ -336,7 +335,7 @@
     </div>
 
     <div style="display: {currentMode === 'Templates' ? 'block' : 'none'}">
-      <PeriodicTasks />
+      <Templates />
     </div>
 
     <div style="display: {currentMode === 'AI' ? 'block' : 'none'}">

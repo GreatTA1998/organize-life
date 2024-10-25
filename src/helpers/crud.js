@@ -1,81 +1,77 @@
 import {
-  setFirestoreDoc,
-  updateFirestoreDoc,
-  deleteFirestoreDoc,
-} from "/src/helpers/firestoreHelpers.js"
-import {
   createOnLocalState,
   updateLocalState,
   deleteFromLocalState,
 } from "/src/helpers/maintainState.js"
 import { deleteImage } from '/src/helpers/storage.js'
 import applyTaskSchema from "/src/helpers/applyTaskSchema.js"
-import { arrayRemove, arrayUnion } from 'firebase/firestore'
+import TaskSchema from "/src/back-end/Schemas/TaskSchema.js"
+import Joi from "joi"
+import Tasks from "/src/back-end/Tasks.js"
 import { get } from 'svelte/store'
-import { user } from '/src/store.js'
+import { user, calendarTasks, todoTasks } from '/src/store.js'
 
 export async function createTaskNode({ id, newTaskObj }) {
-  // cannot define `tasksPath` outside of the functions because
-  // get(user) is not defined when the app starts
-  const tasksPath = `/users/${get(user).uid}/tasks/`
-
   try {
     const newTaskObjChecked = await applyTaskSchema(newTaskObj, get(user))
-
-    setFirestoreDoc(tasksPath + id, newTaskObjChecked) // hope mf doesn't notice :>
+    Joi.assert(newTaskObjChecked, TaskSchema)
+    Tasks.post({ userUID: get(user).uid, task: newTaskObjChecked, taskID: id })
     createOnLocalState({ id, createdNode: newTaskObjChecked })
   } catch (error) {
     console.error('error creating task node: ', error)
-    console.log('error =', error)
     alert("Database update failed, please reload")
+    return error;
   }
 }
 
 export async function updateTaskNode({ id, keyValueChanges }) {
-  const tasksPath = `/users/${get(user).uid}/tasks/`
-
-  updateFirestoreDoc(tasksPath + id, keyValueChanges).catch((err) => {
+  try {
+    const tasks = get(calendarTasks).concat(get(todoTasks))
+    const task = tasks.find(task => task.id === id);
+    console.log('task is: ', task)
+    const newTask = removeUnnecessaryFields({ ...task, ...keyValueChanges })
+    Joi.assert(newTask, TaskSchema)
+    Tasks.update({ userUID: get(user).uid, taskID: id, keyValueChanges })
+    updateLocalState({ id, keyValueChanges });
+  } catch (error) {
     alert(
       "there was an error in atempting to save changes to the db, please reload "
     );
-    console.error("error in updateTaskNode: ", err);
-  })
-  updateLocalState({ id, keyValueChanges });
+    console.error("error in updateTaskNode: ", error);
+  }
 }
 
-// THIS IS STILL NOT WORKING: THE ADOPTION IS NOT WORKING, RIGHT NOW ALL THE
-// SUBTREE WILL BE GONE FOR SOME REASON
-export function deleteTaskNode({ id, parentID, childrenIDs, imageFullPath = "" }) {
-  const tasksPath = `/users/${get(user).uid}/tasks/`
-  
-  if (parentID !== "") {
-    updateFirestoreDoc(tasksPath + parentID, {
-      childrenIDs: arrayRemove(id),
-    })
-    // parent will be deleted, so the grandparent will take care of the children
-    if (childrenIDs) {
-      updateFirestoreDoc(tasksPath + parentID, {
-        childrenIDs: arrayUnion(...childrenIDs),
-      })
-    }
-  }
-
-  // temporary to clean up tasks that were created that didn't conform to the schema
-  // surprisngly many, keep it in to save time
-  if (childrenIDs) {
-    for (const childID of childrenIDs) {
-      updateFirestoreDoc(tasksPath + childID, {
-        parentID: parentID,
-      })
-    }
-  }
-
-  if (imageFullPath) {
-    deleteImage({ imageFullPath })
-  }
-
-  // now safely delete itself
-  deleteFirestoreDoc(tasksPath + id);
-
+export function deleteTaskNode({ id, imageFullPath = "" }) {
+  Tasks.remove({ userUID: get(user).uid, taskID: id })
+  if (imageFullPath) deleteImage({ imageFullPath })
+  const affectedTasks = [...get(todoTasks).filter(task => task.parentID === id), ...get(calendarTasks).filter(task => task.parentID === id)]
+  affectedTasks.forEach(task => updateLocalState({ id: task.id, keyValueChanges: { parentID: "" } })  )
   deleteFromLocalState({ id });
 }
+
+
+const nesseseryFields = [
+  "duration",
+  "name",
+  "orderValue",
+  "parentID",
+  "startTime",
+  "startDateISO",
+  "iconURL",
+  "timeZone",
+  "notify",
+  "notes",
+  "templateID",
+  "isDone",
+  "imageDownloadURL",
+  "imageFullPath"];
+
+function removeUnnecessaryFields(task) {
+  const cleanedTask = {};
+  nesseseryFields.forEach(field => {
+    if (task.hasOwnProperty(field)) {
+      cleanedTask[field] = task[field];
+    }
+  });
+  return cleanedTask;
+};

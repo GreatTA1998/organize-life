@@ -1,8 +1,8 @@
 const { onSchedule } = require('firebase-functions/v2/scheduler');
 const functions = require('firebase-functions');
 const { checkNotify } = require('./checkNotify');
-const { handlePeriodicTask } = require('./handleTemplate');
-const db = getFirestore('asian-alliance');
+const { handleTemplate } = require('./handleTemplate');
+const db = getFirestore('tokyo-db');
 const { getFirestore } = require('firebase-admin/firestore');
 const Joi = require('joi');
 const TemplateSchema = require('./Schemas/TemplateSchema.js');
@@ -28,7 +28,7 @@ exports.periodicTasks = onSchedule(
     const templates = snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id, userID: doc.ref.parent.parent.id }));
     for (const template of templates) {
       Joi.attempt(template, TemplateSchema);
-      await handlePeriodicTask(template);
+      await handleTemplate(template);
     }
   },
 );

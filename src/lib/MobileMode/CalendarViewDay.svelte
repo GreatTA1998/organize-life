@@ -114,7 +114,7 @@
       ></div>
     {/if}
 
-    {#if eventToday.iconUrl}
+    {#if eventToday.iconURL}
       <!-- svelte-ignore a11y-click-events-have-key-events -->
       <div
         on:click={() => dispatch('task-click', { task: eventToday })}
@@ -128,7 +128,7 @@
         </div>
 
         <!-- svelte-ignore a11y-missing-attribute -->
-        <img src={eventToday.iconUrl} style="width: 48px; height: 48px;" />
+        <img src={eventToday.iconURL} style="width: 48px; height: 48px;" />
       </div>
     {:else}
       <!-- svelte-ignore a11y-click-events-have-key-events -->

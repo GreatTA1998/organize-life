@@ -2,7 +2,7 @@ const functions = require('firebase-functions');
 const { getFirestore } = require('firebase-admin/firestore');
 const { DateTime } = require('luxon');
 const { parseExpression } = require('cron-parser');
-const db = getFirestore('asian-alliance');
+const db = getFirestore('tokyo-db');
 const { getRandomID, getPeriodFromCrontab } = require('./utils.js');
 const TaskSchema = require('./Schemas/TaskSchema.js');
 const Joi = require('joi');
@@ -10,7 +10,7 @@ const Joi = require('joi');
 const handleTemplate = async (template) => {
     try {
         if (!template.crontab || template.crontab === '0 0 0 * *' || template.crontab === "0 0 * * 0" || template.crontab === "0 0 0 0 *") return;
-        const db = getFirestore('asian-alliance');
+        const db = getFirestore('tokyo-db');
         const offset = getPeriodFromCrontab(template.crontab) === 'yearly' ? { years: 1 } : { months: 1 };
         const startDate = DateTime.fromISO(`${template.lastGeneratedTask}T${template.startTime || '00:00'}:00`, { zone: template.timeZone }).plus({ days: 1 });
         const endDate = DateTime.now().setZone(template.timeZone).plus(offset);
@@ -25,7 +25,7 @@ const handleTemplate = async (template) => {
             batch.set(taskRef, task);
         });
         await batch.commit();
-        functions.logger.log('Tasks generated for periodic task:', template.name, "through", endDate.toFormat('yyyy-MM-dd'));
+        functions.logger.log('Tasks generated for template:', template.name, "through", endDate.toFormat('yyyy-MM-dd'));
         return;
     } catch (error) {
         console.log('Error in handleTemplate:', error);

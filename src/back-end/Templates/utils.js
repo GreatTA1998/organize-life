@@ -17,41 +17,51 @@ const getPeriodFromCrontab = (crontab) => {
 }
 
 
-const buildFutureTasks = async ({ periodicTask, startDateJS, endDateJS, userID, periodicTaskId }) => {
-  const interval = parseExpression(periodicTask.crontab, ({ currentDate: startDateJS, endDate: endDateJS, iterator: true }));
+const buildFutureTasks = async ({ template, startDateJS, endDateJS, userID, templateID }) => {
+  const interval = parseExpression(template.crontab, ({ currentDate: startDateJS, endDate: endDateJS, iterator: true }));
   const generatedTasks = [];
   while (true) {
     const cronObj = interval.next();
     const ISODate = DateTime.fromJSDate(new Date(cronObj.value.toString())).toFormat('yyyy-MM-dd')
-    generatedTasks.push(buildTaskFromTemplate(periodicTask, ISODate));
+    const task = buildTaskFromTemplate(template, ISODate);
+    Joi.attempt(task, TaskSchema);
+    generatedTasks.push(task);
     if (cronObj.done) {
-      await updateDoc(doc(db, "users", userID, 'periodicTasks', periodicTaskId), { lastGeneratedTask: ISODate });
+      await updateDoc(doc(db, "users", userID, 'templates', templateID), { lastGeneratedTask: ISODate });
       return generatedTasks;
     }
   }
 }
 
-const deleteFutureTasks = async ({ userID, id, fromDate }) => {
+const deleteFutureTasks = async ({ userID, id }) => {
+  const fromDate = DateTime.now().toFormat('yyyy-MM-dd');
   const tasksQuery = query(
     collection(db, "users", userID, "tasks"),
-    where('periodicTaskId', '==', id),
+    where('templateID', '==', id),
     where('startDateISO', '>=', fromDate)
   );
   const tasksSnapshot = await getDocs(tasksQuery);
-  const deletePromises = tasksSnapshot.docs.map(doc =>
-    deleteDoc(doc.ref)
-  );
+  const deletePromises = tasksSnapshot.docs.map(doc => {
+    const task = doc.data();
+    const taskDateTime = DateTime.fromISO(
+      `${task.startDateISO}T${task.startTime || '00'}:00`,
+    );
+    if (taskDateTime >= DateTime.now()) {
+      return deleteDoc(doc(db, "users", userID, 'tasks', doc.id));
+    }
+    return Promise.resolve();
+  });
   return Promise.all(deletePromises);
 }
 
-const postFutureTasks = async ({ userID, id, fromDate }) => {
-  const snapshot = await getDoc(doc(db, "users", userID, 'periodicTasks', id));
-  const periodicTask = snapshot.data();
-  periodicTask.id = id;
-  const offset = getPeriodFromCrontab(periodicTask.crontab) === 'yearly' ? { years: 1 } : { months: 1 };
-  const startDate = DateTime.fromISO(`${fromDate}T${periodicTask.startTime || '00:00'}:00`, { zone: periodicTask.timeZone }).plus({ days: 1 });
-  const endDate = DateTime.now().setZone(periodicTask.timeZone).plus(offset);
-  const tasksArray = await buildFutureTasks({ periodicTask, startDateJS: new Date(startDate), endDateJS: new Date(endDate), userID, periodicTaskId: id });
+const postFutureTasks = async ({ userID, id }) => {
+  const snapshot = await getDoc(doc(db, "users", userID, 'templates', id));
+  const template = snapshot.data();
+  template.id = id;
+  const offset = getPeriodFromCrontab(template.crontab) === 'yearly' ? { years: 1 } : { months: 1 };
+  const startDate = DateTime.now();
+  const endDate = DateTime.now().plus(offset);
+  const tasksArray = await buildFutureTasks({ template, startDateJS: new Date(startDate), endDateJS: new Date(endDate), userID, templateID: id });
   tasksArray.forEach(task => {
     const taskId = getRandomID()
     setDoc(doc(db, "users", userID, 'tasks', taskId), task);
@@ -59,7 +69,7 @@ const postFutureTasks = async ({ userID, id, fromDate }) => {
 }
 
 const getTotalStats = async ({ userID, id }) => {
-  const q = query(collection(db, "users", userID, "tasks"), where('periodicTaskId', '==', id), where('startDateISO', '<=', DateTime.now().toFormat('yyyy-MM-dd')));
+  const q = query(collection(db, "users", userID, "tasks"), where('templateID', '==', id), where('startDateISO', '<=', DateTime.now().toFormat('yyyy-MM-dd'), where('isDone', '==', true)));
   const snapshot = await getDocs(q)
   const TotalMinutesSpent = snapshot.docs.reduce((acc, doc) => acc + doc.data().duration, 0);
   const totalTasksCompleted = snapshot.docs.length
@@ -67,23 +77,23 @@ const getTotalStats = async ({ userID, id }) => {
 };
 
 
-function buildTaskFromTemplate(periodicTask, ISODate) {
+function buildTaskFromTemplate(template, ISODate) {
   return {
-    name: periodicTask.name,
+    name: template.name,
     startDateISO: ISODate,
-    iconUrl: periodicTask.iconUrl,
-    tags: periodicTask.tags,
-    periodicTaskId: periodicTask.id,
-    timeZone: periodicTask.timeZone,
-    notes: periodicTask.notes,
-    notify: periodicTask.notify,
+    iconURL: template.iconURL,
+    tags: template.tags,
+    templateID: template.id,
+    timeZone: template.timeZone,
+    notes: template.notes,
+    notify: template.notify,
     isDone: false,
     imageDownloadURL: "",
     imageFullPath: "",
-    duration: periodicTask.duration,
+    duration: template.duration,
     parentID: "",
     orderValue: 0,
-    startTime: periodicTask.startTime,
+    startTime: template.startTime,
   }
 }
 
@@ -92,5 +102,6 @@ export {
   buildFutureTasks,
   postFutureTasks,
   deleteFutureTasks,
-  getTotalStats
+  getTotalStats,
+  buildTaskFromTemplate
 }

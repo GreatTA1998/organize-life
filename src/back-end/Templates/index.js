@@ -22,75 +22,63 @@ const create = async ({ userID, template, templateID }) => {
 
 const updateWithTasks = async ({ userID, id, updates }) => {
   if (updates.crontab) {
-    updateDoc(doc(db, "users", userID, 'templates', id), { crontab: updates.crontab });
+
+    const oldTemplate = await getDoc(doc(db, "users", userID, 'templates', id));
+    Joi.assert({ ...oldTemplate.data(), ...updates }, TemplateSchema);
+    await updateDoc(doc(db, "users", userID, 'templates', id), updates);
     return Promise.all([
-      deleteFutureTasks({ userID, id, fromDate: DateTime.now().toISO()}),
+      deleteFutureTasks({ userID, id }),
       updates.crontab === '0 0 0 * *' ? Promise.resolve([]) :
-        postFutureTasks({ userID, id, fromDate: DateTime.now().toFormat('yyyy-MM-dd') })
+        postFutureTasks({ userID, id })
     ]);
   }
-  await updateDoc(doc(db, "users", userID, 'periodicTasks', id), updates);
-  const uniqueProperties = ['crontab', 'id', 'userID', 'lastGeneratedTask', 'orderValue'];
+  const oldTemplate = await getDoc(doc(db, "users", userID, 'templates', id));
+  Joi.assert({ ...oldTemplate.data(), ...updates }, TemplateSchema);
+  updateDoc(doc(db, "users", userID, 'templates', id), updates)
+  const uniqueProperties = ['crontab', 'id', 'userID', 'lastGeneratedTask'];
   for (const property of uniqueProperties) {
     delete updates[property];
   }
+  delete updates.orderValue;
   const tasksQuery = query(
     collection(db, "users", userID, "tasks"),
-    where('periodicTaskId', '==', id),
+    where('templateID', '==', id),
     where('startDateISO', '>=', DateTime.now().toFormat('yyyy-MM-dd'))
   );
 
   const tasksSnapshot = await getDocs(tasksQuery);
-  const updatePromises = tasksSnapshot.docs.map(doc =>
-    updateDoc(doc.ref, updates)
-  );
+  const updatePromises = tasksSnapshot.docs.map(doc => {
+    const task = doc.data();
+    const taskDateTime = DateTime.fromISO(
+      `${task.startDateISO}T${task.startTime || '00'}:00`,
+    );
+    if (taskDateTime >= DateTime.now()) {
+      return updateDoc(doc(db, "users", userID, 'tasks', doc.id), updates);
+    }
+    return Promise.resolve();
+  });
   return Promise.all(updatePromises);
 };
 
-const getAll = async (userID) => {
-  const q = query(collection(db, "users", userID, "periodicTasks"));
+
+
+const getAll = async ({ userID, includeStats = true }) => {
+  const q = query(collection(db, "users", userID, "templates"));
   const snapshot = await getDocs(q)
   const arraywithIds = snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id, userID: doc.ref.parent.parent.id }))
-  for (const periodicTask of arraywithIds) {
-    const [totalTasksCompleted, TotalMinutesSpent] = await getTotalStats({ userID, id: periodicTask.id })
-    periodicTask.totalTasksCompleted = totalTasksCompleted
-    periodicTask.TotalMinutesSpent = TotalMinutesSpent
+  if (!includeStats) return arraywithIds;
+
+  for (const template of arraywithIds) {
+    const [totalTasksCompleted, TotalMinutesSpent] = await getTotalStats({ userID, id: template.id })
+    template.totalTasksCompleted = totalTasksCompleted
+    template.TotalMinutesSpent = TotalMinutesSpent
   }
   return arraywithIds
 };
 
 const deleteTemplate = async ({ userID, id }) => {
-  const tasksQuery = query(
-    collection(db, "users", userID, "tasks"),
-    where('periodicTaskId', '==', id),
-    where('startDateISO', '>=', DateTime.now().toFormat('yyyy-MM-dd'))
-  );
-  const tasksSnapshot = await getDocs(tasksQuery);
-  const deletePromises = tasksSnapshot.docs.map(doc =>
-    deleteDoc(doc.ref)
-  );
-  await Promise.all(deletePromises);
-  return deleteDoc(doc(db, "users", userID, "periodicTasks", id));
+  deleteFutureTasks({ userID, id });
+  return deleteDoc(doc(db, "users", userID, "templates", id));
 };
 
-const generateTaskFromTemplate = async ({template, startDateISO, startTime}) => {
-  const task = {
-    startTime,
-    notes: template.notes,
-    periodicTaskId: template.id,
-    parentID: "",
-    name: template.name,
-    orderValue: 0,
-    duration: template.duration,
-    isDone: false,
-    imageDownloadURL: "",
-    imageFullPath: "",
-    startDateISO,
-    iconUrl: template.iconUrl,
-    timeZone: template.timeZone,
-    notify: template.notify,
-  }
-  return task
-}
-
-export default { create, updateWithTasks, getAll, deleteTemplate, getPeriodFromCrontab, generateTaskFromTemplate };
+export default { create, updateWithTasks, getAll, deleteTemplate, getPeriodFromCrontab };

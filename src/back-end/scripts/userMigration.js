@@ -25,8 +25,7 @@ async function migrateUser(userID) {
     await setDoc(destinationUserRef, sourceUserSnapshot.data());
     const batch = writeBatch(destinationDB);
 
-    // List of known subcollections (you may need to update this list)
-    const knownSubcollections = ["tasks", "periodicTasks"]
+    const knownSubcollections = ["tasks", "templates"]
 
     // Migrate each subcollection
     for (const subcollectionName of knownSubcollections) {
