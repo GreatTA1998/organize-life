@@ -169,6 +169,8 @@
     // requestAnimationFrame(() => {
 
     // callback is delayed as long as possible, but RIGHT before the next paint
+
+    setTimeout(() => {
       requestAnimationFrame(() => {
         const totalAddedWidth = getShiftDueToNewColumns({ dayColumnWidth: 200 })
 
@@ -177,10 +179,11 @@
         console.log(`totalAddedWidth =${totalAddedWidth}, oldScrollLeft =${oldScrollLeft}, newScrollLeft = ${newScrollLeft}, ScrollableContainer.scrollLeft = ${ScrollableContainer.scrollLeft}`)
 
         // alert(`totalAddedWidth =${totalAddedWidth}, oldScrollLeft =${oldScrollLeft}, newScrollLeft = ${newScrollLeft}, ScrollableContainer.scrollLeft = ${ScrollableContainer.scrollLeft}`)
-
       })
-    // })
+    }, 1000)
   }
+
+
 
   function getShiftDueToNewColumns ({ dayColumnWidth }) {
     return (size + cushion) * dayColumnWidth
