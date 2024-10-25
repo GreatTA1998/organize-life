@@ -147,7 +147,7 @@
     // this is not slow because layout has not been changed yet
     const oldScrollLeft = ScrollableContainer.scrollLeft
 
-    await tick()
+    // await tick()
 
     requestAnimationFrame(() => {
       ScrollableContainer.scrollLeft = getShiftDueToNewColumns({ dayColumnWidth: 200 }) + oldScrollLeft
@@ -209,6 +209,17 @@
     --timestamps-column-width: 64px; /* was 96px */
     --day-header-width: 120px;
     --calendar-left-padding: 16px;
+  }
+
+  /* Hide the scrollbar for Chrome, Safari and Opera */
+  #the-only-scrollable-container::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Hide the scrollbar for Internet Explorer, Edge and Firefox */
+  #the-only-scrollable-container {
+    -ms-overflow-style: none;  /* Internet Explorer and Edge */
+    scrollbar-width: none;  /* Firefox */
   }
 
   #the-only-scrollable-container {

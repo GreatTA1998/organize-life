@@ -52,7 +52,6 @@
   }
 
   onMount(async () => {
-    console.log('onMount MainPage!!!!!!!!!!!!!!')
     if (!dev) {
       console.log('running handleNotificationPermission')
       try {
