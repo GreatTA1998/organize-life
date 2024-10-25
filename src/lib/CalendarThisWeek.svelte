@@ -150,7 +150,11 @@
 
     await tick()
 
-    ScrollableContainer.scrollLeft = getShiftDueToNewColumns({ dayColumnWidth: 200 }) + oldScrollLeft
+    requestAnimationFrame(() => {
+      ScrollableContainer.scrollLeft = getShiftDueToNewColumns({ dayColumnWidth: 200 }) + oldScrollLeft
+    })
+
+    // ScrollableContainer.scrollLeft = getShiftDueToNewColumns({ dayColumnWidth: 200 }) + oldScrollLeft
   }
 
   function getShiftDueToNewColumns ({ dayColumnWidth }) {
