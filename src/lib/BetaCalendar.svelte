@@ -103,21 +103,34 @@
           {@const yyyyMMdd = currentDate.toFormat('yyyy-MM-dd')}
 
           <div class="day-wrapper" style="transform: translateX({currentDate.diff(startDate, 'days').days * DAY_WIDTH}px);">
-            {yyyyMMdd} {i}
+            <!-- {yyyyMMdd} {i} -->
             {#if i === 7}
-              <div use:lazyCallable={() => handleIntersect(yyyyMMdd)} style="border: 40px solid blue; width: 40px; height: 40px;"></div>
-            {/if}
+              <div use:lazyCallable={() => handleIntersect(yyyyMMdd)} style="outline: 1px solid blue;">
+                <ReusableCalendarColumn 
+                  {i}
+                  {currentDate}
+                  {yyyyMMdd}
+                  calendarBeginningDateClassObject={DateTime.fromISO(yyyyMMdd).toJSDate()}
+                  timestamps={timesOfDay}
+                  pixelsPerHour={MIKA_PIXELS_PER_HOUR}
+                  timeBlockDurationInMinutes={60}
+                  scheduledTasks={$tasksScheduledOn[yyyyMMdd] ? $tasksScheduledOn[yyyyMMdd].hasStartTime : []}
+                />
 
-            <ReusableCalendarColumn 
-              {i}
-              {currentDate}
-              {yyyyMMdd}
-              calendarBeginningDateClassObject={DateTime.fromISO(yyyyMMdd).toJSDate()}
-              timestamps={timesOfDay}
-              pixelsPerHour={MIKA_PIXELS_PER_HOUR}
-              timeBlockDurationInMinutes={60}
-              scheduledTasks={$tasksScheduledOn[yyyyMMdd] ? $tasksScheduledOn[yyyyMMdd].hasStartTime : []}
-            />
+              </div>
+            {:else}
+
+              <ReusableCalendarColumn 
+                {i}
+                {currentDate}
+                {yyyyMMdd}
+                calendarBeginningDateClassObject={DateTime.fromISO(yyyyMMdd).toJSDate()}
+                timestamps={timesOfDay}
+                pixelsPerHour={MIKA_PIXELS_PER_HOUR}
+                timeBlockDurationInMinutes={60}
+                scheduledTasks={$tasksScheduledOn[yyyyMMdd] ? $tasksScheduledOn[yyyyMMdd].hasStartTime : []}
+              />
+            {/if}
           </div>
         {/each}
       {/if}
