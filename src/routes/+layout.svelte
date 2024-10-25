@@ -30,8 +30,11 @@
           api_host: 'https://us.i.posthog.com',
           person_profiles: 'always' // or 'always' to create profiles for anonymous users as well
         })
-      } else {
-        // USER IS LOGGED INTO FIREBASE AUTH
+      } 
+      
+      // USER IS LOGGED INTO FIREBASE AUTH
+      else {
+      
         const urlParts = $page.url.pathname.split('/')
 
         // for a full path, urlParts is ['', 'PfxP5N71jQVzDejF9tYwTgrVtGz2', 'mobile']
@@ -43,14 +46,15 @@
           }
         }
         // desktop mode URL
-        else {
+        else if (urlParts.length === 2) {
           if (isMobile()) {
             if (confirm('This is desktop mode. Use mobile mode instead?')) {
               goto('/' + resultUser.uid + '/mobile')
             }
-          } else {
-            goto('/' + resultUser.uid)
-          }
+          } 
+        }
+        else {
+          goto('/' + resultUser.uid)
         }
 
         // partially hydrate the user so we can redirect away ASAP (NOTE: v1 this shouldn't make a lot of difference to load time)
