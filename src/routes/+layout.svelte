@@ -107,11 +107,10 @@
   }
 </script>
 
-<div
+<!-- <div
   id="loading-screen-logo-start"
   style="z-index: 99999; background: white; width: 100vw; height: 100vh"
   class="center"
-  class:invisible={false}
 >
   <img
     src="/trueoutput-square-nobg.png"
@@ -119,7 +118,7 @@
     alt="logo"
     style="width: 48px; height: 48px;"
   />
-</div>
+</div> -->
 
 <div>
   <slot></slot>
