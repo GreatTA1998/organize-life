@@ -132,12 +132,6 @@
   }
 
   async function fetchPastTasks(ISODate) {
-    noMoreFetches = true
-    setTimeout(() => {
-      noMoreFetches = false
-    }, 2000)
-
-
     const dt = DateTime.fromISO(ISODate)
   
     const right = dt.minus({ days: cushion + 1 })
@@ -154,8 +148,6 @@
     stillRerendering = true
 
     const oldScrollLeft = ScrollableContainer.scrollLeft
-    console.log("oldScrollLeft =", oldScrollLeft)
-    
     daysToRender.set(
       [...buildDates({ start: left, totalDays: size + cushion }), ...$daysToRender]
     )
@@ -189,8 +181,6 @@
 
         const newScrollLeft = totalAddedWidth + oldScrollLeft
         ScrollableContainer.scrollLeft = newScrollLeft
-        console.log(`totalAddedWidth =${totalAddedWidth}, oldScrollLeft =${oldScrollLeft}, newScrollLeft = ${newScrollLeft}, ScrollableContainer.scrollLeft = ${ScrollableContainer.scrollLeft}`)
-
         // alert(`totalAddedWidth =${totalAddedWidth}, oldScrollLeft =${oldScrollLeft}, newScrollLeft = ${newScrollLeft}, ScrollableContainer.scrollLeft = ${ScrollableContainer.scrollLeft}`)
       })
     // })
