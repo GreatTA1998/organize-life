@@ -137,7 +137,6 @@
       right.toISODate()
     )
     
-
     daysToRender.set(
       [...buildDates({ start: left, totalDays: size + cushion }), ...$daysToRender]
     )
