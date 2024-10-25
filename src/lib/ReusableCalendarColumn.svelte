@@ -20,8 +20,11 @@
   import ReusableCreateTaskDirectly from "$lib/ReusableCreateTaskDirectly.svelte";
   import ReusableCalendarColumnTimeIndicator from "$lib/ReusableCalendarColumnTimeIndicator.svelte"
 
+  export let yyyyMMdd
   export let scheduledTasks = [];
   export let timestamps = [];
+  export let currentDate
+  export let i
 
   export let pixelsPerHour;
   export let timeBlockDurationInMinutes;

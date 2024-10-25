@@ -1,4 +1,5 @@
 <script>
+  import BetaCalendar from '$lib/BetaCalendar.svelte'
   import { getDateInDDMMYYYY } from '/src/helpers/everythingElse.js'
   import {
     mostRecentlyCompletedTaskID,
@@ -307,7 +308,8 @@
       />
 
       <!-- 2nd flex child -->
-      <CalendarThisWeek
+      <BetaCalendar/>
+      <!-- <CalendarThisWeek
         {calStartDateClassObj}
         on:calendar-shifted={(e) =>
           incrementDateClassObj({ days: e.detail.days })}
@@ -324,7 +326,7 @@
             id: e.detail.id,
             keyValueChanges: { isDone: e.detail.isDone }
           })}
-      />
+      /> -->
     </div>
 
     <!-- END OF WEEK MODE SECTION -->
