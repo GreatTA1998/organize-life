@@ -182,7 +182,7 @@
     //   })
     // }, 1000)
 
-    requestAnimationFrame(() => {
+    // requestAnimationFrame(() => {
       // in this first frame, svelte will paint
       requestAnimationFrame(() => {
         const totalAddedWidth = getShiftDueToNewColumns({ dayColumnWidth: 200 })
@@ -193,7 +193,7 @@
 
         // alert(`totalAddedWidth =${totalAddedWidth}, oldScrollLeft =${oldScrollLeft}, newScrollLeft = ${newScrollLeft}, ScrollableContainer.scrollLeft = ${ScrollableContainer.scrollLeft}`)
       })
-    })
+    // })
   }
 
 
