@@ -98,6 +98,7 @@
   const topMarginEqualizer = 8 + timestampDivTopMargin; // to align with the timestamps that can't be displayed at negative margins
   const timestampDivTopMargin = 24;
   let isShowingDockingArea = true;
+  let stillRerendering = false
   
   onMount(async () => {
     const today = DateTime.now()
@@ -113,10 +114,15 @@
   })
 
   function handleIntersect (ISODate) {
+    if (!stillRerendering) {
+      return false
+    }
+
     // the initial intersection doesn't count
     // the real intersection is when the app loads and autoscrolls to today's position
     // then the user scrolls backwards to the past
     if ($hasInitialScrolled) {
+      alert('fetchPastTask')
       fetchPastTasks(ISODate)
       return true // this boolean causes the observer to destroy itself after the callback
     } 
@@ -139,9 +145,11 @@
       right.toISODate()
     )
 
+    stillRerendering = true
+
     const oldScrollLeft = ScrollableContainer.scrollLeft
     console.log("oldScrollLeft =", oldScrollLeft)
-    alert(`oldScrollLeft = ${oldScrollLeft}`)
+    // alert(`oldScrollLeft = ${oldScrollLeft}`)
     
     daysToRender.set(
       [...buildDates({ start: left, totalDays: size + cushion }), ...$daysToRender]
@@ -157,7 +165,13 @@
       console.log(`totalAddedWidth =${totalAddedWidth}, oldScrollLeft =${oldScrollLeft}, newScrollLeft = ${newScrollLeft}`)
 
 
-      alert(`totalAddedWidth =${totalAddedWidth}, oldScrollLeft =${oldScrollLeft}, newScrollLeft = ${newScrollLeft}`)
+      // alert(`totalAddedWidth =${totalAddedWidth}, oldScrollLeft =${oldScrollLeft}, newScrollLeft = ${newScrollLeft}`)
+
+      // be extra safe
+      requestAnimationFrame(() => {
+        stillRerendering = false
+      })
+
     })
   }
 
