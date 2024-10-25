@@ -136,8 +136,8 @@
     noMoreFetches = true
     setTimeout(() => {
       noMoreFetches = false
-      alert('Can fetch again now')
-    }, 3000)
+      // alert('Can fetch again now')
+    }, 2000)
 
 
     const dt = DateTime.fromISO(ISODate)
@@ -165,22 +165,30 @@
     buildCalendarDataStructures({
       flatArray: [...newWeekTasksArray, ...$calendarTasks]
     })
-    requestAnimationFrame(() => {
-      const totalAddedWidth = getShiftDueToNewColumns({ dayColumnWidth: 200 })
 
-      const newScrollLeft = totalAddedWidth + oldScrollLeft
-      ScrollableContainer.scrollLeft = newScrollLeft
-      console.log(`totalAddedWidth =${totalAddedWidth}, oldScrollLeft =${oldScrollLeft}, newScrollLeft = ${newScrollLeft}`)
+    // iOS seems to be exactly off by the totalAddedWidth
 
+    // double frame would cause there to be two frames (state update vs scroll) vs merged
+    // requestAnimationFrame(() => {
 
-      // alert(`totalAddedWidth =${totalAddedWidth}, oldScrollLeft =${oldScrollLeft}, newScrollLeft = ${newScrollLeft}`)
-
-      // be extra safe
+    // callback is delayed as long as possible, but RIGHT before the next paint
       requestAnimationFrame(() => {
-        stillRerendering = false
-      })
+        const totalAddedWidth = getShiftDueToNewColumns({ dayColumnWidth: 200 })
 
-    })
+        const newScrollLeft = totalAddedWidth + oldScrollLeft
+        ScrollableContainer.scrollLeft = newScrollLeft
+        console.log(`totalAddedWidth =${totalAddedWidth}, oldScrollLeft =${oldScrollLeft}, newScrollLeft = ${newScrollLeft}, ScrollableContainer.scrollLeft = ${ScrollableContainer.scrollLeft}`)
+
+
+        alert(`totalAddedWidth =${totalAddedWidth}, oldScrollLeft =${oldScrollLeft}, newScrollLeft = ${newScrollLeft}, ScrollableContainer.scrollLeft = ${ScrollableContainer.scrollLeft}`)
+
+        // be extra safe
+        requestAnimationFrame(() => {
+          stillRerendering = false
+        })
+
+      })
+    // })
   }
 
   function getShiftDueToNewColumns ({ dayColumnWidth }) {
@@ -245,18 +253,18 @@
     display: none;
   }
 
-  /* Hide the scrollbar for Internet Explorer, Edge and Firefox */
-  #the-only-scrollable-container {
-    -ms-overflow-style: none;  /* Internet Explorer and Edge */
-    scrollbar-width: none;  /* Firefox */
-  }
-
   #the-only-scrollable-container {
     position: relative;
     overflow: auto;
 
     /* added to fix a patch of white between the header and the calendar column */
     background-color: var(--calendar-bg-color);
+
+    -webkit-overflow-scrolling: touch;
+    
+    /* Hide the scrollbar for Internet Explorer, Edge and Firefox */
+    -ms-overflow-style: none;  /* Internet Explorer and Edge */
+    scrollbar-width: none;  /* Firefox */
   }
   
   .x-sticky {
