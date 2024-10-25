@@ -20,8 +20,10 @@
   onMount(() => {
     // fetching user takes around 300 - 500 ms
     onAuthStateChanged(getAuth(), async (resultUser) => {
+      console.log('onAuthStateChanged')
       const onAuthStateChangedTime = performance.now();
       if (!resultUser) {
+        console.log('no resultUser')
         user.set({})
         goto('/')
 
@@ -34,28 +36,35 @@
       
       // USER IS LOGGED INTO FIREBASE AUTH
       else {
-      
-        const urlParts = $page.url.pathname.split('/')
 
-        // for a full path, urlParts is ['', 'PfxP5N71jQVzDejF9tYwTgrVtGz2', 'mobile']
-        if (urlParts.length === 3 || urlParts[2] === 'mobile') {
-          if (!isMobile()) {
-            if (confirm('This is mobile mode. Use desktop mode instead?')) {
-              goto('/' + resultUser.uid)
-            }
-          }
-        }
-        // desktop mode URL
-        else if (urlParts.length === 2) {
-          if (isMobile()) {
-            if (confirm('This is desktop mode. Use mobile mode instead?')) {
-              goto('/' + resultUser.uid + '/mobile')
-            }
-          } 
-        }
-        else {
+        if ($page.url.pathname === '/') {
           goto('/' + resultUser.uid)
         }
+
+        else {
+          const urlParts = $page.url.pathname.split('/')
+          console.log('$page.url = ', $page.url)
+
+          console.log('urlParts', urlParts)
+
+          // for a full path, urlParts is ['', 'PfxP5N71jQVzDejF9tYwTgrVtGz2', 'mobile']
+          if (urlParts.length === 3 || urlParts[2] === 'mobile') {
+            if (!isMobile()) {
+              if (confirm('This is mobile mode. Use desktop mode instead?')) {
+                goto('/' + resultUser.uid)
+              }
+            }
+          }
+          // desktop mode URL
+          else if (urlParts.length === 2) {
+            if (isMobile()) {
+              if (confirm('This is desktop mode. Use mobile mode instead?')) {
+                goto('/' + resultUser.uid + '/mobile')
+              }
+            } 
+          }
+        }
+
 
         // partially hydrate the user so we can redirect away ASAP (NOTE: v1 this shouldn't make a lot of difference to load time)
         user.set({
