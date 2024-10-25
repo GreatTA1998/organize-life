@@ -267,7 +267,8 @@
     /* added to fix a patch of white between the header and the calendar column */
     background-color: var(--calendar-bg-color);
 
-    -webkit-overflow-scrolling: touch;
+    -webkit-overflow-scrolling: auto;
+    /* -webkit-overflow-scrolling: touch; */
     
     /* Hide the scrollbar for Internet Explorer, Edge and Firefox */
     -ms-overflow-style: none;  /* Internet Explorer and Edge */

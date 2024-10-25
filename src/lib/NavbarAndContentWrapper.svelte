@@ -18,10 +18,11 @@
   /*
     Below are based on for having a fixed height Navbar, with a content div that fills up the remaining space
   */
+  /* dvh vs svh */
   .box {
     display: flex;
     flex-flow: column;
-    height: 100svh;
+    height: 100dvh;
     box-sizing: border-box;
   }
 
