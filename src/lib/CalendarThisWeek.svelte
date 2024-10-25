@@ -142,8 +142,6 @@
     const oldScrollLeft = ScrollableContainer.scrollLeft
     console.log("oldScrollLeft =", oldScrollLeft)
     alert(`oldScrollLeft = ${oldScrollLeft}`)
-
-    // alert('oldScrollLeft =', oldScrollLeft)
     
     daysToRender.set(
       [...buildDates({ start: left, totalDays: size + cushion }), ...$daysToRender]
@@ -159,7 +157,7 @@
       console.log(`totalAddedWidth =${totalAddedWidth}, oldScrollLeft =${oldScrollLeft}, newScrollLeft = ${newScrollLeft}`)
 
 
-      // alert(`totalAddedWidth =${totalAddedWidth}, oldScrollLeft =${oldScrollLeft}, newScrollLeft = ${newScrollLeft}`)
+      alert(`totalAddedWidth =${totalAddedWidth}, oldScrollLeft =${oldScrollLeft}, newScrollLeft = ${newScrollLeft}`)
     })
   }
 

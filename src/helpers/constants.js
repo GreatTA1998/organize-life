@@ -1,3 +1,3 @@
 // lazy loading variables
 export const size = 4
-export const cushion = 4
+export const cushion = 2
