@@ -43,7 +43,7 @@
 
   <div style="display: flex; width: fit-content;">
     <div class="x-sticky" style="margin-top: {timestampDivTopMargin}px;">
-      {#each timesOfDay as timestamp, i (i)}
+      {#each timesOfDay as timestamp, i (timestamp)}
         <div
           class="x-sticky timestamp-number"
           style="height: {MIKA_PIXELS_PER_HOUR}px; width: var(--timestamps-column-width);"
@@ -53,7 +53,7 @@
       {/each}
     </div>
 
-    {#each $daysToRender as ISODate (ISODate)}
+    {#each $daysToRender as ISODate, i (ISODate + `${i}`)}
       <div style="margin-top: {topMarginEqualizer}px;" class="unselectable">
         {#if $tasksScheduledOn && timesOfDay.length !== 0}
           <ReusableCalendarColumn
@@ -123,7 +123,6 @@
     // the real intersection is when the app loads and autoscrolls to today's position
     // then the user scrolls backwards to the past
     if ($hasInitialScrolled) {
-      // alert('fetchPastTask')
       fetchPastTasks(ISODate)
       return true // this boolean causes the observer to destroy itself after the callback
     } 
@@ -136,7 +135,6 @@
     noMoreFetches = true
     setTimeout(() => {
       noMoreFetches = false
-      // alert('Can fetch again now')
     }, 2000)
 
 
@@ -157,7 +155,6 @@
 
     const oldScrollLeft = ScrollableContainer.scrollLeft
     console.log("oldScrollLeft =", oldScrollLeft)
-    // alert(`oldScrollLeft = ${oldScrollLeft}`)
     
     daysToRender.set(
       [...buildDates({ start: left, totalDays: size + cushion }), ...$daysToRender]
@@ -179,13 +176,7 @@
         ScrollableContainer.scrollLeft = newScrollLeft
         console.log(`totalAddedWidth =${totalAddedWidth}, oldScrollLeft =${oldScrollLeft}, newScrollLeft = ${newScrollLeft}, ScrollableContainer.scrollLeft = ${ScrollableContainer.scrollLeft}`)
 
-
-        alert(`totalAddedWidth =${totalAddedWidth}, oldScrollLeft =${oldScrollLeft}, newScrollLeft = ${newScrollLeft}, ScrollableContainer.scrollLeft = ${ScrollableContainer.scrollLeft}`)
-
-        // be extra safe
-        requestAnimationFrame(() => {
-          stillRerendering = false
-        })
+        // alert(`totalAddedWidth =${totalAddedWidth}, oldScrollLeft =${oldScrollLeft}, newScrollLeft = ${newScrollLeft}, ScrollableContainer.scrollLeft = ${ScrollableContainer.scrollLeft}`)
 
       })
     // })
