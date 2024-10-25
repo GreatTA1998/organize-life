@@ -24,7 +24,7 @@
     <div class="sticky-y-div flexbox">
       {#each $daysToRender as ISODate, i (ISODate)}
         {#if i === cushion}
-          <div use:lazyCallable={() => handleIntersect(ISODate)} style="outline: 20px solid blue;"></div>
+          <div use:lazyCallable={() => handleIntersect(ISODate)}></div>
         {:else if i === $daysToRender.length - 1 - cushion}
           <div use:lazyCallable={() => fetchNewWeekOfFutureTasks(ISODate)}></div>
         {/if}
@@ -115,9 +115,9 @@
   })
 
   function handleIntersect (ISODate) {
-    if (noMoreFetches) {
-      return false
-    }
+    // if (noMoreFetches) {
+    //   return false
+    // }
 
     // the initial intersection doesn't count
     // the real intersection is when the app loads and autoscrolls to today's position
