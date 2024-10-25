@@ -122,7 +122,7 @@
     // the real intersection is when the app loads and autoscrolls to today's position
     // then the user scrolls backwards to the past
     if ($hasInitialScrolled) {
-      alert('fetchPastTask')
+      // alert('fetchPastTask')
       fetchPastTasks(ISODate)
       return true // this boolean causes the observer to destroy itself after the callback
     } 
