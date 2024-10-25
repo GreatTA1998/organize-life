@@ -137,9 +137,6 @@
       right.toISODate()
     )
     
-    // check scroll position AFTER data fetch, but before the update,
-    // as that's the most recent location of the scroll location (the user could have scrolled a lot during the data fetch)
-    const oldScrollLeft = ScrollableContainer.scrollLeft
 
     daysToRender.set(
       [...buildDates({ start: left, totalDays: size + cushion }), ...$daysToRender]
@@ -151,10 +148,8 @@
     await tick()
 
     requestAnimationFrame(() => {
-      ScrollableContainer.scrollLeft = getShiftDueToNewColumns({ dayColumnWidth: 200 }) + oldScrollLeft
+      ScrollableContainer.scrollLeft = getShiftDueToNewColumns({ dayColumnWidth: 200 }) + ScrollableContainer.scrollLeft
     })
-
-    // ScrollableContainer.scrollLeft = getShiftDueToNewColumns({ dayColumnWidth: 200 }) + oldScrollLeft
   }
 
   function getShiftDueToNewColumns ({ dayColumnWidth }) {
