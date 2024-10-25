@@ -15,7 +15,6 @@
 
   onMount(async () => {
     $periodicTasks = await PeriodicTasks.getAll($user.uid)
-    console.log($periodicTasks)
   })
 
 </script>

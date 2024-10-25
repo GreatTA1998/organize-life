@@ -11,13 +11,16 @@
   import posthog from 'posthog-js'
   let unsubUserSnapListener = null
   let doingAuth = true
-  const startTime = performance.now()
+
+  const hasConfirmedAuth = false
+
+  $: visible = (doingAuth || loggedInButNoData)
+  $: loggedInButNoData = ($user?.uid && (!$calendarTasks?.length || !$todoTasks?.length))
   
   onMount(() => {
     // fetching user takes around 300 - 500 ms
     onAuthStateChanged(getAuth(), async (resultUser) => {
       const onAuthStateChangedTime = performance.now();
-      console.log(' to run a callback on auth took', onAuthStateChangedTime - startTime);
       if (!resultUser) {
         user.set({})
         goto('/')
@@ -67,16 +70,10 @@
           }
         })
       }
-      const onAuthDoneTime = performance.now();
-      console.log('auth callback took to run', onAuthDoneTime - onAuthStateChangedTime);
       doingAuth = false
     })
   })
 
-  const trace = (y, x) => {
-    console.log(y, x)
-    return x
-  }
   // should be unnecessary because +layout getting destroyed means the App is closed
   onDestroy(() => {
     if (unsubUserSnapListener) unsubUserSnapListener()
@@ -114,7 +111,7 @@
   id="loading-screen-logo-start"
   style="z-index: 99999; background: white; width: 100vw; height: 100vh"
   class="center"
-  class:invisible={!(doingAuth || ($user?.uid && (!$calendarTasks?.length || !$todoTasks?.length )))}
+  class:invisible={!visible}
 >
   <img
     src="/trueoutput-square-nobg.png"

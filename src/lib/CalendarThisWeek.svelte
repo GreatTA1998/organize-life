@@ -24,7 +24,7 @@
     <div class="sticky-y-div flexbox">
       {#each $daysToRender as ISODate, i (ISODate)}
         {#if i === cushion}
-          <div use:lazyCallable={() => handleIntersect(ISODate)} style="border: 20px solid blue;"></div>
+          <div use:lazyCallable={() => handleIntersect(ISODate)} style="outline: 20px solid blue;"></div>
         {:else if i === $daysToRender.length - 1 - cushion}
           <div use:lazyCallable={() => fetchNewWeekOfFutureTasks(ISODate)}></div>
         {/if}
@@ -129,15 +129,21 @@
     const dt = DateTime.fromISO(ISODate)
   
     const right = dt.minus({ days: cushion + 1 })
-    const left = dt.minus({ days: cushion + size + cushion })    
+    const left = dt.minus({ days: cushion + size + cushion })  
+    
+    // const oldScrollLeft = ScrollableContainer.scrollLeft
 
     const newWeekTasksArray = await Tasks.getByDateRange(
       $user.uid,
       left.toISODate(),
       right.toISODate()
     )
-    
+
     const oldScrollLeft = ScrollableContainer.scrollLeft
+    console.log("oldScrollLeft =", oldScrollLeft)
+    alert(`oldScrollLeft = ${oldScrollLeft}`)
+
+    // alert('oldScrollLeft =', oldScrollLeft)
     
     daysToRender.set(
       [...buildDates({ start: left, totalDays: size + cushion }), ...$daysToRender]
@@ -146,7 +152,14 @@
       flatArray: [...newWeekTasksArray, ...$calendarTasks]
     })
     requestAnimationFrame(() => {
-      ScrollableContainer.scrollLeft = getShiftDueToNewColumns({ dayColumnWidth: 200 }) + oldScrollLeft
+      const totalAddedWidth = getShiftDueToNewColumns({ dayColumnWidth: 200 })
+
+      const newScrollLeft = totalAddedWidth + oldScrollLeft
+      ScrollableContainer.scrollLeft = newScrollLeft
+      console.log(`totalAddedWidth =${totalAddedWidth}, oldScrollLeft =${oldScrollLeft}, newScrollLeft = ${newScrollLeft}`)
+
+
+      // alert(`totalAddedWidth =${totalAddedWidth}, oldScrollLeft =${oldScrollLeft}, newScrollLeft = ${newScrollLeft}`)
     })
   }
 
