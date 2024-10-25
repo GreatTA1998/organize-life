@@ -1,6 +1,6 @@
 <!-- {timeIndicatorOffset} -->
 <div class="current-time-indicator-container" 
-  style="top: 700px;"
+  style="top: {timeIndicatorOffset}px"
 > 
   <hr 
     style="border: 2px solid var(--location-indicator-color); border-radius: 5px; width: 100%; margin-top: 0px; margin-bottom: 0px;"
@@ -30,15 +30,9 @@
   // but a boolean is helpful for disabling the intersection observer
 
   $: if (!$hasInitialScrolled && CurrentTimeIndicator) {
-    async function scrollOnNextTick () {
-      // await tick()
+    requestAnimationFrame(() => {
       scrollToTimeIndicator()
-    }
-    scrollOnNextTick()
-
-    // requestAnimationFrame(() => {
-    //   scrollToTimeIndicator()
-    // })
+    })
   }
 
   onMount(() => {
