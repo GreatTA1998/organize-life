@@ -308,7 +308,23 @@
       />
 
       <!-- 2nd flex child -->
-      <BetaCalendar/>
+      <BetaCalendar
+        on:calendar-shifted={(e) =>
+          incrementDateClassObj({ days: e.detail.days })}
+        on:new-root-task={(e) => createTaskNode(e.detail)}
+        on:task-click={(e) => openDetailedCard(e.detail)}
+        on:task-update={(e) =>
+          updateTaskNode({
+            id: e.detail.id,
+            keyValueChanges: e.detail.keyValueChanges
+          })}
+        on:task-dragged={(e) => changeTaskDeadline(e.detail)}
+        on:task-checkbox-change={(e) =>
+          updateTaskNode({
+            id: e.detail.id,
+            keyValueChanges: { isDone: e.detail.isDone }
+          })}
+      />
       <!-- <CalendarThisWeek
         {calStartDateClassObj}
         on:calendar-shifted={(e) =>

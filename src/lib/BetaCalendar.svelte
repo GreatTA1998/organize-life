@@ -129,6 +129,10 @@
                 pixelsPerHour={MIKA_PIXELS_PER_HOUR}
                 timeBlockDurationInMinutes={60}
                 scheduledTasks={$tasksScheduledOn[yyyyMMdd] ? $tasksScheduledOn[yyyyMMdd].hasStartTime : []}
+                on:new-root-task
+                on:task-update
+                on:task-click
+                on:task-checkbox-change
               />
             {/if}
           </div>

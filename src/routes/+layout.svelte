@@ -36,7 +36,7 @@
       
       // USER IS LOGGED INTO FIREBASE AUTH
       else {
-
+        // splitting on '/' gives' ['', '']
         if ($page.url.pathname === '/') {
           goto('/' + resultUser.uid)
         }

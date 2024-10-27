@@ -155,25 +155,6 @@
       flatArray: [...newWeekTasksArray, ...$calendarTasks]
     })
 
-    // iOS seems to be exactly off by the totalAddedWidth
-
-    // double frame would cause there to be two frames (state update vs scroll) vs merged
-    // requestAnimationFrame(() => {
-
-    // callback is delayed as long as possible, but RIGHT before the next paint
-
-    // setTimeout(() => {
-    //   requestAnimationFrame(() => {
-    //     const totalAddedWidth = getShiftDueToNewColumns({ dayColumnWidth: 200 })
-
-    //     const newScrollLeft = totalAddedWidth + oldScrollLeft
-    //     ScrollableContainer.scrollLeft = newScrollLeft
-    //     console.log(`totalAddedWidth =${totalAddedWidth}, oldScrollLeft =${oldScrollLeft}, newScrollLeft = ${newScrollLeft}, ScrollableContainer.scrollLeft = ${ScrollableContainer.scrollLeft}`)
-
-    //     // alert(`totalAddedWidth =${totalAddedWidth}, oldScrollLeft =${oldScrollLeft}, newScrollLeft = ${newScrollLeft}, ScrollableContainer.scrollLeft = ${ScrollableContainer.scrollLeft}`)
-    //   })
-    // }, 1000)
-
     // requestAnimationFrame(() => {
       // in this first frame, svelte will paint
       requestAnimationFrame(() => {
@@ -183,7 +164,6 @@
         ScrollableContainer.scrollLeft = newScrollLeft
         // alert(`totalAddedWidth =${totalAddedWidth}, oldScrollLeft =${oldScrollLeft}, newScrollLeft = ${newScrollLeft}, ScrollableContainer.scrollLeft = ${ScrollableContainer.scrollLeft}`)
       })
-    // })
   }
 
 
