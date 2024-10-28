@@ -25,7 +25,7 @@ exports.periodicTasks = onSchedule(
   async (event) => {
     functions.logger.info('periodicTasks function excecuting');
     const snapshot = await db.collectionGroup('templates').get();
-    const templates = snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id, userID: doc.ref.parent.parent.id }));
+    const templates = snapshot.docs.map(taskDoc => ({ ...taskDoc.data(), id: doc.id, userID: doc.ref.parent.parent.id }));
     for (const template of templates) {
       Joi.attempt(template, TemplateSchema);
       await handleTemplate(template);

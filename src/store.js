@@ -13,7 +13,7 @@ export function deleteTemplate({ templateID }) {
   const currentUser = get(user)
   Templates.deleteTemplate({ id: templateID, userID: currentUser.uid })
   templates.update((templates) => templates.filter((template) => template.id !== templateID))
-  const fullISODate = ({ startDateISO, startTime }) => DateTime.fromISO(`${startDateISO}T${startTime || '00:00'}:00`)
+  const fullISODate = ({ startDateISO, startTime }) => DateTime.fromISO(`${startDateISO}T${startTime || '00:00'}:00`).toISO()
   const afterNow = (taskISO) => taskISO > DateTime.now().toISO();
   const tasksToDelete = get(calendarTasks).filter(task => task.templateID === templateID && afterNow(fullISODate(task)))
   tasksToDelete.forEach(deleteFromLocalState);
