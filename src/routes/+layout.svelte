@@ -53,25 +53,25 @@
       else { // USER IS LOGGED INTO FIREBASE AUTH
         const urlParts = $page.url.pathname.split("/")
 
-        // for a full path, urlParts is ['', 'PfxP5N71jQVzDejF9tYwTgrVtGz2', 'mobile']
-        if (urlParts.length === 3 || urlParts[2] === 'mobile') {
-          if (!isMobile()) {
-            if (confirm('This is mobile mode. Use desktop mode instead?')) {
-              goto('/' + resultUser.uid)
-            }
-          }
-        }
-        // desktop mode URL
-        else {
-          if (isMobile()) {
-            if (confirm('This is desktop mode. Use mobile mode instead?')) {
-              goto('/' + resultUser.uid + '/mobile')
-            }
-          }
-          else {
-            goto('/' + resultUser.uid)
-          }
-        }
+      //   // for a full path, urlParts is ['', 'PfxP5N71jQVzDejF9tYwTgrVtGz2', 'mobile']
+      //   if (urlParts.length === 3 || urlParts[2] === 'mobile') {
+      //     if (!isMobile()) {
+      //       if (confirm('This is mobile mode. Use desktop mode instead?')) {
+      //         goto('/' + resultUser.uid)
+      //       }
+      //     }
+      //   }
+      //   // desktop mode URL
+      //   else {
+      //     if (isMobile()) {
+      //       if (confirm('This is desktop mode. Use mobile mode instead?')) {
+      //         goto('/' + resultUser.uid + '/mobile')
+      //       }
+      //     }
+      //     else {
+      //       goto('/' + resultUser.uid)
+      //     }
+      //   }
 
         // partially hydrate the user so we can redirect away ASAP (NOTE: v1 this shouldn't make a lot of difference to load time)
         user.set({ 

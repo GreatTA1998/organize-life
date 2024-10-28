@@ -1,5 +1,7 @@
 import { writable, readable, get } from 'svelte/store'
 import Templates from './back-end/Templates'
+import { DateTime } from 'luxon'
+import { deleteFromLocalState } from './helpers/maintainState';
 
 export const todoTasks = writable(null)
 export const calendarTasks = writable(null)
@@ -13,7 +15,7 @@ export function deleteTemplate({ templateID }) {
   templates.update((templates) => templates.filter((template) => template.id !== templateID))
   const fullISODate = ({ startDateISO, startTime }) => DateTime.fromISO(`${startDateISO}T${startTime || '00:00'}:00`)
   const afterNow = (taskISO) => taskISO > DateTime.now().toISO();
-  const tasksToDelete = calendarTasks.get(tasks => tasks.filter(task => task.templateID === templateID && afterNow(fullISODate(task))))
+  const tasksToDelete = get(calendarTasks).filter(task => task.templateID === templateID && afterNow(fullISODate(task)))
   tasksToDelete.forEach(deleteFromLocalState);
 }
 
