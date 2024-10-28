@@ -2,6 +2,7 @@ import { db } from '../firestoreConnection.js';
 import { getDocs, query, collection, doc, writeBatch } from 'firebase/firestore';
 import Joi from 'joi';
 import TaskSchema from '../Schemas/TaskSchema.js';
+import TemplateSchema from '../Schemas/TemplateSchema.js';
 
 const nesseseryFields = [
     "duration",
@@ -36,8 +37,21 @@ const updateCollection = async (userID) => {
         const batch = writeBatch(db);
         templatesSnapshot.forEach((templateDoc) => {
             const newDocRef = doc(collection(db, 'users', userID, 'templates'), templateDoc.id);
-            Joi.attempt(templateDoc.data(), TemplateSchema);
-            batch.set(newDocRef, templateDoc.data());
+            const newTemplate = {
+                name: templateDoc.data().name,
+                orderValue: templateDoc.data().orderValue,
+                lastGeneratedTask: templateDoc.data().lastGeneratedTask,
+                crontab: templateDoc.data().crontab || '',
+                iconURL: templateDoc.data().iconURL || templateDoc.data().iconUrl || '',
+                tags: templateDoc.data().tags || '',
+                timeZone: templateDoc.data().timeZone || 'Asia/Tokyo',
+                notes: templateDoc.data().notes || '',
+                notify: templateDoc.data().notify || '',
+                duration: templateDoc.data().duration || 0,
+                startTime: templateDoc.data().startTime || '',
+            }
+            Joi.attempt(newTemplate, TemplateSchema);
+            batch.set(newDocRef, newTemplate);
         });
         await batch.commit();
         console.log(`Successfully migrated documents to 'templates' collection`);
@@ -57,6 +71,7 @@ const updateTasks = async (userID) => {
             if (!taskDoc.data().name) return;
             const newTask = {
                 ...taskDoc.data(),
+                orderValue: taskDoc.data().orderValue || 0,
                 duration: taskDoc.data().duration || 0,
                 startDateISO: taskDoc.data().startDateISO || '',
                 startTime: taskDoc.data().startTime || '',
@@ -87,8 +102,8 @@ const userID = '1'
 //  '6uIcMMsBEkQ85OINCDADtrygzZx1';
 
 // task: 02N6mo10hj07qnVA7oiB
-// await updateCollection(userID)
-await updateTasks('6uIcMMsBEkQ85OINCDADtrygzZx1')
+// await updateCollection('yGVJSutBrnS1156uopQQOBuwpMl2')
+await updateTasks('yGVJSutBrnS1156uopQQOBuwpMl2')
 
 
 // const tasks = await getDocs(query(collection(db, 'users', userID, 'tasks')))
