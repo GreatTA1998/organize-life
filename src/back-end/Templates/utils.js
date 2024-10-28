@@ -34,7 +34,6 @@ const buildFutureTasks = async ({ template, startDateJS, endDateJS, userID, temp
 }
 
 const deleteFutureTasks = async ({ userID, id }) => {
-  console.log('deleting future tasks', userID, id);
   const fromDate = DateTime.now().toFormat('yyyy-MM-dd');
   const tasksQuery = query(
     collection(db, "users", userID, "tasks"),
@@ -48,7 +47,6 @@ const deleteFutureTasks = async ({ userID, id }) => {
       `${task.startDateISO}T${task.startTime || '00'}:00`,
     );
     if (taskDateTime >= DateTime.now()) {
-      console.log('deleting task', taskDoc.id, taskDoc.data());
       return deleteDoc(doc(db, "users", userID, 'tasks', taskDoc.id));
     }
     return Promise.resolve();

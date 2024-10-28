@@ -1,7 +1,7 @@
 import { writable, readable, get } from 'svelte/store'
 import Templates from './back-end/Templates'
 import { DateTime } from 'luxon'
-import { deleteFromLocalState } from './helpers/maintainState';
+import { deleteFromLocalState, updateLocalState } from './helpers/maintainState';
 
 export const todoTasks = writable(null)
 export const calendarTasks = writable(null)
@@ -29,10 +29,10 @@ export function updateTemplate({ templateID, keyValueChanges }) {
   templates.update((templates) => templates.map((template) =>
     template.id === templateID ? { ...template, ...keyValueChanges } : template
   ))
-  const fullISODate = ({ startDateISO, startTime }) => DateTime.fromISO(`${startDateISO}T${startTime || '00:00'}:00`)
+  const fullISODate = ({ startDateISO, startTime }) => DateTime.fromISO(`${startDateISO}T${startTime || '00:00'}:00`).toISO()
   const afterNow = (taskISO) => taskISO > DateTime.now().toISO();
-  const tasksToDelete = get(calendarTasks).filter(task => task.templateID === templateID && afterNow(fullISODate(task)))
-  tasksToDelete.forEach(deleteFromLocalState);
+  const tasksToUpdate = get(calendarTasks).filter(task => task.templateID === templateID && afterNow(fullISODate(task)))
+  tasksToUpdate.forEach(({id}) => updateLocalState({ id, keyValueChanges }));
 
   // update future tasks
   // create local future tasks

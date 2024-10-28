@@ -37,7 +37,6 @@ export function updateLocalState({ id, keyValueChanges }) {
   for (const [key, value] of Object.entries(keyValueChanges)) {
     newNode[key] = value;
   }
-
   // work with JS variables instead of Svelte stores
   let calArr = get(calendarTasks);
   let todoArr = get(todoTasks);
