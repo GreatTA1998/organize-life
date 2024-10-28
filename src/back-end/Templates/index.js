@@ -7,7 +7,8 @@ import {
   where,
   setDoc,
   updateDoc,
-  deleteDoc
+  deleteDoc,
+  getDoc
 } from "firebase/firestore";
 import { DateTime } from 'luxon';
 import { getPeriodFromCrontab, deleteFutureTasks, postFutureTasks, getTotalStats } from './utils.js';
@@ -22,7 +23,6 @@ const create = async ({ userID, template, templateID }) => {
 
 const updateWithTasks = async ({ userID, id, updates }) => {
   if (updates.crontab) {
-
     const oldTemplate = await getDoc(doc(db, "users", userID, 'templates', id));
     Joi.assert({ ...oldTemplate.data(), ...updates }, TemplateSchema);
     await updateDoc(doc(db, "users", userID, 'templates', id), updates);
@@ -47,13 +47,13 @@ const updateWithTasks = async ({ userID, id, updates }) => {
   );
 
   const tasksSnapshot = await getDocs(tasksQuery);
-  const updatePromises = tasksSnapshot.docs.map(doc => {
-    const task = doc.data();
+  const updatePromises = tasksSnapshot.docs.map(task => {
+    const taskData = task.data();
     const taskDateTime = DateTime.fromISO(
-      `${task.startDateISO}T${task.startTime || '00'}:00`,
+      `${taskData.startDateISO}T${taskData.startTime || '00'}:00`,
     );
     if (taskDateTime >= DateTime.now()) {
-      return updateDoc(doc(db, "users", userID, 'tasks', doc.id), updates);
+      return updateDoc(doc(db, "users", userID, 'tasks', task.id), updates);
     }
     return Promise.resolve();
   });

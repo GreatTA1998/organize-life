@@ -16,11 +16,6 @@
     ctx = canvas.getContext('2d')
   })
 
-
-  $: {
-    console.log('colorPickerColor', colorPickerColor)
-    console.log('color', color)
-  }
   let drawing = false
   let color = 'black'
   let colorPickerColor = ''
@@ -186,6 +181,6 @@
     <input id="public" type="checkbox" bind:checked={isShareable} />
   </div>
 </div>
-  <ColorPicker {showColorPicker} {handleColorChange} {toggleColorPicker} {colorPickerColor} />
+  <ColorPicker {showColorPicker} {handleColorChange} {toggleColorPicker} />
 
 <style src="./BasicWhiteboard.css"></style>

@@ -31,7 +31,7 @@ export function updateTemplate({ templateID, keyValueChanges }) {
   ))
   const fullISODate = ({ startDateISO, startTime }) => DateTime.fromISO(`${startDateISO}T${startTime || '00:00'}:00`)
   const afterNow = (taskISO) => taskISO > DateTime.now().toISO();
-  const tasksToDelete = calendarTasks.get(tasks => tasks.filter(task => task.templateID === templateID && afterNow(fullISODate(task))))
+  const tasksToDelete = get(calendarTasks).filter(task => task.templateID === templateID && afterNow(fullISODate(task)))
   tasksToDelete.forEach(deleteFromLocalState);
 
   // update future tasks

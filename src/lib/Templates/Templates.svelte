@@ -36,10 +36,6 @@
   Known Bugs:
   <ul>
     <li>Updates to templates need a refresh to display on the calendar</li>
-    <li>
-      adding quick tasks to the calendar requires refresh to recalculate
-      statistics
-    </li>
   </ul>
 </h4>
 <div style="padding: 48px;">
