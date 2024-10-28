@@ -11,7 +11,14 @@
 
   const setIsPopupOpen = ({ newVal }) => (isPopupOpen = newVal)
 
+  function handleKeyPress(event) {
+    if (event.key === 'Enter' && newTaskName.trim()) {
+      createTemplate()
+    }
+  }
+
   async function createTemplate() {
+    if (!newTaskName.trim()) return
     const newTemplate = {
       name: newTaskName,
       duration: 5,
@@ -25,9 +32,12 @@
       iconURL: '',
       tags: ''
     }
-    const templateID = getRandomID();
+    const templateID = getRandomID()
     Templates.create({ userID: $user.uid, template: newTemplate, templateID })
-    $templates = [...$templates, { ...newTemplate, id: templateID, userID: $user.uid }]
+    $templates = [
+      ...$templates,
+      { ...newTemplate, id: templateID, userID: $user.uid }
+    ]
     newTaskName = ''
     isPopupOpen = false
   }
@@ -35,10 +45,11 @@
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <div style="font-size: 24px; margin-bottom: 12px; cursor: pointer;">
-  <span style ="cursor:pointer" on:click={() => setIsPopupOpen({ newVal: true })} >
-    {Templates.getPeriodFromCrontab(
-      crontab
-    ).toUpperCase()}</span
+  <span
+    style="cursor:pointer"
+    on:click={() => setIsPopupOpen({ newVal: true })}
+  >
+    {Templates.getPeriodFromCrontab(crontab).toUpperCase()}</span
   >
   <!-- svelte-ignore a11y-click-events-have-key-events -->
   <span
@@ -62,7 +73,8 @@
         <input
           type="text"
           bind:value={newTaskName}
-          placeholder="Untitled"
+          on:keypress={handleKeyPress}
+          placeholder="name"
           style="margin-left: 12px; width: 100%; font-size: 24px;"
           class="title-underline-input"
           autofocus
@@ -73,6 +85,7 @@
         margin-top: 16px;"
         >
           <ReusableRoundButton
+            isDisabled={!newTaskName.trim()}
             on:click={createTemplate}
             backgroundColor="rgb(0, 89, 125)"
             textColor="white"
@@ -141,7 +154,6 @@
     color: #8e8e93;
   }
 
-
   .close-button {
     position: absolute;
     top: 10px;
@@ -170,7 +182,6 @@
     align-items: center;
     justify-content: center;
     height: 100%;
-    margin-top: -2px; 
+    margin-top: -2px;
   }
-
 </style>

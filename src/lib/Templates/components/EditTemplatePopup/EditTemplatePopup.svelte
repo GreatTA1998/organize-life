@@ -82,7 +82,7 @@
         </span>
       </div>
       <EditTime {template} />
-      <IconsDisplay {setIsPopupOpen} {template} />
+      <IconsDisplay {template} />
     </div>
   </div>
 {/if}
