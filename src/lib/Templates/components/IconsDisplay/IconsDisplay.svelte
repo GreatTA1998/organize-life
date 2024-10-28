@@ -4,12 +4,10 @@
   import BasicWhiteboard from './BasicWhiteboard.svelte'
   import Icons from '/src/back-end/Icons.js'
   export let template
-  export let setIsPopupOpen  // magic that closes the popup 
   let isShowingPremiumPopup = false
 
   function handleSelectIcon(iconURL = '') {
     updateTemplate({ templateID: template.id, keyValueChanges: { iconURL } })
-    // setIsPopupOpen({ newVal: false })
   }
 
   function handleDeleteIcon({ id, url }) {
