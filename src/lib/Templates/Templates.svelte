@@ -1,7 +1,7 @@
 <script>
   import TemplateColumn from './TemplateColumn.svelte'
   import { onMount } from 'svelte'
-  import { user, templates } from '/src/store.js'
+  import { user, templates, calendarTasks } from '/src/store.js'
   import Templates from '/src/back-end/Templates'
   import { filterByType } from './utils.js'
 
@@ -12,6 +12,17 @@
   $: yearlyTasks = filterByType($templates, 'yearly')
 
   $: quickTasks = filterByType($templates, 'quick')
+
+  $: {
+    if ($calendarTasks) {
+      Templates.getAll({
+        userID: $user.uid,
+        includeStats: true
+      }).then((result) => {
+        $templates = result
+      })
+    }
+  }
 
   onMount(async () => {
     $templates = await Templates.getAll({
@@ -25,7 +36,10 @@
   Known Bugs:
   <ul>
     <li>Updates to templates need a refresh to display on the calendar</li>
-    <li>adding quick tasks to the calendar requires refresh to recalculate statistics</li>
+    <li>
+      adding quick tasks to the calendar requires refresh to recalculate
+      statistics
+    </li>
   </ul>
 </h4>
 <div style="padding: 48px;">

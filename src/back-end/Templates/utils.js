@@ -71,7 +71,6 @@ const postFutureTasks = async ({ userID, id }) => {
 const getTotalStats = async ({ userID, id }) => {
   const q = query(collection(db, "users", userID, "tasks"), where('templateID', '==', id), where('startDateISO', '<=', DateTime.now().toFormat('yyyy-MM-dd')), where('isDone', '==', true));
   const snapshot = await getDocs(q)
-  console.log(' get Total stats', snapshot.docs.map(doc => doc.data()));
   const TotalMinutesSpent = snapshot.docs.reduce((acc, doc) => acc + doc.data().duration, 0);
   const totalTasksCompleted = snapshot.docs.length
   return [totalTasksCompleted, TotalMinutesSpent]
