@@ -1,5 +1,7 @@
 <script>
+  import PlaygroundCalendar from '$lib/Playground/PlaygroundCalendar.svelte'
   import BetaCalendar from '$lib/BetaCalendar.svelte'
+  import FunctionalCalendar from '$lib/Playground/FunctionalCalendar.svelte'
   import { getDateInDDMMYYYY } from '/src/helpers/everythingElse.js'
   import {
     mostRecentlyCompletedTaskID,
@@ -34,6 +36,7 @@
   } from '/src/helpers/crud.js'
   import { findTaskByID } from '/src/helpers/utils.js'
   import { dev } from '$app/environment'
+
   let currentMode = 'Week'
   const userDocPath = `users/${$user.uid}`
 
@@ -307,8 +310,14 @@
           })}
       />
 
+      <FunctionalCalendar
+      
+      />
+<!-- 
+      <PlaygroundCalendar/> -->
+
       <!-- 2nd flex child -->
-      <BetaCalendar
+      <!-- <BetaCalendar
         on:calendar-shifted={(e) =>
           incrementDateClassObj({ days: e.detail.days })}
         on:new-root-task={(e) => createTaskNode(e.detail)}
@@ -324,7 +333,8 @@
             id: e.detail.id,
             keyValueChanges: { isDone: e.detail.isDone }
           })}
-      />
+      /> -->
+      
       <!-- <CalendarThisWeek
         {calStartDateClassObj}
         on:calendar-shifted={(e) =>

@@ -30,6 +30,7 @@
   export let timeBlockDurationInMinutes;
   export let calendarBeginningDateClassObject;
 
+  let numOfHourBlocksDisplayed = 24;
   let overallContainerHeight;
   let OverallContainer;
   const dispatch = createEventDispatcher();
@@ -156,19 +157,19 @@
 <!-- https://github.com/sveltejs/svelte/issues/6016 -->
 <div
   bind:this={OverallContainer}
-  class="scroll-container"
+  class="overall-container"
   style="
     position: relative;
     width: var(--calendar-day-section-width);
     background-color: var(--calendar-bg-color);
-    flex-grow: 1;
   "
 >
   <!-- NOTE: this is a tall rectangular container that only encompasses the timestamps -->
   <!-- svelte-ignore a11y-click-events-have-key-events -->
+   <!-- TO-DO: refator and deprecate this code somehow-->
   <div
     class="calendar-day-container"
-    style="height: {timestamps.length *
+    style="height: {numOfHourBlocksDisplayed *
       timeBlockDurationInMinutes *
       pixelsPerMinute}px; 
       margin-bottom: 1px; 
@@ -291,7 +292,7 @@
   }
 
   /* DO NOT REMOVE, BREAKS DRAG-AND-DROP AND DURATION ADJUSTMENT */
-  .scroll-container {
+  .overall-container {
     height: fit-content;
     overflow-y: hidden;
     overflow-x: hidden;

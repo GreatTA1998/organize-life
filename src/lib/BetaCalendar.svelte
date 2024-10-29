@@ -10,10 +10,13 @@
   import { buildCalendarDataStructures } from '/src/helpers/maintainState.js'
   import { buildDates } from "../helpers/dataStructures";
   import Tasks from "../back-end/Tasks"
+  import ReusableCalendarHeader from "./ReusableCalendarHeader.svelte"
+  import BetaCalendarTimestamps from '$lib/BetaCalendarTimestamps.svelte'
 
   const TOTAL_DAYS = 365; // Show a year's worth of days
-  const BUFFER_DAYS = 7; // One week buffer on each side
+  const BUFFER_DAYS = 0; // One week buffer on each side
   const DAY_WIDTH = 200; // Adjust based on your ReusableCalendarColumn width
+  let isShowingDockingArea = true
 
   let startDate = DateTime.now().minus({ days: TOTAL_DAYS / 2 });
   let containerWidth;
@@ -63,7 +66,6 @@
   });
 
   function handleIntersect (ISODate) {
-    console.log('handleIntersect, $hasInitialScrolled =', $hasInitialScrolled)
     if ($hasInitialScrolled) {
       fetchPastTasks(ISODate)
       return true // this boolean causes the observer to destroy itself after the callback
@@ -95,74 +97,147 @@
 </script>
 
 
-<div class="beta-calendar" style="outline: 2px solid red; margin-top: 100px;">
-  <div class="calendar-container" bind:clientWidth={containerWidth} on:scroll={(e) => scrollX = e.target.scrollLeft}>
-    <div class="calendar-content" style="width: {TOTAL_DAYS * DAY_WIDTH}px;">
-      {#if $tasksScheduledOn}
-        {#each visibleDays as currentDate, i (currentDate.toMillis())}
-          {@const yyyyMMdd = currentDate.toFormat('yyyy-MM-dd')}
-
-          <div class="day-wrapper" style="transform: translateX({currentDate.diff(startDate, 'days').days * DAY_WIDTH}px);">
-            <!-- {yyyyMMdd} {i} -->
-            {#if i === 7}
-              <div use:lazyCallable={() => handleIntersect(yyyyMMdd)} style="outline: 1px solid blue;">
-                <ReusableCalendarColumn 
-                  {i}
-                  {currentDate}
-                  {yyyyMMdd}
-                  calendarBeginningDateClassObject={DateTime.fromISO(yyyyMMdd).toJSDate()}
-                  timestamps={timesOfDay}
-                  pixelsPerHour={MIKA_PIXELS_PER_HOUR}
-                  timeBlockDurationInMinutes={60}
-                  scheduledTasks={$tasksScheduledOn[yyyyMMdd] ? $tasksScheduledOn[yyyyMMdd].hasStartTime : []}
-                />
-
+<div class="calendar-container" bind:clientWidth={containerWidth} on:scroll={(e) => scrollX = e.target.scrollLeft}>
+  <!-- TO-DO: don't hard-code the height -->
+  <div class="giant-blank-div" 
+    style="
+      width: {TOTAL_DAYS * DAY_WIDTH}px; 
+      height: {1920 + 120}px
+    "
+  >
+    {#if visibleDays.length > 0}
+      <div 
+        class="doctor-who-phone-booth"
+        style:transform={`translateX(${visibleDays[0]?.diff(startDate, 'days').days * DAY_WIDTH}px)`}
+        style:width="fit-content"
+        style:height={`${1920 + 120}px`}
+        style:position="relative"
+      >
+        <div class="top-flexbox" class:bottom-border={$tasksScheduledOn}>
+          <div class="pinned-div">
+            <div style="font-size: 16px; margin-top: var(--main-content-top-margin);">
+              <div style="color: rgb(0, 0, 0); font-weight: 400;">
+                Oct
+                <!-- {calStartDateClassObj.toLocaleString("en-US", { month: "short" })} -->
               </div>
-            {:else}
+              <div style="font-weight: 200; margin-top: 2px;">
+                2024
+                <!-- {calStartDateClassObj.toLocaleString("en-US", { year: "numeric" })} -->
+              </div>
+            </div>
+      
+            {#if $tasksScheduledOn}
+              <span
+                on:click={() => isShowingDockingArea = !isShowingDockingArea}
+                class="collapse-arrow material-symbols-outlined"
+              >
+                {isShowingDockingArea ? "expand_less" : "expand_more"}
+              </span>
+            {/if}
+          </div>
 
-              <ReusableCalendarColumn 
-                {i}
-                {currentDate}
-                {yyyyMMdd}
-                calendarBeginningDateClassObject={DateTime.fromISO(yyyyMMdd).toJSDate()}
-                timestamps={timesOfDay}
-                pixelsPerHour={MIKA_PIXELS_PER_HOUR}
-                timeBlockDurationInMinutes={60}
-                scheduledTasks={$tasksScheduledOn[yyyyMMdd] ? $tasksScheduledOn[yyyyMMdd].hasStartTime : []}
-                on:new-root-task
+          <div class="sticky-y-div flexbox" style="border: 2px solid blue;">
+            {#each visibleDays as currentDate, i (currentDate.toMillis() + `${i}`)}
+              {i}
+              <ReusableCalendarHeader
+                ISODate={currentDate.toFormat('yyyy-MM-dd')}
+                isShowingDockingArea={true}
                 on:task-update
                 on:task-click
                 on:task-checkbox-change
+                on:new-root-task
               />
-            {/if}
+            {/each}
           </div>
-        {/each}
-      {/if}
-    </div>
+        </div>
+
+        {#if $tasksScheduledOn}
+          <div style="display: flex; width: fit-content">
+            {#if visibleDays.length > 0}
+              <BetaCalendarTimestamps leftOffset={visibleDays[0].diff(startDate, 'days').days * DAY_WIDTH}/>
+            {/if}
+            <!-- {#each visibleDays as currentDate, i (currentDate.toMillis())}
+              {@const yyyyMMdd = currentDate.toFormat('yyyy-MM-dd')}
+              <div class="day-wrapper" style="border: 10px solid green;">
+                {yyyyMMdd} {i}
+                {#if i === BUFFER_DAYS}
+                  <div use:lazyCallable={() => handleIntersect(yyyyMMdd)} style="outline: 4px solid blue;">
+                    <ReusableCalendarColumn 
+                      {i}
+                      {currentDate}
+                      {yyyyMMdd}
+                      calendarBeginningDateClassObject={DateTime.fromISO(yyyyMMdd).toJSDate()}
+                      timestamps={timesOfDay}
+                      pixelsPerHour={MIKA_PIXELS_PER_HOUR}
+                      timeBlockDurationInMinutes={60}
+                      scheduledTasks={$tasksScheduledOn[yyyyMMdd] ? $tasksScheduledOn[yyyyMMdd].hasStartTime : []}
+                    />
+                  </div>
+                {:else}
+                  <ReusableCalendarColumn 
+                    {i}
+                    {currentDate}
+                    {yyyyMMdd}
+                    calendarBeginningDateClassObject={DateTime.fromISO(yyyyMMdd).toJSDate()}
+                    timestamps={timesOfDay}
+                    pixelsPerHour={MIKA_PIXELS_PER_HOUR}
+                    timeBlockDurationInMinutes={60}
+                    scheduledTasks={$tasksScheduledOn[yyyyMMdd] ? $tasksScheduledOn[yyyyMMdd].hasStartTime : []}
+                    on:new-root-task
+                    on:task-update
+                    on:task-click
+                    on:task-checkbox-change
+                  />
+                {/if}
+              </div>
+            {/each} -->
+          </div>
+        {/if}
+      </div>
+    {/if}
   </div>
 </div>
 
 <style>
-  .beta-calendar {
-    height: 100%;
-    width: 100%;
-    /* overflow: hidden; */
-  }
-
   .calendar-container {
     height: 100%;
     overflow-x: scroll;
-    /* overflow-y: hidden; */
+    overflow-y: scroll;
   }
 
-  .calendar-content {
+  .giant-blank-div {
     position: relative;
-    height: 100%;
+    height: fit-content;
+    border: 8px solid black;
   }
 
   .day-wrapper {
-    position: absolute;
-    height: 100%;
     width: 200px;
+  }
+
+  .sticky-y-div {
+    position: sticky;
+    top: 0;
+    color: white;
+    z-index: 1; /* Lower z-index than pinned-div */
+    background-color: var(--calendar-bg-color);
+    width: fit-content;
+  }
+
+  .flexbox {
+    display: flex;
+  }
+
+  .bottom-border {
+    border-bottom: 1px solid lightgrey;
+  }
+
+  .top-flexbox {
+    display: flex;
+    position: static;
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    width: fit-content;
   }
 </style>
