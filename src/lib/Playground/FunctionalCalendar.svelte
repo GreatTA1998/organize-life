@@ -36,7 +36,7 @@
 </script>
 
 <div class="calendar-wrapper" style="position: relative;">
-  <div class="corner-label" style="width: 64px; height: {CORNER_LABEL_HEIGHT}px;">
+  <div class="corner-label" style="height: {CORNER_LABEL_HEIGHT}px;">
     <div style="font-size: 16px; margin-top: var(--main-content-top-margin);">
       <div style="color: rgb(0, 0, 0); font-weight: 400;">
         Oct
@@ -68,6 +68,7 @@
             {#each visibleDays as currentDate, i (currentDate.toMillis() + `${i}`)}
               <ReusableCalendarHeader
                 ISODate={currentDate.toFormat('yyyy-MM-dd')}
+                isShowingDockingArea={false}
                 on:task-update
                 on:task-click
                 on:task-checkbox-change
@@ -87,6 +88,10 @@
                 pixelsPerHour={MIKA_PIXELS_PER_HOUR}
                 timeBlockDurationInMinutes={60}
                 scheduledTasks={$tasksScheduledOn[currentDate.toFormat('yyyy-MM-dd')] ? $tasksScheduledOn[currentDate.toFormat('yyyy-MM-dd')].hasStartTime : []}
+                on:new-root-task
+                on:task-update
+                on:task-click
+                on:task-checkbox-change
               />
             {/each}
           </div>
@@ -112,6 +117,9 @@
     z-index: 3;
     border-bottom: 1px solid lightgrey;
     border-right: 1px solid lightgrey;
+
+    width: var(--timestamps-column-width);
+    padding: 0px 5px 5px var(--calendar-left-padding);
   }
 
   .calendar-container {

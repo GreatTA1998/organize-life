@@ -20,8 +20,6 @@
   onMount(() => {
     // fetching user takes around 300 - 500 ms
     onAuthStateChanged(getAuth(), async (resultUser) => {
-      console.log('onAuthStateChanged')
-      const onAuthStateChangedTime = performance.now();
       if (!resultUser) {
         console.log('no resultUser')
         user.set({})
@@ -43,9 +41,6 @@
 
         else {
           const urlParts = $page.url.pathname.split('/')
-          console.log('$page.url = ', $page.url)
-
-          console.log('urlParts', urlParts)
 
           // for a full path, urlParts is ['', 'PfxP5N71jQVzDejF9tYwTgrVtGz2', 'mobile']
           if (urlParts.length === 3 || urlParts[2] === 'mobile') {
