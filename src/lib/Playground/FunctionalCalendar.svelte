@@ -10,6 +10,7 @@
 
   const TOTAL_DAYS = 365;
   const DAY_WIDTH = 200;
+  const CORNER_LABEL_HEIGHT = 110
   let startDate = DateTime.now().minus({ days: TOTAL_DAYS / 2 });
   let containerWidth;
   let scrollX = 0;
@@ -35,7 +36,7 @@
 </script>
 
 <div class="calendar-wrapper" style="position: relative;">
-  <div class="corner-label" style="width: 64px; height: 96px;">
+  <div class="corner-label" style="width: 64px; height: {CORNER_LABEL_HEIGHT}px;">
     <div style="font-size: 16px; margin-top: var(--main-content-top-margin);">
       <div style="color: rgb(0, 0, 0); font-weight: 400;">
         Oct
@@ -57,13 +58,13 @@
       style="display: flex"
     >
       {#if visibleDays.length > 0 && $tasksScheduledOn}
-        <FunctionalCalendarTimestamps />
+        <FunctionalCalendarTimestamps topMargin={CORNER_LABEL_HEIGHT}/>
 
         <div 
           class="visible-days"
           style:transform={`translateX(${visibleDays[0]?.diff(startDate, 'days').days * DAY_WIDTH}px)`}
         >
-          <div class="headers">
+          <div class="headers" class:bottom-border={$tasksScheduledOn}>
             {#each visibleDays as currentDate, i (currentDate.toMillis() + `${i}`)}
               <ReusableCalendarHeader
                 ISODate={currentDate.toFormat('yyyy-MM-dd')}
@@ -81,7 +82,7 @@
                 {i}
                 {currentDate}
                 yyyyMMdd={currentDate.toFormat('yyyy-MM-dd')}
-                calendarBeginningDateClassObject={currentDate.toJSDate()}
+                calendarBeginningDateClassObject={DateTime.fromISO(currentDate.toFormat('yyyy-MM-dd')).toJSDate()}
                 timestamps={timesOfDay}
                 pixelsPerHour={MIKA_PIXELS_PER_HOUR}
                 timeBlockDurationInMinutes={60}
@@ -137,5 +138,9 @@
 
   .day-columns {
     display: flex;
+  }
+
+  .bottom-border {
+    border-bottom: 1px solid lightgrey;
   }
 </style> 

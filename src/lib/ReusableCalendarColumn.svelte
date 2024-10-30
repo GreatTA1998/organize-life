@@ -31,7 +31,6 @@
   export let calendarBeginningDateClassObject;
 
   let numOfHourBlocksDisplayed = 24;
-  let overallContainerHeight;
   let OverallContainer;
   const dispatch = createEventDispatcher();
   let isDirectlyCreatingTask = false;
@@ -158,11 +157,6 @@
 <div
   bind:this={OverallContainer}
   class="overall-container"
-  style="
-    position: relative;
-    width: var(--calendar-day-section-width);
-    background-color: var(--calendar-bg-color);
-  "
 >
   <!-- NOTE: this is a tall rectangular container that only encompasses the timestamps -->
   <!-- svelte-ignore a11y-click-events-have-key-events -->
@@ -196,10 +190,10 @@
         style="
           position: absolute; 
           top: {computeOffsetGeneral({
-          d1: calendarBeginningDateClassObject,
-          d2: getJSDateFromTask(task),
-          pixelsPerMinute,
-        })}px;
+            d1: calendarBeginningDateClassObject,
+            d2: getJSDateFromTask(task),
+            pixelsPerMinute,
+          })}px;
           left: 0;
           right: 0;
           margin-left: auto;
@@ -293,9 +287,12 @@
 
   /* DO NOT REMOVE, BREAKS DRAG-AND-DROP AND DURATION ADJUSTMENT */
   .overall-container {
+    position: relative;
     height: fit-content;
     overflow-y: hidden;
     overflow-x: hidden;
+    width: var(--calendar-day-section-width);
+    background-color: var(--calendar-bg-color);
   }
 
   .highlighted-background {

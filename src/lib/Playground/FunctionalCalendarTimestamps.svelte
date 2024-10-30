@@ -1,9 +1,9 @@
 <script>
-  import { MIKA_PIXELS_PER_HOUR } from "/src/helpers/everythingElse.js";
+  import { MIKA_PIXELS_PER_HOUR } from "/src/helpers/everythingElse.js"
 
-  const timestampDivTopMargin = 24;
-  let numOfHourBlocksDisplayed = 24;
-  let timesOfDay = getTimesOfDay();
+  export let topMargin
+  let numOfHourBlocksDisplayed = 24
+  let timesOfDay = getTimesOfDay()
 
   function getTimesOfDay() {
     const temp = [];
@@ -20,7 +20,7 @@
   }
 </script>
 
-<div class="timestamps" style="margin-top: {timestampDivTopMargin}px;">
+<div class="timestamps" style="margin-top: {topMargin}px;">
   {#each timesOfDay as timestamp, i (timestamp)}
     <div
       class="timestamp-number"
