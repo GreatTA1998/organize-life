@@ -3,43 +3,108 @@
   import ReusableCalendarHeader from '../ReusableCalendarHeader.svelte';
   import FunctionalCalendarTimestamps from './FunctionalCalendarTimestamps.svelte';
 
-  import { onMount } from 'svelte';
-  import { DateTime } from 'luxon';
-  import { tasksScheduledOn } from '/src/store.js';
+  import Tasks from "/src/back-end/Tasks";
+  import { buildCalendarDataStructures } from '/src/helpers/maintainState.js'
   import { MIKA_PIXELS_PER_HOUR } from "/src/helpers/everythingElse.js";
+
+  import { onMount, tick } from 'svelte';
+  import { DateTime } from 'luxon';
+  import { tasksScheduledOn, user, calendarTasks } from '/src/store.js';
 
   const TOTAL_DAYS = 365;
   const DAY_WIDTH = 200;
   const CORNER_LABEL_HEIGHT = 110
-  let startDate = DateTime.now().minus({ days: TOTAL_DAYS / 2 });
-  let containerWidth;
-  let scrollX = 0;
-  let visibleDays = [];
-  let timesOfDay = []; // deprecate this logic
 
-  $: startIndex = Math.floor(scrollX / DAY_WIDTH);
-  $: endIndex = Math.ceil((scrollX + containerWidth) / DAY_WIDTH);
-  $: visibleDays = calculateVisibleDays(startIndex, endIndex);
+  let startDT = DateTime.now().startOf('day').minus({ days: TOTAL_DAYS / 2 })
+  let scrollParentWidth
+  let scrollX = 0
+  let visibleDays = []
 
-  function calculateVisibleDays(start, end) {
-    return Array.from({ length: end - start }, (_, i) => {
-      const index = start + i;
-      if (index < 0 || index >= TOTAL_DAYS) return null;
-      return startDate.plus({ days: index });
-    }).filter(Boolean);
+  let monthName = ''
+
+  let dtOfHydratedColumns
+  const c = 4 // 2c = 8, total rendered will be visible columns + (8)(2), so 16 additional columns
+
+  let leftObserverIdx 
+  let rightObserverIdx
+
+  // startIndex represents the leftMost column that will be visible (even if only partially)
+  $: startIndex = Math.floor(scrollX / DAY_WIDTH)
+
+  // endIndex represents the rightmost column that will be visible (even if only partially)
+  $: endIndex = Math.ceil((scrollX + scrollParentWidth) / DAY_WIDTH)
+
+  // update month name according to scroll position
+  $: if (startIndex && dtOfHydratedColumns) {
+    const leftMostVisibleDT = startDT.plus({ days: startIndex })
+    monthName = leftMostVisibleDT.toFormat('LLL')
   }
 
-  onMount(() => {
-    const middleIndex = Math.floor(TOTAL_DAYS / 2);
-    scrollX = middleIndex * DAY_WIDTH;
-  });
+  $: calculatePreparedColumns(startIndex, endIndex)
+
+  // handle only past fetches for now
+  $: if (startIndex === leftObserverIdx) {
+    fetchAndLoadNewColumns()
+  }
+
+  onMount(async () => {
+    const middleIndex = Math.floor(TOTAL_DAYS / 2)
+    scrollX = middleIndex * DAY_WIDTH
+
+    await tick()
+    
+    leftObserverIdx = startIndex - c
+    rightObserverIdx = endIndex + c
+
+    calculatePreparedColumns(startIndex, endIndex)
+  })
+  
+  async function fetchAndLoadNewColumns () {
+    calculatePreparedColumns(startIndex, endIndex) 
+ 
+    fetchPastTasks(leftObserverIdx)
+    // don't await
+    leftObserverIdx = leftObserverIdx - 2*c - 1
+  }
+
+  async function fetchPastTasks (obsIdx) {
+    return new Promise(async (resolve) => {
+      const dt = startDT.plus({ days: obsIdx })
+      const right = dt.minus({ days: c + 1 }) // notice we go 1 more left
+      const left = right.minus({ days: 2*c })  
+
+      console.log('leftObserverIdx dt =', dt.toFormat('MM dd'))
+      console.log('right, left =', right.toFormat('MM dd'), left.toFormat('MM dd'))
+
+      const newWeekTasksArray = await Tasks.getByDateRange(
+        $user.uid,
+        left.toISODate(),
+        right.toISODate()
+      )
+      buildCalendarDataStructures({
+        flatArray: [...newWeekTasksArray, ...$calendarTasks]
+      })
+
+      resolve()
+    })
+  }
+
+  function calculatePreparedColumns (startIndex, endIndex) {
+    const output = []
+    for (let i = startIndex - 2*c; i <= endIndex + 2*c; i++) {
+      output.push(
+        startDT.plus({ days: i })
+      )
+    }
+    dtOfHydratedColumns = output
+  }
 </script>
 
 <div class="calendar-wrapper" style="position: relative;">
   <div class="corner-label" style="height: {CORNER_LABEL_HEIGHT}px;">
     <div style="font-size: 16px; margin-top: var(--main-content-top-margin);">
       <div style="color: rgb(0, 0, 0); font-weight: 400;">
-        Oct
+        {monthName}
       </div>
       <div style="font-weight: 200; margin-top: 2px;">
         2024
@@ -48,8 +113,8 @@
   </div>
 
   <div 
-    class="calendar-container" 
-    bind:clientWidth={containerWidth}
+    class="scroll-parent" 
+    bind:clientWidth={scrollParentWidth}
     on:scroll={(e) => scrollX = e.target.scrollLeft}
   >
     <div 
@@ -57,15 +122,15 @@
       style:width="{TOTAL_DAYS * DAY_WIDTH}px"
       style="display: flex"
     >
-      {#if visibleDays.length > 0 && $tasksScheduledOn}
+      {#if dtOfHydratedColumns.length > 0 && $tasksScheduledOn}
         <FunctionalCalendarTimestamps topMargin={CORNER_LABEL_HEIGHT}/>
 
         <div 
           class="visible-days"
-          style:transform={`translateX(${visibleDays[0]?.diff(startDate, 'days').days * DAY_WIDTH}px)`}
+          style:transform={`translateX(${dtOfHydratedColumns[0]?.diff(startDT, 'days').days * DAY_WIDTH}px)`}
         >
           <div class="headers" class:bottom-border={$tasksScheduledOn}>
-            {#each visibleDays as currentDate, i (currentDate.toMillis() + `${i}`)}
+            {#each dtOfHydratedColumns as currentDate, i (currentDate.toMillis() + `${i}`)}
               <ReusableCalendarHeader
                 ISODate={currentDate.toFormat('yyyy-MM-dd')}
                 isShowingDockingArea={false}
@@ -78,13 +143,12 @@
           </div>
 
           <div class="day-columns">
-            {#each visibleDays as currentDate, i (currentDate.toMillis())}
+            {#each dtOfHydratedColumns as currentDate, i (currentDate.toMillis())}
               <ReusableCalendarColumn 
                 {i}
                 {currentDate}
                 yyyyMMdd={currentDate.toFormat('yyyy-MM-dd')}
                 calendarBeginningDateClassObject={DateTime.fromISO(currentDate.toFormat('yyyy-MM-dd')).toJSDate()}
-                timestamps={timesOfDay}
                 pixelsPerHour={MIKA_PIXELS_PER_HOUR}
                 timeBlockDurationInMinutes={60}
                 scheduledTasks={$tasksScheduledOn[currentDate.toFormat('yyyy-MM-dd')] ? $tasksScheduledOn[currentDate.toFormat('yyyy-MM-dd')].hasStartTime : []}
@@ -122,7 +186,7 @@
     padding: 0px 5px 5px var(--calendar-left-padding);
   }
 
-  .calendar-container {
+  .scroll-parent {
     overflow: auto;
     position: relative;
   }
