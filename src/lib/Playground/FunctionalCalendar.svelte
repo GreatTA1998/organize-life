@@ -9,7 +9,7 @@
 
   import { onMount, tick } from 'svelte';
   import { DateTime } from 'luxon';
-  import { tasksScheduledOn, user, calendarTasks } from '/src/store.js';
+  import { tasksScheduledOn, user, calendarTasks, hasInitialScrolled } from '/src/store.js';
 
   const TOTAL_DAYS = 365;
   const DAY_WIDTH = 200;
@@ -18,7 +18,6 @@
   let startDT = DateTime.now().startOf('day').minus({ days: TOTAL_DAYS / 2 })
   let scrollParentWidth
   let scrollX = 0
-  let visibleDays = []
 
   let monthName = ''
 
@@ -27,6 +26,12 @@
 
   let leftObserverIdx 
   let rightObserverIdx
+
+  let fetchedLeftIndices = new Set()
+  let hasFetchedRightIndices = new Set()
+
+  let prevStartIndex
+  let prevEndIndex
 
   // startIndex represents the leftMost column that will be visible (even if only partially)
   $: startIndex = Math.floor(scrollX / DAY_WIDTH)
@@ -47,18 +52,60 @@
     scrollX = middleIndex * DAY_WIDTH
 
     await tick()
-
+    
     leftObserverIdx = startIndex - c
+    rightObserverIdx = endIndex + c
+
+    prevStartIndex = startIndex
+    prevEndIndex = endIndex
+
+    updateColumnsToHydrate()
   })
+
+  function updateColumnsToHydrate () {
+    const output = []
+    for (let i = startIndex - 2*c; i <= endIndex + 2*c; i++) {
+      output.push(
+        startDT.plus({ days: i })
+      )
+    }
+    dtOfHydratedColumns = output
+  }
+
+  function calculatePreparedColumns (startIndex, endIndex, force = true) {
+    // note: `startIndex` jumps non-consecutively sometimes depending on how fast the user is scrolling
+    if (startIndex <= leftObserverIdx && startIndex !== prevStartIndex) {
+      if (fetchedLeftIndices.has(leftObserverIdx) === false) {
+        fetchPastTasks(leftObserverIdx) // even though jumps can be arbitrarily wide, the function calls will resolve in a weakly decreasing order of their `leftObserverIdx`
+        fetchedLeftIndices.add(leftObserverIdx)
+        leftObserverIdx -= (2*c + 1)
+      }
+    } 
+    else if (endIndex >= rightObserverIdx && endIndex !== prevEndIndex) {
+      if (!hasFetchedRightIndices.has(rightObserverIdx)) {
+        fetchNewWeekOfFutureTasks(rightObserverIdx)
+        hasFetchedRightIndices.add(rightObserverIdx)
+        rightObserverIdx += (2*c + 1)
+      }
+    }
+    
+    if (startIndex <= prevStartIndex - c) {
+      updateColumnsToHydrate()
+      prevStartIndex = startIndex // we want prevStartIndex's jumps to be predictable, unlike `startIndex`
+      prevEndIndex = endIndex
+    }
+    else if (endIndex >= prevEndIndex + c) {
+      updateColumnsToHydrate()
+      prevEndIndex = endIndex
+      prevStartIndex = startIndex
+    }
+  }
 
   async function fetchPastTasks (obsIdx) {
     return new Promise(async (resolve) => {
       const dt = startDT.plus({ days: obsIdx })
       const right = dt.minus({ days: (c+1) }) // notice we go 1 more left
       const left = right.minus({ days: 2*c })  
-
-      console.log('leftObs dt =', dt.toFormat('dd'))
-      console.log('r, l =', right.toFormat('dd'), left.toFormat('dd'))
 
       const newWeekTasksArray = await Tasks.getByDateRange(
         $user.uid,
@@ -74,31 +121,9 @@
     })
   }
 
-  function calculatePreparedColumns (startIndex, endIndex, force = true) {
-    console.log('leftObserverIdx =', leftObserverIdx)
-    if (startIndex > leftObserverIdx) {
-      return
-    } 
-
-    // `startIndex` jumps
-    if (startIndex <= leftObserverIdx) {
-      fetchPastTasks(leftObserverIdx) // `leftObsIdx` because we still don't want holes in our data fetch
-      leftObserverIdx -= (2*c + 1)
-      rightObserverIdx += (2*c + 1)
-    } 
-
-    const output = []
-    for (let i = startIndex - 2*c; i <= endIndex + 2*c; i++) {
-      output.push(
-        startDT.plus({ days: i })
-      )
-    }
-    dtOfHydratedColumns = output
-  }
-
   async function fetchNewWeekOfFutureTasks (rightObsIdx) {
     const dt = startDT.plus({ days: rightObsIdx })
-    const left = dt.plus({ days: c + 1 })
+    const left = dt.plus({ days: (c+1) })
     const right = left.plus({ days: 2*c })
 
     // note each new loaded intervals should not be overlapping
