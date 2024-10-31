@@ -22,7 +22,7 @@
 
   let monthName = ''
 
-  let dtOfHydratedColumns
+  let dtOfHydratedColumns = []
   const c = 4 // 2c = 8, total rendered will be visible columns + (8)(2), so 16 additional columns
 
   let leftObserverIdx 
@@ -42,45 +42,30 @@
 
   $: calculatePreparedColumns(startIndex, endIndex)
 
-  // handle only past fetches for now
-  $: if (startIndex === leftObserverIdx) {
-    fetchAndLoadNewColumns()
-  }
-
   onMount(async () => {
     const middleIndex = Math.floor(TOTAL_DAYS / 2)
     scrollX = middleIndex * DAY_WIDTH
 
     await tick()
-    
-    leftObserverIdx = startIndex - c
-    rightObserverIdx = endIndex + c
 
-    calculatePreparedColumns(startIndex, endIndex)
+    leftObserverIdx = startIndex - c
   })
-  
-  async function fetchAndLoadNewColumns () {
-    calculatePreparedColumns(startIndex, endIndex) 
- 
-    fetchPastTasks(leftObserverIdx)
-    // don't await
-    leftObserverIdx = leftObserverIdx - 2*c - 1
-  }
 
   async function fetchPastTasks (obsIdx) {
     return new Promise(async (resolve) => {
       const dt = startDT.plus({ days: obsIdx })
-      const right = dt.minus({ days: c + 1 }) // notice we go 1 more left
+      const right = dt.minus({ days: (c+1) }) // notice we go 1 more left
       const left = right.minus({ days: 2*c })  
 
-      console.log('leftObserverIdx dt =', dt.toFormat('MM dd'))
-      console.log('right, left =', right.toFormat('MM dd'), left.toFormat('MM dd'))
+      console.log('leftObs dt =', dt.toFormat('dd'))
+      console.log('r, l =', right.toFormat('dd'), left.toFormat('dd'))
 
       const newWeekTasksArray = await Tasks.getByDateRange(
         $user.uid,
         left.toISODate(),
         right.toISODate()
       )
+
       buildCalendarDataStructures({
         flatArray: [...newWeekTasksArray, ...$calendarTasks]
       })
@@ -89,7 +74,19 @@
     })
   }
 
-  function calculatePreparedColumns (startIndex, endIndex) {
+  function calculatePreparedColumns (startIndex, endIndex, force = true) {
+    console.log('leftObserverIdx =', leftObserverIdx)
+    if (startIndex > leftObserverIdx) {
+      return
+    } 
+
+    // `startIndex` jumps
+    if (startIndex <= leftObserverIdx) {
+      fetchPastTasks(leftObserverIdx) // `leftObsIdx` because we still don't want holes in our data fetch
+      leftObserverIdx -= (2*c + 1)
+      rightObserverIdx += (2*c + 1)
+    } 
+
     const output = []
     for (let i = startIndex - 2*c; i <= endIndex + 2*c; i++) {
       output.push(
@@ -97,6 +94,23 @@
       )
     }
     dtOfHydratedColumns = output
+  }
+
+  async function fetchNewWeekOfFutureTasks (rightObsIdx) {
+    const dt = startDT.plus({ days: rightObsIdx })
+    const left = dt.plus({ days: c + 1 })
+    const right = left.plus({ days: 2*c })
+
+    // note each new loaded intervals should not be overlapping
+    const newWeekTasksArray = await Tasks.getByDateRange(
+      $user.uid,
+      left.toISODate(), 
+      right.toISODate() 
+    )
+
+    buildCalendarDataStructures({
+      flatArray: [...$calendarTasks, ...newWeekTasksArray]
+    })
   }
 </script>
 
@@ -120,7 +134,7 @@
     <div 
       class="scroll-content" 
       style:width="{TOTAL_DAYS * DAY_WIDTH}px"
-      style="display: flex"
+      style="display: flex; background-color: var(--calendar-bg-color);"
     >
       {#if dtOfHydratedColumns.length > 0 && $tasksScheduledOn}
         <FunctionalCalendarTimestamps topMargin={CORNER_LABEL_HEIGHT}/>
