@@ -49,8 +49,7 @@
     const middleIndex = Math.floor(TOTAL_DAYS / 2)
     requestAnimationFrame(() => {
       ScrollParent.scrollLeft = middleIndex * DAY_WIDTH
-      // don't set `hasInitialScrolled` to true
-      // let <CurrentTimeIndicator/> finish off the rest of the logic when it mounts
+      // don't set `hasInitialScrolled` to true, let <CurrentTimeIndicator/> finish off the rest of the logic when it mounts
     })
   }
 
