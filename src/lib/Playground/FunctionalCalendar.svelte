@@ -28,9 +28,6 @@
   let leftObserverIdx 
   let rightObserverIdx
 
-  let fetchedLeftIndices = new Set()
-  let hasFetchedRightIndices = new Set()
-
   let prevStartIndex
   let prevEndIndex
 
@@ -85,18 +82,12 @@
   function calculatePreparedColumns (startIndex, endIndex, force = true) {
     // note: `startIndex` jumps non-consecutively sometimes depending on how fast the user is scrolling
     if (startIndex <= leftObserverIdx && startIndex !== prevStartIndex) {
-      if (fetchedLeftIndices.has(leftObserverIdx) === false) {
-        fetchPastTasks(leftObserverIdx) // even though jumps can be arbitrarily wide, the function calls will resolve in a weakly decreasing order of their `leftObserverIdx`
-        fetchedLeftIndices.add(leftObserverIdx)
-        leftObserverIdx -= (2*c + 1)
-      }
+      fetchPastTasks(leftObserverIdx) // even though jumps can be arbitrarily wide, the function calls will resolve in a weakly decreasing order of their `leftObserverIdx`
+      leftObserverIdx -= (2*c + 1)
     } 
     else if (endIndex >= rightObserverIdx && endIndex !== prevEndIndex) {
-      if (!hasFetchedRightIndices.has(rightObserverIdx)) {
-        fetchNewWeekOfFutureTasks(rightObserverIdx)
-        hasFetchedRightIndices.add(rightObserverIdx)
-        rightObserverIdx += (2*c + 1)
-      }
+      fetchNewWeekOfFutureTasks(rightObserverIdx)
+      rightObserverIdx += (2*c + 1)
     }
     
     if (startIndex <= prevStartIndex - c) {
