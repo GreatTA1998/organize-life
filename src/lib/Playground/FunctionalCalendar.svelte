@@ -15,6 +15,7 @@
   const DAY_WIDTH = 200;
   const CORNER_LABEL_HEIGHT = 110
 
+  let ScrollParent
   let startDT = DateTime.now().startOf('day').minus({ days: TOTAL_DAYS / 2 })
   let scrollParentWidth
   let scrollX = 0
@@ -46,6 +47,15 @@
   }
 
   $: calculatePreparedColumns(startIndex, endIndex)
+
+  $: if (!$hasInitialScrolled && ScrollParent) {
+    const middleIndex = Math.floor(TOTAL_DAYS / 2)
+    requestAnimationFrame(() => {
+      ScrollParent.scrollLeft = middleIndex * DAY_WIDTH
+      // don't set `hasInitialScrolled` to true
+      // let <CurrentTimeIndicator/> finish off the rest of the logic when it mounts
+    })
+  }
 
   onMount(async () => {
     const middleIndex = Math.floor(TOTAL_DAYS / 2)
@@ -151,7 +161,7 @@
     </div>
   </div>
 
-  <div 
+  <div bind:this={ScrollParent}
     class="scroll-parent" 
     bind:clientWidth={scrollParentWidth}
     on:scroll={(e) => scrollX = e.target.scrollLeft}
