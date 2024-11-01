@@ -24,9 +24,9 @@
   export let timestamps = [];
 
   export let pixelsPerHour;
-  export let timeBlockDurationInMinutes;
   export let calendarBeginningDateClassObject;
 
+  let timeBlockDurationInMinutes = 60
   let numOfHourBlocksDisplayed = 24;
   let OverallContainer;
   const dispatch = createEventDispatcher();

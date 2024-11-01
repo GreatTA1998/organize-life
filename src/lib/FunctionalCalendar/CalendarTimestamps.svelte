@@ -1,5 +1,5 @@
 <script>
-  import { MIKA_PIXELS_PER_HOUR } from "/src/helpers/everythingElse.js"
+  export let pixelsPerHour
 
   export let topMargin
   let numOfHourBlocksDisplayed = 24
@@ -24,7 +24,7 @@
   {#each timesOfDay as timestamp, i (timestamp)}
     <div
       class="timestamp-number"
-      style="height: {MIKA_PIXELS_PER_HOUR}px;"
+      style="height: {pixelsPerHour}px;"
     >
       {timestamp.substring(0, 5)}
     </div>

@@ -137,6 +137,7 @@
     >
       {#if dtOfActiveColumns.length > 0 && $tasksScheduledOn}
         <CalendarTimestamps 
+          pixelsPerHour={PIXELS_PER_HOUR}
           topMargin={exactHeight}
         />
         <div class="visible-days"
@@ -162,7 +163,6 @@
               <DayColumn 
                 calendarBeginningDateClassObject={DateTime.fromISO(currentDate.toFormat('yyyy-MM-dd')).toJSDate()}
                 pixelsPerHour={PIXELS_PER_HOUR}
-                timeBlockDurationInMinutes={60}
                 scheduledTasks={$tasksScheduledOn[currentDate.toFormat('yyyy-MM-dd')] ? $tasksScheduledOn[currentDate.toFormat('yyyy-MM-dd')].hasStartTime : []}
                 on:task-update
                 on:task-click
