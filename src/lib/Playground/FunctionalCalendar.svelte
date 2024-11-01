@@ -17,6 +17,8 @@
 
   let ScrollParent
   let startDT = DateTime.now().startOf('day').minus({ days: TOTAL_DAYS / 2 })
+  
+  // width doesn't change during scroll, so bind:clientWidth performance is decent
   let scrollParentWidth
   let scrollX = 0
 
@@ -31,10 +33,7 @@
   let prevLeftEdgeIdx
   let prevRightEdgeIdx
 
-  // leftEdgeIdx represents the leftMost column that will be visible (even if only partially)
   $: leftEdgeIdx = Math.floor(scrollX / DAY_WIDTH)
-
-  // rightEdgeIdx represents the rightmost column that will be visible (even if only partially)
   $: rightEdgeIdx = Math.ceil((scrollX + scrollParentWidth) / DAY_WIDTH)
 
   // update month name according to scroll position
