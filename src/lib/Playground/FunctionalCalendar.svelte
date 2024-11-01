@@ -139,7 +139,6 @@
         <FunctionalCalendarTimestamps 
           topMargin={exactHeight}
         />
-
         <div class="visible-days"
           style:transform={`translateX(${dtOfActiveColumns[0]?.diff(calOriginDT, 'days').days * COLUMN_WIDTH}px)`}
         >
@@ -153,7 +152,6 @@
                 {isShowingDockingArea}
                 on:task-update
                 on:task-click
-                on:task-checkbox-change
                 on:new-root-task
               />
             {/each}
@@ -166,10 +164,9 @@
                 pixelsPerHour={PIXELS_PER_HOUR}
                 timeBlockDurationInMinutes={60}
                 scheduledTasks={$tasksScheduledOn[currentDate.toFormat('yyyy-MM-dd')] ? $tasksScheduledOn[currentDate.toFormat('yyyy-MM-dd')].hasStartTime : []}
-                on:new-root-task
                 on:task-update
                 on:task-click
-                on:task-checkbox-change
+                on:new-root-task
               />
             {/each}
           </div>

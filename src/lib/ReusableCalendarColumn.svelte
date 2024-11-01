@@ -206,7 +206,6 @@
             fontSize={0.8}
             on:task-click
             on:task-update
-            on:task-checkbox-change
           />
         {:else if task.imageDownloadURL}
           <ReusablePhotoTaskElement
@@ -216,7 +215,6 @@
             hasCheckbox
             on:task-click
             on:task-update
-            on:task-checkbox-change
           />
         {:else}
           <ReusableTaskElement
@@ -226,7 +224,6 @@
             hasCheckbox
             on:task-click
             on:task-update
-            on:task-checkbox-change
           />
         {/if}
       </div>
