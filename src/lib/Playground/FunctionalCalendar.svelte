@@ -5,7 +5,6 @@
 
   import Tasks from "/src/back-end/Tasks"
   import { buildCalendarDataStructures } from '/src/helpers/maintainState.js'
-  import { MIKA_PIXELS_PER_HOUR } from "/src/helpers/everythingElse.js"
 
   import { onMount } from 'svelte'
   import { DateTime } from 'luxon'
@@ -13,8 +12,10 @@
 
   const TOTAL_COLUMNS = 365
   const COLUMN_WIDTH = 200
+  const PIXELS_PER_HOUR = 80
   const CORNER_LABEL_HEIGHT = 110
   const middleIdx = Math.floor(TOTAL_COLUMNS / 2)
+
   const c = 4 // 2c = 8, total rendered will be visible columns + (8)(2), so 16 additional columns
 
   let calOriginDT = DateTime.now().startOf('day').minus({ days: TOTAL_COLUMNS / 2 })
@@ -161,7 +162,7 @@
                 {currentDate}
                 yyyyMMdd={currentDate.toFormat('yyyy-MM-dd')}
                 calendarBeginningDateClassObject={DateTime.fromISO(currentDate.toFormat('yyyy-MM-dd')).toJSDate()}
-                pixelsPerHour={MIKA_PIXELS_PER_HOUR}
+                pixelsPerHour={PIXELS_PER_HOUR}
                 timeBlockDurationInMinutes={60}
                 scheduledTasks={$tasksScheduledOn[currentDate.toFormat('yyyy-MM-dd')] ? $tasksScheduledOn[currentDate.toFormat('yyyy-MM-dd')].hasStartTime : []}
                 on:new-root-task
