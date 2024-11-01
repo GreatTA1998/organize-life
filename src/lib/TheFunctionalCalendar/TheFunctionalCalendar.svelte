@@ -125,26 +125,23 @@
     on:toggle-docking-area={() => isShowingDockingArea = !isShowingDockingArea}
   />
 
-  <div bind:this={ScrollParent}
-    id="scroll-parent" 
+  <div id="scroll-parent" 
+    bind:this={ScrollParent}
     bind:clientWidth={scrollParentWidth}
     on:scroll={(e) => scrollX = e.target.scrollLeft}
   >
-    <div
-      class="scroll-content" 
-      style:width="{TOTAL_COLUMNS * COLUMN_WIDTH}px"
-      style="display: flex; background-color: var(--calendar-bg-color);"
-    >
-      {#if dtOfActiveColumns.length > 0 && $tasksScheduledOn}
-        <CalendarTimestamps 
-          pixelsPerHour={PIXELS_PER_HOUR}
-          topMargin={exactHeight}
-        />
+    <div class="scroll-content" style:width="{TOTAL_COLUMNS * COLUMN_WIDTH}px">
+      <CalendarTimestamps 
+        pixelsPerHour={PIXELS_PER_HOUR}
+        topMargin={exactHeight}
+      />
+
+      {#if dtOfActiveColumns[0] && $tasksScheduledOn}
         <div class="visible-days"
-          style:transform={`translateX(${dtOfActiveColumns[0]?.diff(calOriginDT, 'days').days * COLUMN_WIDTH}px)`}
+          style:transform={`translateX(${dtOfActiveColumns[0].diff(calOriginDT, 'days').days * COLUMN_WIDTH}px)`}
         >
-          <div use:trackHeight={newHeight => exactHeight = newHeight}
-            class="headers-flexbox" 
+          <div class="headers-flexbox" 
+            use:trackHeight={newHeight => exactHeight = newHeight}
             class:bottom-border={$tasksScheduledOn}
           >
             {#each dtOfActiveColumns as currentDate, i (currentDate.toMillis() + `${i}`)}
@@ -159,11 +156,11 @@
           </div>
 
           <div class="day-columns">
-            {#each dtOfActiveColumns as currentDate, i (currentDate.toMillis())}
+            {#each dtOfActiveColumns as currentDate (currentDate.toMillis())}
               <DayColumn 
                 calendarBeginningDateClassObject={DateTime.fromISO(currentDate.toFormat('yyyy-MM-dd')).toJSDate()}
                 pixelsPerHour={PIXELS_PER_HOUR}
-                scheduledTasks={$tasksScheduledOn[currentDate.toFormat('yyyy-MM-dd')] ? $tasksScheduledOn[currentDate.toFormat('yyyy-MM-dd')].hasStartTime : []}
+                scheduledTasks={$tasksScheduledOn[currentDate.toFormat('yyyy-MM-dd')]?.hasStartTime ?? []}
                 on:task-update
                 on:task-click
                 on:new-root-task
@@ -196,6 +193,8 @@
 
   .scroll-content {
     position: relative;
+    display: flex; 
+    background-color: var(--calendar-bg-color);
   }
 
   .visible-days {
