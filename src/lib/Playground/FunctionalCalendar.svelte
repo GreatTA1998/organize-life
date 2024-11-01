@@ -23,7 +23,7 @@
 
   let monthName = ''
 
-  let dtOfHydratedColumns = []
+  let dtOfActiveColumns = []
   const c = 4 // 2c = 8, total rendered will be visible columns + (8)(2), so 16 additional columns
 
   let leftTriggerIdx 
@@ -36,7 +36,7 @@
   $: rightEdgeIdx = Math.ceil((scrollX + scrollParentWidth) / DAY_WIDTH)
 
   // update month name according to scroll position
-  $: if (leftEdgeIdx && dtOfHydratedColumns) {
+  $: if (leftEdgeIdx && dtOfActiveColumns) {
     const leftMostVisibleDT = startDT.plus({ days: leftEdgeIdx })
     monthName = leftMostVisibleDT.toFormat('LLL')
   }
@@ -70,7 +70,7 @@
         startDT.plus({ days: i })
       )
     }
-    dtOfHydratedColumns = output
+    dtOfActiveColumns = output
 
     prevRightEdgeIdx = rightEdgeIdx
     prevLeftEdgeIdx = leftEdgeIdx
@@ -152,15 +152,15 @@
       style:width="{TOTAL_DAYS * DAY_WIDTH}px"
       style="display: flex; background-color: var(--calendar-bg-color);"
     >
-      {#if dtOfHydratedColumns.length > 0 && $tasksScheduledOn}
+      {#if dtOfActiveColumns.length > 0 && $tasksScheduledOn}
         <FunctionalCalendarTimestamps topMargin={CORNER_LABEL_HEIGHT}/>
 
         <div 
           class="visible-days"
-          style:transform={`translateX(${dtOfHydratedColumns[0]?.diff(startDT, 'days').days * DAY_WIDTH}px)`}
+          style:transform={`translateX(${dtOfActiveColumns[0]?.diff(startDT, 'days').days * DAY_WIDTH}px)`}
         >
           <div class="headers" class:bottom-border={$tasksScheduledOn}>
-            {#each dtOfHydratedColumns as currentDate, i (currentDate.toMillis() + `${i}`)}
+            {#each dtOfActiveColumns as currentDate, i (currentDate.toMillis() + `${i}`)}
               <ReusableCalendarHeader
                 ISODate={currentDate.toFormat('yyyy-MM-dd')}
                 isShowingDockingArea={false}
@@ -173,7 +173,7 @@
           </div>
 
           <div class="day-columns">
-            {#each dtOfHydratedColumns as currentDate, i (currentDate.toMillis())}
+            {#each dtOfActiveColumns as currentDate, i (currentDate.toMillis())}
               <ReusableCalendarColumn 
                 {i}
                 {currentDate}
