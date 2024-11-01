@@ -135,7 +135,6 @@
         pixelsPerHour={PIXELS_PER_HOUR}
         topMargin={exactHeight}
       />
-
       {#if dtOfActiveColumns[0] && $tasksScheduledOn}
         <div class="visible-days"
           style:transform={`translateX(${dtOfActiveColumns[0].diff(calOriginDT, 'days').days * COLUMN_WIDTH}px)`}
