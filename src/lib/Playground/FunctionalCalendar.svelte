@@ -7,49 +7,42 @@
   import { buildCalendarDataStructures } from '/src/helpers/maintainState.js'
   import { MIKA_PIXELS_PER_HOUR } from "/src/helpers/everythingElse.js"
 
-  import { onMount, tick } from 'svelte'
+  import { onMount } from 'svelte'
   import { DateTime } from 'luxon'
   import { tasksScheduledOn, user, calendarTasks, hasInitialScrolled } from '/src/store.js'
 
   const TOTAL_COLUMNS = 365
   const COLUMN_WIDTH = 200
   const CORNER_LABEL_HEIGHT = 110
-
-  let ScrollParent
-  let calOriginDT = DateTime.now().startOf('day').minus({ days: TOTAL_COLUMNS / 2 })
-  
-  let scrollParentWidth // width doesn't change during scroll, so bind:clientWidth performance is decent
-  let scrollX = 0
-
-  let dtOfActiveColumns = []
+  const middleIdx = Math.floor(TOTAL_COLUMNS / 2)
   const c = 4 // 2c = 8, total rendered will be visible columns + (8)(2), so 16 additional columns
+
+  let calOriginDT = DateTime.now().startOf('day').minus({ days: TOTAL_COLUMNS / 2 })
+  let dtOfActiveColumns = []
 
   let leftTriggerIdx 
   let rightTriggerIdx
-
   let prevLeftEdgeIdx
   let prevRightEdgeIdx
 
-  let middleIndex = Math.floor(TOTAL_COLUMNS / 2)
+  let ScrollParent
+  let scrollParentWidth // width doesn't change during scroll, so bind:clientWidth shouldn't cause performance issues
+  let scrollX = middleIdx * COLUMN_WIDTH
 
   $: leftEdgeIdx = Math.floor(scrollX / COLUMN_WIDTH)
   $: rightEdgeIdx = Math.ceil((scrollX + scrollParentWidth) / COLUMN_WIDTH)
 
-  $: monthName = leftEdgeIdx ? calOriginDT.plus({ days: leftEdgeIdx }).toFormat('LLL') : ''
-
   $: reactToScroll(leftEdgeIdx, rightEdgeIdx)
+
+  $: monthName = leftEdgeIdx ? calOriginDT.plus({ days: leftEdgeIdx }).toFormat('LLL') : ''
 
   $: if (!$hasInitialScrolled && ScrollParent) {
     requestAnimationFrame(() => {
-      ScrollParent.scrollLeft = middleIndex * COLUMN_WIDTH // don't set `hasInitialScrolled` to true, let <CurrentTimeIndicator/> finish off the rest of the logic when it mounts
+      ScrollParent.scrollLeft = middleIdx * COLUMN_WIDTH // don't set `hasInitialScrolled` to true, let <CurrentTimeIndicator/> finish off the rest of the logic when it mounts
     })
   }
 
-  onMount(async () => {
-    scrollX = middleIndex * COLUMN_WIDTH
-
-    await tick()
-    
+  onMount(async () => {    
     leftTriggerIdx = leftEdgeIdx - c
     rightTriggerIdx = rightEdgeIdx + c
 
