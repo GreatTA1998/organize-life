@@ -126,7 +126,7 @@
   </div>
 
   <div bind:this={ScrollParent}
-    class="scroll-parent" 
+    id="scroll-parent" 
     bind:clientWidth={scrollParentWidth}
     on:scroll={(e) => scrollX = e.target.scrollLeft}
   >
@@ -196,7 +196,7 @@
     padding: 0px 5px 5px var(--calendar-left-padding);
   }
 
-  .scroll-parent {
+  #scroll-parent {
     overflow: auto;
     position: relative;
   }

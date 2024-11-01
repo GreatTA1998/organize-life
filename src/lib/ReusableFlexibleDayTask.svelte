@@ -50,7 +50,6 @@
 <script>
  // Assumes `task` is hydrated
  import { createEventDispatcher } from 'svelte'
- import { getTrueY } from '/src/helpers/everythingElse.js'
  import { yPosWithinBlock, whatIsBeingDragged, whatIsBeingDraggedID, whatIsBeingDraggedFullObj } from '/src/store.js'
  import ReusableCheckbox from '$lib/ReusableCheckbox.svelte'
 

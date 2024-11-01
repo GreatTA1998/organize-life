@@ -24,9 +24,8 @@ export function getRandomColor () {
 }
 
 export function getTrueY (e) {
-  const ScrollContainers = document.getElementsByClassName('scroll-container')
-  const ScrollContainer = ScrollContainers[0]
-  return e.clientY + ScrollContainer.scrollTop - ScrollContainer.getBoundingClientRect().top - ScrollContainer.style.paddingTop
+  const ScrollParent = document.getElementById('scroll-parent')
+  return e.clientY + ScrollParent.scrollTop - ScrollParent.getBoundingClientRect().top - ScrollParent.style.paddingTop
 }
 
 export const MIKA_PIXELS_PER_HOUR = 80
