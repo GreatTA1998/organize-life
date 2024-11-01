@@ -25,8 +25,8 @@
   let dtOfHydratedColumns = []
   const c = 4 // 2c = 8, total rendered will be visible columns + (8)(2), so 16 additional columns
 
-  let leftObserverIdx 
-  let rightObserverIdx
+  let leftTriggerIdx 
+  let rightTriggerIdx
 
   let prevStartIndex
   let prevEndIndex
@@ -59,8 +59,8 @@
 
     await tick()
     
-    leftObserverIdx = startIndex - c
-    rightObserverIdx = endIndex + c
+    leftTriggerIdx = startIndex - c
+    rightTriggerIdx = endIndex + c
 
     prevStartIndex = startIndex
     prevEndIndex = endIndex
@@ -80,13 +80,13 @@
 
   function calculatePreparedColumns (startIndex, endIndex, force = true) {
     // note: `startIndex` jumps non-consecutively sometimes depending on how fast the user is scrolling
-    if (startIndex <= leftObserverIdx && startIndex !== prevStartIndex) {
-      fetchPastTasks(leftObserverIdx) // even though jumps can be arbitrarily wide, the function calls will resolve in a weakly decreasing order of their `leftObserverIdx`
-      leftObserverIdx -= (2*c + 1)
+    if (startIndex <= leftTriggerIdx && startIndex !== prevStartIndex) {
+      fetchPastTasks(leftTriggerIdx) // even though jumps can be arbitrarily wide, the function calls will resolve in a weakly decreasing order of their `leftTriggerIdx`
+      leftTriggerIdx -= (2*c + 1)
     } 
-    else if (endIndex >= rightObserverIdx && endIndex !== prevEndIndex) {
-      fetchNewWeekOfFutureTasks(rightObserverIdx)
-      rightObserverIdx += (2*c + 1)
+    else if (endIndex >= rightTriggerIdx && endIndex !== prevEndIndex) {
+      fetchNewWeekOfFutureTasks(rightTriggerIdx)
+      rightTriggerIdx += (2*c + 1)
     }
     
     if (startIndex <= prevStartIndex - c) {
