@@ -41,8 +41,7 @@
 
   $: if (!$hasInitialScrolled && ScrollParent) {
     requestAnimationFrame(() => {
-      ScrollParent.scrollLeft = middleIndex * COLUMN_WIDTH
-      // don't set `hasInitialScrolled` to true, let <CurrentTimeIndicator/> finish off the rest of the logic when it mounts
+      ScrollParent.scrollLeft = middleIndex * COLUMN_WIDTH // don't set `hasInitialScrolled` to true, let <CurrentTimeIndicator/> finish off the rest of the logic when it mounts
     })
   }
 
@@ -86,40 +85,36 @@
     }
   }
 
-  async function fetchMorePastTasks (idx) {
+  async function fetchMorePastTasks (triggerIdx) {
     return new Promise(async (resolve) => {
-      const dt = calOriginDT.plus({ days: idx })
-      const right = dt.minus({ days: (c+1) }) // notice we go 1 more left
-      const left = right.minus({ days: 2*c })  
+      const triggerDT = calOriginDT.plus({ days: triggerIdx })
+      const rightBound = triggerDT.minus({ days: (c+1) })
+      const leftBound = rightBound.minus({ days: 2*c })  
 
-      const newWeekTasksArray = await Tasks.getByDateRange(
-        $user.uid,
-        left.toISODate(),
-        right.toISODate()
-      )
+      const newTasks = await Tasks.getByDateRange($user.uid, leftBound.toISODate(), rightBound.toISODate())
 
       buildCalendarDataStructures({
-        flatArray: [...newWeekTasksArray, ...$calendarTasks]
+        flatArray: [...newTasks, ...$calendarTasks]
       })
 
       resolve()
     })
   }
 
-  async function fetchMoreFutureTasks (idx) {
-    const dt = calOriginDT.plus({ days: idx })
-    const left = dt.plus({ days: (c+1) })
-    const right = left.plus({ days: 2*c })
+  async function fetchMoreFutureTasks (triggerIdx) {
+    return new Promise(async (resolve) => {
+      const triggerDT = calOriginDT.plus({ days: triggerIdx })
+      const leftBound = triggerDT.plus({ days: (c+1) })
+      const rightBound = leftBound.plus({ days: 2*c })
 
-    // note each new loaded intervals should not be overlapping
-    const newWeekTasksArray = await Tasks.getByDateRange(
-      $user.uid,
-      left.toISODate(), 
-      right.toISODate() 
-    )
+      // note each new loaded intervals should not be overlapping
+      const newTasks = await Tasks.getByDateRange($user.uid, leftBound.toISODate(), rightBound.toISODate())
 
-    buildCalendarDataStructures({
-      flatArray: [...$calendarTasks, ...newWeekTasksArray]
+      buildCalendarDataStructures({
+        flatArray: [...$calendarTasks, ...newTasks]
+      })
+
+      resolve()
     })
   }
 </script>
