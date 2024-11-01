@@ -68,7 +68,7 @@
         on:task-click={(e) => openDetailedCard(e.detail)}
       />
     {:else if activeTabName === 'CALENDAR_VIEW'}
-      <FunctionalCalendar/>
+      <TheFunctionalCalendar/>
     {/if}
   </div>
 
@@ -120,7 +120,7 @@
 </div>
 
 <script>
-  import FunctionalCalendar from '$lib/FunctionalCalendar/FunctionalCalendar.svelte'
+  import TheFunctionalCalendar from '$lib/TheFunctionalCalendar/TheFunctionalCalendar.svelte'
 
   import { 
     getRandomID, 

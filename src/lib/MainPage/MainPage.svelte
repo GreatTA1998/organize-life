@@ -1,5 +1,5 @@
 <script>
-  import FunctionalCalendar from '$lib/FunctionalCalendar/FunctionalCalendar.svelte'
+  import TheFunctionalCalendar from '$lib/TheFunctionalCalendar/TheFunctionalCalendar.svelte'
   import { getDateInDDMMYYYY } from '/src/helpers/everythingElse.js'
   import {
     mostRecentlyCompletedTaskID,
@@ -306,17 +306,11 @@
           })}
       />
 
-      <FunctionalCalendar
+      <TheFunctionalCalendar
         on:new-root-task={(e) => createTaskNode(e.detail)}
         on:task-unscheduled={(e) => putTaskToThisWeekTodo(e)}
         on:task-click={(e) => openDetailedCard(e.detail)}
         on:subtask-create={(e) => createSubtask(e.detail)}
-        on:task-checkbox-change={(e) =>
-          updateTaskNode({
-            id: e.detail.id,
-            keyValueChanges: { isDone: e.detail.isDone }
-          })
-        }
         on:task-update={(e) =>
           updateTaskNode({
             id: e.detail.id,
