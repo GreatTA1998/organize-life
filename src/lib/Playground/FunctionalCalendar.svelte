@@ -28,22 +28,22 @@
   let leftTriggerIdx 
   let rightTriggerIdx
 
-  let prevStartIndex
-  let prevEndIndex
+  let prevLeftEdgeIdx
+  let prevRightEdgeIdx
 
-  // startIndex represents the leftMost column that will be visible (even if only partially)
-  $: startIndex = Math.floor(scrollX / DAY_WIDTH)
+  // leftEdgeIdx represents the leftMost column that will be visible (even if only partially)
+  $: leftEdgeIdx = Math.floor(scrollX / DAY_WIDTH)
 
-  // endIndex represents the rightmost column that will be visible (even if only partially)
-  $: endIndex = Math.ceil((scrollX + scrollParentWidth) / DAY_WIDTH)
+  // rightEdgeIdx represents the rightmost column that will be visible (even if only partially)
+  $: rightEdgeIdx = Math.ceil((scrollX + scrollParentWidth) / DAY_WIDTH)
 
   // update month name according to scroll position
-  $: if (startIndex && dtOfHydratedColumns) {
-    const leftMostVisibleDT = startDT.plus({ days: startIndex })
+  $: if (leftEdgeIdx && dtOfHydratedColumns) {
+    const leftMostVisibleDT = startDT.plus({ days: leftEdgeIdx })
     monthName = leftMostVisibleDT.toFormat('LLL')
   }
 
-  $: calculatePreparedColumns(startIndex, endIndex)
+  $: calculatePreparedColumns(leftEdgeIdx, rightEdgeIdx)
 
   $: if (!$hasInitialScrolled && ScrollParent) {
     const middleIndex = Math.floor(TOTAL_DAYS / 2)
@@ -59,18 +59,18 @@
 
     await tick()
     
-    leftTriggerIdx = startIndex - c
-    rightTriggerIdx = endIndex + c
+    leftTriggerIdx = leftEdgeIdx - c
+    rightTriggerIdx = rightEdgeIdx + c
 
-    prevStartIndex = startIndex
-    prevEndIndex = endIndex
+    prevLeftEdgeIdx = leftEdgeIdx
+    prevRightEdgeIdx = rightEdgeIdx
 
     updateColumnsToHydrate()
   })
 
   function updateColumnsToHydrate () {
     const output = []
-    for (let i = startIndex - 2*c; i <= endIndex + 2*c; i++) {
+    for (let i = leftEdgeIdx - 2*c; i <= rightEdgeIdx + 2*c; i++) {
       output.push(
         startDT.plus({ days: i })
       )
@@ -78,26 +78,26 @@
     dtOfHydratedColumns = output
   }
 
-  function calculatePreparedColumns (startIndex, endIndex, force = true) {
-    // note: `startIndex` jumps non-consecutively sometimes depending on how fast the user is scrolling
-    if (startIndex <= leftTriggerIdx && startIndex !== prevStartIndex) {
+  function calculatePreparedColumns (leftEdgeIdx, rightEdgeIdx, force = true) {
+    // note: `leftEdgeIdx` jumps non-consecutively sometimes depending on how fast the user is scrolling
+    if (leftEdgeIdx <= leftTriggerIdx && leftEdgeIdx !== prevLeftEdgeIdx) {
       fetchPastTasks(leftTriggerIdx) // even though jumps can be arbitrarily wide, the function calls will resolve in a weakly decreasing order of their `leftTriggerIdx`
       leftTriggerIdx -= (2*c + 1)
     } 
-    else if (endIndex >= rightTriggerIdx && endIndex !== prevEndIndex) {
+    else if (rightEdgeIdx >= rightTriggerIdx && rightEdgeIdx !== prevRightEdgeIdx) {
       fetchNewWeekOfFutureTasks(rightTriggerIdx)
       rightTriggerIdx += (2*c + 1)
     }
     
-    if (startIndex <= prevStartIndex - c) {
+    if (leftEdgeIdx <= prevLeftEdgeIdx - c) {
       updateColumnsToHydrate()
-      prevStartIndex = startIndex // we want prevStartIndex's jumps to be predictable, unlike `startIndex`
-      prevEndIndex = endIndex
+      prevLeftEdgeIdx = leftEdgeIdx // we want prevLeftEdgeIdx's jumps to be predictable, unlike `leftEdgeIdx`
+      prevRightEdgeIdx = rightEdgeIdx
     }
-    else if (endIndex >= prevEndIndex + c) {
+    else if (rightEdgeIdx >= prevRightEdgeIdx + c) {
       updateColumnsToHydrate()
-      prevEndIndex = endIndex
-      prevStartIndex = startIndex
+      prevRightEdgeIdx = rightEdgeIdx
+      prevLeftEdgeIdx = leftEdgeIdx
     }
   }
 
