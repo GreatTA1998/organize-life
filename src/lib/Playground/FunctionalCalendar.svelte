@@ -2,6 +2,7 @@
   import ReusableCalendarColumn from '../ReusableCalendarColumn.svelte'
   import ReusableCalendarHeader from '../ReusableCalendarHeader.svelte'
   import FunctionalCalendarTimestamps from './FunctionalCalendarTimestamps.svelte'
+  import YearAndMonthTile from './YearAndMonthTile.svelte'
 
   import Tasks from "/src/back-end/Tasks"
   import { buildCalendarDataStructures } from '/src/helpers/maintainState.js'
@@ -38,8 +39,6 @@
   $: rightEdgeIdx = Math.ceil((scrollX + scrollParentWidth) / COLUMN_WIDTH)
 
   $: reactToScroll(leftEdgeIdx, rightEdgeIdx)
-
-  $: monthName = leftEdgeIdx ? calOriginDT.plus({ days: leftEdgeIdx }).toFormat('LLL') : ''
 
   $: if (!$hasInitialScrolled && ScrollParent) {
     requestAnimationFrame(() => {
@@ -118,25 +117,13 @@
 </script>
 
 <div class="calendar-wrapper">
-  <div class="corner-label" style="height: {exactHeight + 1}px;">
-    <div style="font-size: 16px; margin-top: var(--main-content-top-margin);">
-      <div style="color: rgb(0, 0, 0); font-weight: 400;">
-        {monthName}
-      </div>
-      <div style="font-weight: 200; margin-top: 2px;">
-        2024
-      </div>
-    </div>
-
-    {#if $tasksScheduledOn}
-      <span
-          on:click={() => isShowingDockingArea = !isShowingDockingArea}
-        class="collapse-arrow material-symbols-outlined"
-      >
-        {isShowingDockingArea ? "expand_less" : "expand_more"}
-      </span>
-    {/if}
-  </div>
+  <YearAndMonthTile
+    {leftEdgeIdx}
+    {calOriginDT}
+    {exactHeight}
+    {isShowingDockingArea}
+    on:toggle-docking-area={() => isShowingDockingArea = !isShowingDockingArea}
+  />
 
   <div bind:this={ScrollParent}
     id="scroll-parent" 
@@ -153,14 +140,12 @@
           topMargin={exactHeight}
         />
 
-        <div 
-          class="visible-days"
+        <div class="visible-days"
           style:transform={`translateX(${dtOfActiveColumns[0]?.diff(calOriginDT, 'days').days * COLUMN_WIDTH}px)`}
         >
-          <div 
+          <div use:trackHeight={newHeight => exactHeight = newHeight}
             class="headers-flexbox" 
             class:bottom-border={$tasksScheduledOn}
-            use:trackHeight={newHeight => exactHeight = newHeight}
           >
             {#each dtOfActiveColumns as currentDate, i (currentDate.toMillis() + `${i}`)}
               <ReusableCalendarHeader
@@ -202,19 +187,6 @@
     position: relative;
   }
 
-  .corner-label {
-    position: absolute;
-    top: 0;
-    left: 0;
-    background: var(--calendar-bg-color);
-    z-index: 3;
-    border-bottom: 1px solid lightgrey;
-    border-right: 1px solid lightgrey;
-
-    width: var(--timestamps-column-width);
-    padding: 0px 5px 5px var(--calendar-left-padding);
-  }
-
   #scroll-parent {
     overflow: auto;
     position: relative;
@@ -243,15 +215,5 @@
 
   .bottom-border {
     border-bottom: 1px solid lightgrey;
-  }
-
-  .collapse-arrow {
-    position: absolute;
-    bottom: 4px;
-    right: 4px;
-    font-size: 26px;
-    cursor: pointer;
-    color: rgb(121, 121, 121);
-    font-weight: 300;
   }
 </style> 
