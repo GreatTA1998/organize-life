@@ -5,8 +5,9 @@
 
   import Tasks from "/src/back-end/Tasks"
   import { buildCalendarDataStructures } from '/src/helpers/maintainState.js'
+  import { trackHeight } from '/src/helpers/actions.js'
 
-  import { onMount } from 'svelte'
+  import { onDestroy, onMount } from 'svelte'
   import { DateTime } from 'luxon'
   import { tasksScheduledOn, user, calendarTasks, hasInitialScrolled } from '/src/store.js'
 
@@ -29,6 +30,9 @@
   let ScrollParent
   let scrollParentWidth // width doesn't change during scroll, so bind:clientWidth shouldn't cause performance issues
   let scrollX = middleIdx * COLUMN_WIDTH
+
+  let isShowingDockingArea = true
+  let exactHeight = CORNER_LABEL_HEIGHT
 
   $: leftEdgeIdx = Math.floor(scrollX / COLUMN_WIDTH)
   $: rightEdgeIdx = Math.ceil((scrollX + scrollParentWidth) / COLUMN_WIDTH)
@@ -113,8 +117,8 @@
   }
 </script>
 
-<div class="calendar-wrapper" style="position: relative;">
-  <div class="corner-label" style="height: {CORNER_LABEL_HEIGHT}px;">
+<div class="calendar-wrapper">
+  <div class="corner-label" style="height: {exactHeight + 1}px;">
     <div style="font-size: 16px; margin-top: var(--main-content-top-margin);">
       <div style="color: rgb(0, 0, 0); font-weight: 400;">
         {monthName}
@@ -123,6 +127,15 @@
         2024
       </div>
     </div>
+
+    {#if $tasksScheduledOn}
+      <span
+          on:click={() => isShowingDockingArea = !isShowingDockingArea}
+        class="collapse-arrow material-symbols-outlined"
+      >
+        {isShowingDockingArea ? "expand_less" : "expand_more"}
+      </span>
+    {/if}
   </div>
 
   <div bind:this={ScrollParent}
@@ -130,23 +143,29 @@
     bind:clientWidth={scrollParentWidth}
     on:scroll={(e) => scrollX = e.target.scrollLeft}
   >
-    <div 
+    <div
       class="scroll-content" 
       style:width="{TOTAL_COLUMNS * COLUMN_WIDTH}px"
       style="display: flex; background-color: var(--calendar-bg-color);"
     >
       {#if dtOfActiveColumns.length > 0 && $tasksScheduledOn}
-        <FunctionalCalendarTimestamps topMargin={CORNER_LABEL_HEIGHT}/>
+        <FunctionalCalendarTimestamps 
+          topMargin={exactHeight}
+        />
 
         <div 
           class="visible-days"
           style:transform={`translateX(${dtOfActiveColumns[0]?.diff(calOriginDT, 'days').days * COLUMN_WIDTH}px)`}
         >
-          <div class="headers" class:bottom-border={$tasksScheduledOn}>
+          <div 
+            class="headers-flexbox" 
+            class:bottom-border={$tasksScheduledOn}
+            use:trackHeight={newHeight => exactHeight = newHeight}
+          >
             {#each dtOfActiveColumns as currentDate, i (currentDate.toMillis() + `${i}`)}
               <ReusableCalendarHeader
                 ISODate={currentDate.toFormat('yyyy-MM-dd')}
-                isShowingDockingArea={false}
+                {isShowingDockingArea}
                 on:task-update
                 on:task-click
                 on:task-checkbox-change
@@ -210,7 +229,7 @@
     left: 60px; /* Timestamp width */
   }
 
-  .headers {
+  .headers-flexbox {
     display: flex;
     position: sticky;
     top: 0;
@@ -224,5 +243,15 @@
 
   .bottom-border {
     border-bottom: 1px solid lightgrey;
+  }
+
+  .collapse-arrow {
+    position: absolute;
+    bottom: 4px;
+    right: 4px;
+    font-size: 26px;
+    cursor: pointer;
+    color: rgb(121, 121, 121);
+    font-weight: 300;
   }
 </style> 
