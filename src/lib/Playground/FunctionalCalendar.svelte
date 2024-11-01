@@ -62,13 +62,10 @@
     leftTriggerIdx = leftEdgeIdx - c
     rightTriggerIdx = rightEdgeIdx + c
 
-    prevLeftEdgeIdx = leftEdgeIdx
-    prevRightEdgeIdx = rightEdgeIdx
-
-    updateColumnsToHydrate()
+    updateActiveColumns()
   })
 
-  function updateColumnsToHydrate () {
+  function updateActiveColumns () {
     const output = []
     for (let i = leftEdgeIdx - 2*c; i <= rightEdgeIdx + 2*c; i++) {
       output.push(
@@ -76,9 +73,12 @@
       )
     }
     dtOfHydratedColumns = output
+
+    prevRightEdgeIdx = rightEdgeIdx
+    prevLeftEdgeIdx = leftEdgeIdx
   }
 
-  function calculatePreparedColumns (leftEdgeIdx, rightEdgeIdx, force = true) {
+  function calculatePreparedColumns (leftEdgeIdx, rightEdgeIdx) {
     // note: `leftEdgeIdx` jumps non-consecutively sometimes depending on how fast the user is scrolling
     if (leftEdgeIdx <= leftTriggerIdx && leftEdgeIdx !== prevLeftEdgeIdx) {
       fetchPastTasks(leftTriggerIdx) // even though jumps can be arbitrarily wide, the function calls will resolve in a weakly decreasing order of their `leftTriggerIdx`
@@ -89,15 +89,8 @@
       rightTriggerIdx += (2*c + 1)
     }
     
-    if (leftEdgeIdx <= prevLeftEdgeIdx - c) {
-      updateColumnsToHydrate()
-      prevLeftEdgeIdx = leftEdgeIdx // we want prevLeftEdgeIdx's jumps to be predictable, unlike `leftEdgeIdx`
-      prevRightEdgeIdx = rightEdgeIdx
-    }
-    else if (rightEdgeIdx >= prevRightEdgeIdx + c) {
-      updateColumnsToHydrate()
-      prevRightEdgeIdx = rightEdgeIdx
-      prevLeftEdgeIdx = leftEdgeIdx
+    if (leftEdgeIdx <= prevLeftEdgeIdx - c || rightEdgeIdx >= prevRightEdgeIdx + c) {
+      updateActiveColumns()
     }
   }
 
