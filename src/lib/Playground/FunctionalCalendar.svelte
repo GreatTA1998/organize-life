@@ -158,9 +158,6 @@
           <div class="day-columns">
             {#each dtOfActiveColumns as currentDate, i (currentDate.toMillis())}
               <ReusableCalendarColumn 
-                {i}
-                {currentDate}
-                yyyyMMdd={currentDate.toFormat('yyyy-MM-dd')}
                 calendarBeginningDateClassObject={DateTime.fromISO(currentDate.toFormat('yyyy-MM-dd')).toJSDate()}
                 pixelsPerHour={PIXELS_PER_HOUR}
                 timeBlockDurationInMinutes={60}
