@@ -73,11 +73,11 @@
   function reactToScroll (leftEdgeIdx, rightEdgeIdx) {
     // note: `leftEdgeIdx` jumps non-consecutively sometimes depending on how fast the user is scrolling
     if (leftEdgeIdx <= leftTriggerIdx && leftEdgeIdx !== prevLeftEdgeIdx) {
-      fetchPastTasks(leftTriggerIdx) // even though jumps can be arbitrarily wide, the function calls will resolve in a weakly decreasing order of their `leftTriggerIdx`
+      fetchMorePastTasks(leftTriggerIdx) // even though jumps can be arbitrarily wide, the function calls will resolve in a weakly decreasing order of their `leftTriggerIdx`
       leftTriggerIdx -= (2*c + 1)
     } 
     else if (rightEdgeIdx >= rightTriggerIdx && rightEdgeIdx !== prevRightEdgeIdx) {
-      fetchNewWeekOfFutureTasks(rightTriggerIdx)
+      fetchMoreFutureTasks(rightTriggerIdx)
       rightTriggerIdx += (2*c + 1)
     }
     
@@ -86,9 +86,9 @@
     }
   }
 
-  async function fetchPastTasks (obsIdx) {
+  async function fetchMorePastTasks (idx) {
     return new Promise(async (resolve) => {
-      const dt = calOriginDT.plus({ days: obsIdx })
+      const dt = calOriginDT.plus({ days: idx })
       const right = dt.minus({ days: (c+1) }) // notice we go 1 more left
       const left = right.minus({ days: 2*c })  
 
@@ -106,8 +106,8 @@
     })
   }
 
-  async function fetchNewWeekOfFutureTasks (rightObsIdx) {
-    const dt = calOriginDT.plus({ days: rightObsIdx })
+  async function fetchMoreFutureTasks (idx) {
+    const dt = calOriginDT.plus({ days: idx })
     const left = dt.plus({ days: (c+1) })
     const right = left.plus({ days: 2*c })
 
