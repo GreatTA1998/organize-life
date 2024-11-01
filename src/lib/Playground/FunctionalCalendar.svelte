@@ -11,12 +11,12 @@
   import { DateTime } from 'luxon'
   import { tasksScheduledOn, user, calendarTasks, hasInitialScrolled } from '/src/store.js'
 
-  const TOTAL_DAYS = 365
-  const DAY_WIDTH = 200
+  const TOTAL_COLUMNS = 365
+  const COLUMN_WIDTH = 200
   const CORNER_LABEL_HEIGHT = 110
 
   let ScrollParent
-  let calOriginDT = DateTime.now().startOf('day').minus({ days: TOTAL_DAYS / 2 })
+  let calOriginDT = DateTime.now().startOf('day').minus({ days: TOTAL_COLUMNS / 2 })
   
   let scrollParentWidth // width doesn't change during scroll, so bind:clientWidth performance is decent
   let scrollX = 0
@@ -30,24 +30,24 @@
   let prevLeftEdgeIdx
   let prevRightEdgeIdx
 
-  $: leftEdgeIdx = Math.floor(scrollX / DAY_WIDTH)
-  $: rightEdgeIdx = Math.ceil((scrollX + scrollParentWidth) / DAY_WIDTH)
+  let middleIndex = Math.floor(TOTAL_COLUMNS / 2)
+
+  $: leftEdgeIdx = Math.floor(scrollX / COLUMN_WIDTH)
+  $: rightEdgeIdx = Math.ceil((scrollX + scrollParentWidth) / COLUMN_WIDTH)
 
   $: monthName = leftEdgeIdx ? calOriginDT.plus({ days: leftEdgeIdx }).toFormat('LLL') : ''
 
   $: reactToScroll(leftEdgeIdx, rightEdgeIdx)
 
   $: if (!$hasInitialScrolled && ScrollParent) {
-    const middleIndex = Math.floor(TOTAL_DAYS / 2)
     requestAnimationFrame(() => {
-      ScrollParent.scrollLeft = middleIndex * DAY_WIDTH
+      ScrollParent.scrollLeft = middleIndex * COLUMN_WIDTH
       // don't set `hasInitialScrolled` to true, let <CurrentTimeIndicator/> finish off the rest of the logic when it mounts
     })
   }
 
   onMount(async () => {
-    const middleIndex = Math.floor(TOTAL_DAYS / 2)
-    scrollX = middleIndex * DAY_WIDTH
+    scrollX = middleIndex * COLUMN_WIDTH
 
     await tick()
     
@@ -143,7 +143,7 @@
   >
     <div 
       class="scroll-content" 
-      style:width="{TOTAL_DAYS * DAY_WIDTH}px"
+      style:width="{TOTAL_COLUMNS * COLUMN_WIDTH}px"
       style="display: flex; background-color: var(--calendar-bg-color);"
     >
       {#if dtOfActiveColumns.length > 0 && $tasksScheduledOn}
@@ -151,7 +151,7 @@
 
         <div 
           class="visible-days"
-          style:transform={`translateX(${dtOfActiveColumns[0]?.diff(calOriginDT, 'days').days * DAY_WIDTH}px)`}
+          style:transform={`translateX(${dtOfActiveColumns[0]?.diff(calOriginDT, 'days').days * COLUMN_WIDTH}px)`}
         >
           <div class="headers" class:bottom-border={$tasksScheduledOn}>
             {#each dtOfActiveColumns as currentDate, i (currentDate.toMillis() + `${i}`)}
