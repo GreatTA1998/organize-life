@@ -16,7 +16,7 @@
   const CORNER_LABEL_HEIGHT = 110
 
   let ScrollParent
-  let startDT = DateTime.now().startOf('day').minus({ days: TOTAL_DAYS / 2 })
+  let calOriginDT = DateTime.now().startOf('day').minus({ days: TOTAL_DAYS / 2 })
   
   let scrollParentWidth // width doesn't change during scroll, so bind:clientWidth performance is decent
   let scrollX = 0
@@ -33,7 +33,7 @@
   $: leftEdgeIdx = Math.floor(scrollX / DAY_WIDTH)
   $: rightEdgeIdx = Math.ceil((scrollX + scrollParentWidth) / DAY_WIDTH)
 
-  $: monthName = leftEdgeIdx ? startDT.plus({ days: leftEdgeIdx }).toFormat('LLL') : ''
+  $: monthName = leftEdgeIdx ? calOriginDT.plus({ days: leftEdgeIdx }).toFormat('LLL') : ''
 
   $: reactToScroll(leftEdgeIdx, rightEdgeIdx)
 
@@ -61,7 +61,7 @@
     const output = []
     for (let i = leftEdgeIdx - 2*c; i <= rightEdgeIdx + 2*c; i++) {
       output.push(
-        startDT.plus({ days: i })
+        calOriginDT.plus({ days: i })
       )
     }
     dtOfActiveColumns = output
@@ -88,7 +88,7 @@
 
   async function fetchPastTasks (obsIdx) {
     return new Promise(async (resolve) => {
-      const dt = startDT.plus({ days: obsIdx })
+      const dt = calOriginDT.plus({ days: obsIdx })
       const right = dt.minus({ days: (c+1) }) // notice we go 1 more left
       const left = right.minus({ days: 2*c })  
 
@@ -107,7 +107,7 @@
   }
 
   async function fetchNewWeekOfFutureTasks (rightObsIdx) {
-    const dt = startDT.plus({ days: rightObsIdx })
+    const dt = calOriginDT.plus({ days: rightObsIdx })
     const left = dt.plus({ days: (c+1) })
     const right = left.plus({ days: 2*c })
 
@@ -151,7 +151,7 @@
 
         <div 
           class="visible-days"
-          style:transform={`translateX(${dtOfActiveColumns[0]?.diff(startDT, 'days').days * DAY_WIDTH}px)`}
+          style:transform={`translateX(${dtOfActiveColumns[0]?.diff(calOriginDT, 'days').days * DAY_WIDTH}px)`}
         >
           <div class="headers" class:bottom-border={$tasksScheduledOn}>
             {#each dtOfActiveColumns as currentDate, i (currentDate.toMillis() + `${i}`)}
