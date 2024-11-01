@@ -21,8 +21,6 @@
   let scrollParentWidth // width doesn't change during scroll, so bind:clientWidth performance is decent
   let scrollX = 0
 
-  let monthName = ''
-
   let dtOfActiveColumns = []
   const c = 4 // 2c = 8, total rendered will be visible columns + (8)(2), so 16 additional columns
 
@@ -35,11 +33,7 @@
   $: leftEdgeIdx = Math.floor(scrollX / DAY_WIDTH)
   $: rightEdgeIdx = Math.ceil((scrollX + scrollParentWidth) / DAY_WIDTH)
 
-  // update month name according to scroll position
-  $: if (leftEdgeIdx && dtOfActiveColumns) {
-    const leftMostVisibleDT = startDT.plus({ days: leftEdgeIdx })
-    monthName = leftMostVisibleDT.toFormat('LLL')
-  }
+  $: monthName = leftEdgeIdx ? startDT.plus({ days: leftEdgeIdx }).toFormat('LLL') : ''
 
   $: reactToScroll(leftEdgeIdx, rightEdgeIdx)
 
