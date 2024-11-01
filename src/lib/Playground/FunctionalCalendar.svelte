@@ -177,6 +177,11 @@
 </div>
 
 <style>
+  :root {
+    /* NOTE: there might be more missing CSS variables, refer to Github if more issues emerge */
+    --calendar-left-padding: 16px;
+  }
+
   .calendar-wrapper {
     height: 100%;
     display: grid;
