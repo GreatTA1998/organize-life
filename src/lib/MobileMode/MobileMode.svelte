@@ -67,6 +67,8 @@
         on:task-duration-adjusted
         on:task-click={(e) => openDetailedCard(e.detail)}
       />
+    {:else if activeTabName === 'CALENDAR_VIEW'}
+      <FunctionalCalendar/>
     {/if}
   </div>
 
@@ -103,10 +105,23 @@
         </div>
       </div>
     </div>
+
+    <div class="bottom-nav-tab" on:click={() => activeTabName = 'CALENDAR_VIEW'} class:active-nav-tab={activeTabName === 'CALENDAR_VIEW'}>
+      <div style="text-align: center;">
+        <span class=" material-icons nav-tab-icon">
+          
+        </span>
+        <div class="nav-tab-desc">
+          FULL CALENDAR
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 
 <script>
+  import FunctionalCalendar from '$lib/FunctionalCalendar/FunctionalCalendar.svelte'
+
   import { 
     getRandomID, 
     getDateInMMDD, 
