@@ -1,25 +1,24 @@
 <script>
-  import ReusableCalendarColumn from '../ReusableCalendarColumn.svelte';
-  import ReusableCalendarHeader from '../ReusableCalendarHeader.svelte';
-  import FunctionalCalendarTimestamps from './FunctionalCalendarTimestamps.svelte';
+  import ReusableCalendarColumn from '../ReusableCalendarColumn.svelte'
+  import ReusableCalendarHeader from '../ReusableCalendarHeader.svelte'
+  import FunctionalCalendarTimestamps from './FunctionalCalendarTimestamps.svelte'
 
-  import Tasks from "/src/back-end/Tasks";
+  import Tasks from "/src/back-end/Tasks"
   import { buildCalendarDataStructures } from '/src/helpers/maintainState.js'
-  import { MIKA_PIXELS_PER_HOUR } from "/src/helpers/everythingElse.js";
+  import { MIKA_PIXELS_PER_HOUR } from "/src/helpers/everythingElse.js"
 
-  import { onMount, tick } from 'svelte';
-  import { DateTime } from 'luxon';
-  import { tasksScheduledOn, user, calendarTasks, hasInitialScrolled } from '/src/store.js';
+  import { onMount, tick } from 'svelte'
+  import { DateTime } from 'luxon'
+  import { tasksScheduledOn, user, calendarTasks, hasInitialScrolled } from '/src/store.js'
 
-  const TOTAL_DAYS = 365;
-  const DAY_WIDTH = 200;
+  const TOTAL_DAYS = 365
+  const DAY_WIDTH = 200
   const CORNER_LABEL_HEIGHT = 110
 
   let ScrollParent
   let startDT = DateTime.now().startOf('day').minus({ days: TOTAL_DAYS / 2 })
   
-  // width doesn't change during scroll, so bind:clientWidth performance is decent
-  let scrollParentWidth
+  let scrollParentWidth // width doesn't change during scroll, so bind:clientWidth performance is decent
   let scrollX = 0
 
   let monthName = ''
@@ -42,7 +41,7 @@
     monthName = leftMostVisibleDT.toFormat('LLL')
   }
 
-  $: calculatePreparedColumns(leftEdgeIdx, rightEdgeIdx)
+  $: reactToScroll(leftEdgeIdx, rightEdgeIdx)
 
   $: if (!$hasInitialScrolled && ScrollParent) {
     const middleIndex = Math.floor(TOTAL_DAYS / 2)
@@ -77,7 +76,7 @@
     prevLeftEdgeIdx = leftEdgeIdx
   }
 
-  function calculatePreparedColumns (leftEdgeIdx, rightEdgeIdx) {
+  function reactToScroll (leftEdgeIdx, rightEdgeIdx) {
     // note: `leftEdgeIdx` jumps non-consecutively sometimes depending on how fast the user is scrolling
     if (leftEdgeIdx <= leftTriggerIdx && leftEdgeIdx !== prevLeftEdgeIdx) {
       fetchPastTasks(leftTriggerIdx) // even though jumps can be arbitrarily wide, the function calls will resolve in a weakly decreasing order of their `leftTriggerIdx`
