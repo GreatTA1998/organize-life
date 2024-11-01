@@ -1,5 +1,5 @@
 <script>
-  import FunctionalCalendar from '$lib/Playground/FunctionalCalendar.svelte'
+  import FunctionalCalendar from '$lib/FunctionalCalendar/FunctionalCalendar.svelte'
   import { getDateInDDMMYYYY } from '/src/helpers/everythingElse.js'
   import {
     mostRecentlyCompletedTaskID,
