@@ -10,8 +10,8 @@
 
   const dispatch = createEventDispatcher()
 
-   $: monthName = leftEdgeIdx ? calOriginDT.plus({ days: leftEdgeIdx }).toFormat('LLL') : ''
-   $: yearName = leftEdgeIdx ? calOriginDT.plus({ days: leftEdgeIdx }).toFormat('yyyy') : ''
+  $: monthName = leftEdgeIdx ? calOriginDT.plus({ days: leftEdgeIdx }).toFormat('LLL') : ''
+  $: yearName = leftEdgeIdx ? calOriginDT.plus({ days: leftEdgeIdx }).toFormat('yyyy') : ''
 </script>
 
 <div class="corner-label" style="height: {exactHeight + 1}px;">

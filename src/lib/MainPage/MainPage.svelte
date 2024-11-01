@@ -1,6 +1,4 @@
 <script>
-  import PlaygroundCalendar from '$lib/Playground/PlaygroundCalendar.svelte'
-  import BetaCalendar from '$lib/BetaCalendar.svelte'
   import FunctionalCalendar from '$lib/Playground/FunctionalCalendar.svelte'
   import { getDateInDDMMYYYY } from '/src/helpers/everythingElse.js'
   import {
@@ -11,12 +9,10 @@
   } from '/src/store.js'
   import AI from '../AI/AI.svelte'
   import TheSnackbar from '$lib/TheSnackbar.svelte'
-  import CalendarThisWeek from '$lib/CalendarThisWeek.svelte'
   import PopupCustomerSupport from '$lib/PopupCustomerSupport.svelte'
   import NavbarAndContentWrapper from '$lib/NavbarAndContentWrapper.svelte'
   import DetailedCardPopup from '$lib/DetailedCardPopup/DetailedCardPopup.svelte'
   import PeriodicTasks from '$lib/PeriodicTasks/PeriodicTasks.svelte'
-  import UncertainMilestones from '$lib/UncertainMilestones.svelte'
   import MultiPhotoUploader from '$lib/MultiPhotoUploader.svelte'
   import {
     handleSW,

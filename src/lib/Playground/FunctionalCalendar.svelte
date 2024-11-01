@@ -1,7 +1,7 @@
 <script>
-  import ReusableCalendarColumn from '../ReusableCalendarColumn.svelte'
-  import ReusableCalendarHeader from '../ReusableCalendarHeader.svelte'
-  import FunctionalCalendarTimestamps from './FunctionalCalendarTimestamps.svelte'
+  import DayColumn from './DayColumn.svelte'
+  import DayHeader from './DayHeader.svelte'
+  import CalendarTimestamps from './CalendarTimestamps.svelte'
   import YearAndMonthTile from './YearAndMonthTile.svelte'
 
   import Tasks from "/src/back-end/Tasks"
@@ -136,7 +136,7 @@
       style="display: flex; background-color: var(--calendar-bg-color);"
     >
       {#if dtOfActiveColumns.length > 0 && $tasksScheduledOn}
-        <FunctionalCalendarTimestamps 
+        <CalendarTimestamps 
           topMargin={exactHeight}
         />
         <div class="visible-days"
@@ -147,7 +147,7 @@
             class:bottom-border={$tasksScheduledOn}
           >
             {#each dtOfActiveColumns as currentDate, i (currentDate.toMillis() + `${i}`)}
-              <ReusableCalendarHeader
+              <DayHeader
                 ISODate={currentDate.toFormat('yyyy-MM-dd')}
                 {isShowingDockingArea}
                 on:task-update
@@ -159,7 +159,7 @@
 
           <div class="day-columns">
             {#each dtOfActiveColumns as currentDate, i (currentDate.toMillis())}
-              <ReusableCalendarColumn 
+              <DayColumn 
                 calendarBeginningDateClassObject={DateTime.fromISO(currentDate.toFormat('yyyy-MM-dd')).toJSDate()}
                 pixelsPerHour={PIXELS_PER_HOUR}
                 timeBlockDurationInMinutes={60}
