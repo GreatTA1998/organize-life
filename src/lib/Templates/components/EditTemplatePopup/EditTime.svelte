@@ -80,6 +80,7 @@
       </UXFormField>
     </div>
 
+    {#if template.crontab !== ''}
     <div style="margin-top: 0px; margin-left: 16px;">
       <div style="font-size: 14px; rgb(100, 100, 100); margin-bottom: 8px;">
         start time
@@ -90,7 +91,8 @@
           on:new-checked-state={handleSwitchToggle}
         />
       </div>
-    </div>
+      </div>
+    {/if}
 
     {#if hasSpecificTime}
       <div style="max-width: 70px; margin-left: 8px;">
