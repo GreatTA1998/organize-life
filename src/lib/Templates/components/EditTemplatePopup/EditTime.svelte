@@ -14,7 +14,8 @@
   function saveDuration() {
     updateTemplate({
       templateID: template.id,
-      keyValueChanges: { duration: newDuration }
+      keyValueChanges: { duration: newDuration },
+      oldTemplate: template
     })
     isEditingDuration = false
   }
@@ -22,7 +23,8 @@
   function saveStartTime() {
     updateTemplate({
       templateID: template.id,
-      keyValueChanges: { startTime: newStartHHMM }
+      keyValueChanges: { startTime: newStartHHMM },
+      oldTemplate: template
     })
     isEditingTaskStart = false
   }
@@ -46,7 +48,8 @@
     if (hasSpecificTime) {
       updateTemplate({
         templateID: template.id,
-        keyValueChanges: { startTime: "" }
+        keyValueChanges: { startTime: "" },
+        oldTemplate: template
       })
     }
     hasSpecificTime = e.detail.isChecked

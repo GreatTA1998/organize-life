@@ -15,7 +15,8 @@
   function handleDrop(newOrderValue) {
     updateTemplate({
       templateID: draggedTemplate.id,
-      keyValueChanges: { orderValue: newOrderValue }
+      keyValueChanges: { orderValue: newOrderValue },
+      oldTemplate: templates.find(template => template.id === draggedTemplate.id)
     })
   }
 </script>

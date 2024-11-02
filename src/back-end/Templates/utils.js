@@ -3,6 +3,8 @@ import { DateTime } from 'luxon';
 import { db } from "../firestoreConnection.js";
 import { updateDoc, doc, setDoc, getDoc, collection, query, where, getDocs, deleteDoc } from 'firebase/firestore';
 import { getRandomID } from '../../helpers/everythingElse.js';
+import Joi from 'joi';
+import { TaskSchema } from '../Schemas';
 const { parseExpression } = cronParser;
 
 const getPeriodFromCrontab = (crontab) => {
@@ -54,11 +56,8 @@ const deleteFutureTasks = async ({ userID, id }) => {
   return Promise.all(deletePromises);
 }
 
-const postFutureTasks = async ({ userID, id }) => {
-  const snapshot = await getDoc(doc(db, "users", userID, 'templates', id));
-  const template = snapshot.data();
-  template.id = id;
-  const offset = getPeriodFromCrontab(template.crontab) === 'yearly' ? { years: 1 } : { months: 1 };
+const postFutureTasks = async ({ userID, id, newTemplate }) => {
+  const offset = getPeriodFromCrontab(template.crontab) === 'yearly' ? { years: 2 } : { months: 2 };
   const startDate = DateTime.now();
   const endDate = DateTime.now().plus(offset);
   const tasksArray = await buildFutureTasks({ template, startDateJS: new Date(startDate), endDateJS: new Date(endDate), userID, templateID: id });

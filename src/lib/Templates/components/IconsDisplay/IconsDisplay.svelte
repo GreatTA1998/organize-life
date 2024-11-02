@@ -7,7 +7,7 @@
   let isShowingPremiumPopup = false
 
   function handleSelectIcon(iconURL = '') {
-    updateTemplate({ templateID: template.id, keyValueChanges: { iconURL } })
+    updateTemplate({ templateID: template.id, keyValueChanges: { iconURL }, oldTemplate: template })
   }
 
   function handleDeleteIcon({ id, url }) {

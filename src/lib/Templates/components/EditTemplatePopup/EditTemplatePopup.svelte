@@ -17,8 +17,10 @@
     (newVal) =>
       updateTemplate({
         templateID: template.id,
-        keyValueChanges: { name: newVal }
+        keyValueChanges: { name: newVal },
+        oldTemplate: template
       }),
+
     800
   )
 

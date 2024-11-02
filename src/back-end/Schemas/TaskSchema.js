@@ -15,6 +15,7 @@ export default Joi.object({
     isDone: Joi.boolean().required(),
     imageDownloadURL: Joi.string().required().allow(""),
     imageFullPath: Joi.string().required().allow(""),
+    tags: Joi.string().required().allow("").default(''),
     // id: hydrated
     // userID: hydrated
 })

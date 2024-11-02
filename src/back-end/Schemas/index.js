@@ -1,5 +1,5 @@
 import TaskSchema from "./TaskSchema";
 import TemplateSchema from "./TemplateSchema";
 
-export default { TaskSchema, TemplateSchema };
+export { TaskSchema, TemplateSchema };
 

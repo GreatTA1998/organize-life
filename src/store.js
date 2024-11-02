@@ -9,23 +9,35 @@ export const calendarTasks = writable(null)
 // templates
 export const templates = writable([])
 
-export function deleteTemplate({ templateID }) {
-  const currentUser = get(user)
-  Templates.deleteTemplate({ id: templateID, userID: currentUser.uid })
-  templates.update((templates) => templates.filter((template) => template.id !== templateID))
+
+function deleteFutureTasks(templateID){
   const fullISODate = ({ startDateISO, startTime }) => DateTime.fromISO(`${startDateISO}T${startTime || '00:00'}:00`).toISO()
   const afterNow = (taskISO) => taskISO > DateTime.now().toISO();
   const tasksToDelete = get(calendarTasks).filter(task => task.templateID === templateID && afterNow(fullISODate(task)))
   tasksToDelete.forEach(deleteFromLocalState);
 }
 
-export function updateTemplate({ templateID, keyValueChanges }) {
+export function deleteTemplate({ templateID }) {
+  const currentUser = get(user)
+  Templates.deleteTemplate({ id: templateID, userID: currentUser.uid })
+  templates.update((templates) => templates.filter((template) => template.id !== templateID))
+  deleteFutureTasks(templateID)
+}
+
+
+export function updateTemplate({ templateID, keyValueChanges, oldTemplate }) {
+  console.log('updateTemplate', templateID, keyValueChanges)
   const currentUser = get(user);
   Templates.updateWithTasks({
     userID: currentUser.uid,
     id: templateID,
-    updates: keyValueChanges
+    updates: keyValueChanges,
+    oldTemplate
   })
+  if (keyValueChanges.crontab) {
+    deleteFutureTasks(templateID)
+    postFutureTasks(template)
+  }
   templates.update((templates) => templates.map((template) =>
     template.id === templateID ? { ...template, ...keyValueChanges } : template
   ))

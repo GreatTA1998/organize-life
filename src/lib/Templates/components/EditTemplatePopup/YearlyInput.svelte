@@ -8,7 +8,7 @@
     if (dateRegex.test(yearlyDate)) {
       const [month, day] = yearlyDate.split('-')
       const crontab = `0 0 ${day} ${month} *`
-      updateTemplate({ templateID: template.id, keyValueChanges: { crontab: crontab } })
+      updateTemplate({ templateID: template.id, keyValueChanges: { crontab: crontab }, oldTemplate: template })
     } else {
       alert('Please enter a valid date in MM-DD format')
     }
