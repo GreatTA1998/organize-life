@@ -1,5 +1,5 @@
  <!-- This component was first planned on Svelte REPL: https://svelte.dev/repl/d42716f1cc2746ce949de01f0117419e?version=4.2.15 -->
-<div id="the-only-scrollable-container">
+<div bind:this={ScrollableContainer} id="the-only-scrollable-container">
   <div class="top-flexbox" class:bottom-border={$tasksScheduledOn}>
     <div class="pinned-div">
       <div style="font-size: 16px; margin-top: var(--main-content-top-margin);">
@@ -24,9 +24,9 @@
     <div class="sticky-y-div flexbox">
       {#each $daysToRender as ISODate, i (ISODate)}
         {#if i === cushion}
-          <div use:lazyCallable={() => handleIntersect(ISODate)} style="outline: 20px solid blue;"></div>
+          <div use:lazyCallable={() => handleIntersect(ISODate)}></div>
         {:else if i === $daysToRender.length - 1 - cushion}
-          <div use:lazyCallable={() => fetchNewWeekOfFutureTasks(ISODate)} style="outline: 20px solid red;"></div>
+          <div use:lazyCallable={() => fetchNewWeekOfFutureTasks(ISODate)}></div>
         {/if}
 
         <ReusableCalendarHeader
@@ -77,7 +77,7 @@
   import ReusableCalendarHeader from "$lib/ReusableCalendarHeader.svelte";
   import ReusableCalendarColumn from "$lib/ReusableCalendarColumn.svelte";
   import { MIKA_PIXELS_PER_HOUR } from "/src/helpers/everythingElse.js";
-  import { onMount, afterUpdate } from "svelte";
+  import { onMount, afterUpdate, tick } from "svelte";
   import { user, tasksScheduledOn, hasInitialScrolled } from "/src/store.js";
   import { getFirestoreCollection } from "/src/helpers/firestoreHelpers.js";
   import { lazyCallable } from "/src/helpers/actions.js";
@@ -90,6 +90,7 @@
 
   export let calStartDateClassObj;
 
+  let ScrollableContainer
   let doodleIcons = null;
   // NOTE: timesOfDay should start from 00:00, so dateClassObjects also need to start from 00:00 military time
   let timesOfDay = [];
@@ -98,17 +99,6 @@
   const timestampDivTopMargin = 24;
   let isShowingDockingArea = true;
   
-  let newScrollLeft = 0
-  let ScrollingParent
-  let hasFetchedNewPastTasks = false
-
-  afterUpdate(() => {
-    if (ScrollingParent && hasFetchedNewPastTasks) {
-      ScrollingParent.scrollLeft = newScrollLeft
-      hasFetchedNewPastTasks = false
-    }
-  })
-
   onMount(async () => {
     const today = DateTime.now()
     daysToRender.set(
@@ -135,18 +125,6 @@
     }
   }
 
-  function saveScrollPosition () {
-    ScrollingParent = document.getElementById('the-only-scrollable-container')
-    if (ScrollingParent) {
-      const dayColumnWidth = 200
-      const correctionAmount = dayColumnWidth * (size + cushion)  
- 
-      const oldScrollLeft = ScrollingParent.scrollLeft
-      newScrollLeft = correctionAmount + oldScrollLeft
-      hasFetchedNewPastTasks = true
-    }
-  }
-
   async function fetchPastTasks(ISODate) {
     const dt = DateTime.fromISO(ISODate)
   
@@ -158,18 +136,25 @@
       left.toISODate(), // '2024-07-31',
       right.toISODate()
     )
-
-    hasFetchedNewPastTasks = true
-
-    saveScrollPosition()
+    
+    // check scroll position AFTER data fetch, but before the update,
+    // as that's the most recent location of the scroll location (the user could have scrolled a lot during the data fetch)
+    const oldScrollLeft = ScrollableContainer.scrollLeft
 
     daysToRender.set(
       [...buildDates({ start: left, totalDays: size + cushion }), ...$daysToRender]
     )
-
     buildCalendarDataStructures({
       flatArray: [...newWeekTasksArray, ...$calendarTasks]
     })
+
+    await tick()
+
+    ScrollableContainer.scrollLeft = getShiftDueToNewColumns({ dayColumnWidth: 200 }) + oldScrollLeft
+  }
+
+  function getShiftDueToNewColumns ({ dayColumnWidth }) {
+    return (size + cushion) * dayColumnWidth
   }
 
   async function fetchNewWeekOfFutureTasks(intersectedDate) {
@@ -201,22 +186,19 @@
     isShowingDockingArea = !isShowingDockingArea;
   }
 
-  function getTimesOfDay() {
+  function getTimesOfDay () {
+    const temp = []
     let currentHour = 0; // today.getHours() // get the integer i.e. 0 to 23
     // now generate 16 hours of time (so it covers, for example, 8 am - midnight)
     for (let i = 0; i < numOfHourBlocksDisplayed; i++) {
       if (currentHour === 24) {
-        currentHour = 0;
+        currentHour = 0
       }
-      if (currentHour < 10) {
-        timesOfDay.push("0" + currentHour + ":00");
-      } else {
-        timesOfDay.push(currentHour + ":00");
-      }
-
-      currentHour += 1;
+      if (currentHour < 10) temp.push("0" + currentHour + ":00")
+      else temp.push(currentHour + ":00")
+      currentHour += 1
     }
-    timesOfDay = timesOfDay;
+    timesOfDay = temp
   }
 </script>
 

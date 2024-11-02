@@ -25,10 +25,6 @@
     box-sizing: border-box;
   }
 
-  .box .row {
-    /* border: 1px dotted grey; */
-  }
-
   .box .row.header {
     flex: 0 1 auto;
   }
@@ -38,9 +34,5 @@
     flex-flow: column;
     flex: 1 1 auto;
     overflow-y: auto;
-  }
-
-  .box .row.footer {
-    flex: 0 1 40px;
   }
 </style>

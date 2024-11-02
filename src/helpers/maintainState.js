@@ -74,6 +74,7 @@ export function deleteFromLocalState({ id }) {
 }
 
 export function buildCalendarDataStructures({ flatArray }) {
+  console.log('buildCalendarDataStructures!!!!!!!!!!!!!!')
   calendarTasks.set(flatArray);
   calendarMemoryTree.set(constructCalendarTrees(get(calendarTasks)));
   const dateToTasks = computeDateToTasksDict(get(calendarMemoryTree));

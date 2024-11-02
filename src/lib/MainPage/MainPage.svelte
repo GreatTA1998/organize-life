@@ -33,7 +33,6 @@
   } from '/src/helpers/crud.js'
   import { findTaskByID } from '/src/helpers/utils.js'
   import { dev } from '$app/environment'
-
   let currentMode = 'Week'
   const userDocPath = `users/${$user.uid}`
 
@@ -53,6 +52,7 @@
   }
 
   onMount(async () => {
+    console.log('onMount MainPage!!!!!!!!!!!!!!')
     if (!dev) {
       console.log('running handleNotificationPermission')
       try {
@@ -291,9 +291,7 @@
 
   <!-- WEEK MODE -->
   <div slot="content" style="display: flex; flex-grow: 1; height: 100%;">
-    <div
-      style="display: {currentMode === 'Week' ? 'flex' : 'none'}; width: 100%;"
-    >
+    <div style="display: {currentMode === 'Week' ? 'flex' : 'none'}; width: 100%;">
       <!-- 1st flex child -->
       <NewThisWeekTodo
         on:new-root-task={(e) => createTaskNode(e.detail)}
@@ -330,15 +328,20 @@
 
     <!-- END OF WEEK MODE SECTION -->
 
-    <div style="display: {currentMode === 'Year' ? 'block' : 'none'}">
+    <!-- <div style="display: {currentMode === 'Year' ? 'block' : 'none'}">
       <UncertainMilestones />
+    </div> -->
+
+    <div style="width: 100%; background: hsl(98, 40%, 96%); display: {currentMode === 'Templates' ? 'block' : 'none'}">
+      <PeriodicTasks />
     </div>
 
-    <div style="display: {currentMode === 'Templates' ? 'block' : 'none'}">
-      <Templates />
-    </div>
-
-    <div style="display: {currentMode === 'AI' ? 'block' : 'none'}">
+    <div
+      style="width: 100%; background: var(--calendar-bg-color); display: {currentMode ===
+      'AI'
+        ? 'block'
+        : 'none'}"
+    >
       <AI />
     </div>
   </div>

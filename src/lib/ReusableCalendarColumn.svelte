@@ -151,7 +151,6 @@
 <!-- https://github.com/sveltejs/svelte/issues/6016 -->
 <div
   bind:this={OverallContainer}
-  bind:clientHeight={overallContainerHeight}
   class="scroll-container"
   style="
     position: relative;

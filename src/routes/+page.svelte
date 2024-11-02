@@ -1,6 +1,7 @@
 {#if hasFetchedUser}
   <NavbarAndContentWrapper>
     <div slot="navbar" class="top-navbar transparent-glow-navbar" style="background: rgb(250, 250, 250); border-bottom: 1px solid lightgrey;">
+      <!-- svelte-ignore a11y-missing-attribute -->
       <img 
         src="/trueoutput-square-nobg.png" 
         style="margin-left: 0vw; width: 38px; height: 38px;"
