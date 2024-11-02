@@ -50,6 +50,7 @@
       <MyJSDatePicker
         MMDD={newStartMMDD}
         YYYY={newStartYYYY}
+        placeholder="Nov 2"
         on:date-selected={(e) => { 
           newStartMMDD = e.detail.selectedDate
           newStartYYYY = e.detail.selectedYear
@@ -80,7 +81,6 @@
         fieldLabel="Duration"
         value={Math.round(taskObject.duration)}
         willAutofocus={false}
-        data-field="duration"
         on:input={(e) => handleChanges("duration", Number(e.detail.value))}
       >
         <div

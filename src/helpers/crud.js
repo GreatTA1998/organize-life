@@ -28,7 +28,6 @@ export async function updateTaskNode({ id, keyValueChanges }) {
   try {
     const tasks = get(calendarTasks).concat(get(todoTasks))
     const task = tasks.find(task => task.id === id);
-    console.log('task is: ', task)
     const newTask = removeUnnecessaryFields({ ...task, ...keyValueChanges })
     Joi.assert(newTask, TaskSchema)
     Tasks.update({ userUID: get(user).uid, taskID: id, keyValueChanges })
@@ -45,7 +44,7 @@ export function deleteTaskNode({ id, imageFullPath = "" }) {
   Tasks.remove({ userUID: get(user).uid, taskID: id })
   if (imageFullPath) deleteImage({ imageFullPath })
   const affectedTasks = [...get(todoTasks).filter(task => task.parentID === id), ...get(calendarTasks).filter(task => task.parentID === id)]
-  affectedTasks.forEach(task => updateLocalState({ id: task.id, keyValueChanges: { parentID: "" } })  )
+  affectedTasks.forEach(task => updateLocalState({ id: task.id, keyValueChanges: { parentID: "" } }))
   deleteFromLocalState({ id });
 }
 
@@ -64,6 +63,7 @@ const nesseseryFields = [
   "templateID",
   "isDone",
   "imageDownloadURL",
+  "tags",
   "imageFullPath"];
 
 function removeUnnecessaryFields(task) {

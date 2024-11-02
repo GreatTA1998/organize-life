@@ -6,14 +6,13 @@
     showSnackbar,
     hasInitialScrolled
   } from '/src/store.js'
+  import Templates from '$lib/Templates/Templates.svelte'
   import AI from '../AI/AI.svelte'
   import TheSnackbar from '$lib/TheSnackbar.svelte'
   import CalendarThisWeek from '$lib/CalendarThisWeek.svelte'
   import PopupCustomerSupport from '$lib/PopupCustomerSupport.svelte'
   import NavbarAndContentWrapper from '$lib/NavbarAndContentWrapper.svelte'
   import DetailedCardPopup from '$lib/DetailedCardPopup/DetailedCardPopup.svelte'
-  import Templates from '$lib/Templates/Templates.svelte'
-  import UncertainMilestones from '$lib/UncertainMilestones.svelte'
   import MultiPhotoUploader from '$lib/MultiPhotoUploader.svelte'
   import {
     handleSW,
@@ -52,7 +51,6 @@
   }
 
   onMount(async () => {
-    console.log('onMount MainPage!!!!!!!!!!!!!!')
     if (!dev) {
       console.log('running handleNotificationPermission')
       try {
@@ -333,7 +331,7 @@
     </div> -->
 
     <div style="width: 100%; background: hsl(98, 40%, 96%); display: {currentMode === 'Templates' ? 'block' : 'none'}">
-      <PeriodicTasks />
+      <Templates />
     </div>
 
     <div

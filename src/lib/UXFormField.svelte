@@ -7,7 +7,6 @@
   export let pattern = "";
   export let placeholder = "";
   export let willAutofocus = true;
-
   const dispatch = createEventDispatcher();
 
   function handleInput(event) {

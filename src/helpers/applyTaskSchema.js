@@ -13,6 +13,7 @@ const Schema = {
   imageFullPath: "",
   startDateISO: "",
   iconURL: "",
+  tags: "",
   timeZone: DateTime.local().zoneName,
   notify: "", //string so "0" means notification at 0 minutes instead of false
 };
