@@ -13,10 +13,6 @@
   let doingAuth = true
 
   const hasConfirmedAuth = false
-
-  $: visible = (doingAuth || loggedInButNoData)
-  $: loggedInButNoData = ($user?.uid && (!$calendarTasks?.length || !$todoTasks?.length))
-  
   onMount(() => {
     // fetching user takes around 300 - 500 ms
     onAuthStateChanged(getAuth(), async (resultUser) => {
@@ -115,10 +111,11 @@
   }
 </script>
 
-<!-- <div
+<div
   id="loading-screen-logo-start"
   style="z-index: 99999; background: white; width: 100vw; height: 100vh"
   class="center"
+  class:invisible={!(doingAuth || ($user?.uid && (!$calendarTasks?.length || !$todoTasks?.length )))}
 >
   <img
     src="/trueoutput-square-nobg.png"
@@ -126,7 +123,7 @@
     alt="logo"
     style="width: 48px; height: 48px;"
   />
-</div> -->
+</div>
 
 <div>
   <slot></slot>
