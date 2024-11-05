@@ -2,7 +2,8 @@ import { writable, readable, get } from 'svelte/store'
 import Templates from './back-end/Templates'
 import { DateTime } from 'luxon'
 import { deleteFromLocalState, updateLocalState } from './helpers/maintainState';
-
+import Joi from 'joi';
+import TemplateSchema from './back-end/Schemas/TemplateSchema.js';
 export const todoTasks = writable(null)
 export const calendarTasks = writable(null)
 
@@ -25,18 +26,32 @@ export function deleteTemplate({ templateID }) {
 }
 
 
-export function updateTemplate({ templateID, keyValueChanges, oldTemplate }) {
-  console.log('updateTemplate', templateID, keyValueChanges)
+function buildNewTemplate({oldTemplate, keyValueChanges}){
+  const newTemplate = { ...oldTemplate, ...keyValueChanges }
+  delete newTemplate.id
+  delete newTemplate.userID
+  delete newTemplate.totalMinutesSpent
+  delete newTemplate.totalTasksCompleted
+  Joi.assert(newTemplate, TemplateSchema);
+  return newTemplate
+}
+const postFutureTasks = (hydratedTasks) => {
+  calendarTasks.update((calendarTasks) => [...calendarTasks, ...hydratedTasks])
+}
+
+export async function updateTemplate({ templateID, keyValueChanges, oldTemplate }) {
+  console.log('keyValueChanges', keyValueChanges)
+  const newTemplate = buildNewTemplate ({oldTemplate, keyValueChanges})
   const currentUser = get(user);
-  Templates.updateWithTasks({
+  const hydratedTasks = await Templates.updateWithTasks({
     userID: currentUser.uid,
     id: templateID,
     updates: keyValueChanges,
-    oldTemplate
+    newTemplate
   })
   if (keyValueChanges.crontab) {
     deleteFutureTasks(templateID)
-    postFutureTasks(template)
+    postFutureTasks(hydratedTasks)
   }
   templates.update((templates) => templates.map((template) =>
     template.id === templateID ? { ...template, ...keyValueChanges } : template
@@ -45,9 +60,6 @@ export function updateTemplate({ templateID, keyValueChanges, oldTemplate }) {
   const afterNow = (taskISO) => taskISO > DateTime.now().toISO();
   const tasksToUpdate = get(calendarTasks).filter(task => task.templateID === templateID && afterNow(fullISODate(task)))
   tasksToUpdate.forEach(({id}) => updateLocalState({ id, keyValueChanges }));
-
-  // update future tasks
-  // create local future tasks
 }
 
 export const user = writable({}) // {} means not logged in, cannot be null

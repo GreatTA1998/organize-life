@@ -91,7 +91,7 @@
               style="font-weight: 400; font-size: 14px; margin-top: 8px; color:
               green"
             >
-            {Math.round((template.TotalMinutesSpent / 60) * 10) / 10} hr            </div>
+            {Math.round((template.totalMinutesSpent / 60) * 10) / 10} hr            </div>
           </div>
         {/if}
         </div>

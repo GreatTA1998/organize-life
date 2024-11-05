@@ -7,7 +7,7 @@ export const filterByType = (tasks, type) =>
 
 
 export const getDisplayLength = ({ template, templateWidthInPx }) => {
-  const hours = template.TotalMinutesSpent / 60
+  const hours = template.totalMinutesSpent / 60
   const maxTimeBarWidth = window.innerWidth / 3 - templateWidthInPx
   const pixelsPerHour = maxTimeBarWidth / hours
   const accurateLength =
@@ -16,7 +16,6 @@ export const getDisplayLength = ({ template, templateWidthInPx }) => {
 }
 
 export const updateCrontab = ({ selectedDays, template, crontabIndex }) => {
-  console.log('updateCrontab', selectedDays, template, crontabIndex)
   let updatedCrontab = template.crontab.split(" ");
   if (crontabIndex == 'yearly') {
     updatedCrontab = selectedDays;

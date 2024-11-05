@@ -21,12 +21,19 @@ const create = async ({ userID, template, templateID }) => {
   return setDoc(docRef, template);
 };
 
-const updateWithTasks = async ({ userID, id, updates, oldTemplate }) => {
-  const newTemplate = { ...oldTemplate, ...updates }
-  Joi.assert(newTemplate, TemplateSchema);
-  updateDoc(doc(db, "users", userID, 'templates', id), updates)
-    deleteFutureTasks({ userID, id });
-    if(updates.crontab !== '0 0 0 * *') postFutureTasks({ userID, id, newTemplate })
+const updateWithTasks = async ({ userID, id, updates, newTemplate }) => {
+  console.log('updates', updates)
+  console.log('newTemplate', newTemplate)
+    updateDoc(doc(db, "users", userID, 'templates', id), updates)
+   
+    if(updates.crontab !== '0 0 0 * *' && newTemplate.crontab !== '0 0 * * 0'){
+      console.log('deleting future tasks')
+      deleteFutureTasks({ userID, id });
+      console.log('posting future tasks')
+      return await postFutureTasks({ userID, id, newTemplate })
+    }
+    
+    return [];
 };
 
 const getAll = async ({ userID, includeStats = true }) => {
@@ -36,9 +43,9 @@ const getAll = async ({ userID, includeStats = true }) => {
   if (!includeStats) return arraywithIds;
 
   for (const template of arraywithIds) {
-    const [totalTasksCompleted, TotalMinutesSpent] = await getTotalStats({ userID, id: template.id })
+    const [totalTasksCompleted, totalMinutesSpent] = await getTotalStats({ userID, id: template.id })
     template.totalTasksCompleted = totalTasksCompleted
-    template.TotalMinutesSpent = TotalMinutesSpent
+    template.totalMinutesSpent = totalMinutesSpent
   }
   return arraywithIds
 };

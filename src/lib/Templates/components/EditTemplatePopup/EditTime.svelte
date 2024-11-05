@@ -5,11 +5,11 @@
   import { updateTemplate } from '/src/store.js'
   export let template
 
-  let isEditingTaskStart = false
+  let isEditingSpecificTime = false
   let isEditingDuration = false
   let newDuration = template.duration
   let newStartHHMM = template.startTime
-  let hasSpecificTime = !!template.startTime
+  let displaySpecificTime = !!template.startTime
 
   function saveDuration() {
     updateTemplate({
@@ -17,16 +17,16 @@
       keyValueChanges: { duration: newDuration },
       oldTemplate: template
     })
-    isEditingDuration = false
   }
 
   function saveStartTime() {
+    console.log('saving start time', newStartHHMM)
     updateTemplate({
       templateID: template.id,
       keyValueChanges: { startTime: newStartHHMM },
       oldTemplate: template
     })
-    isEditingTaskStart = false
+    isEditingSpecificTime = false;
   }
 
   function handleDurationInput(e) {
@@ -35,7 +35,7 @@
   }
 
   function handleTaskStartInput(e) {
-    isEditingTaskStart = true
+    isEditingSpecificTime = true
     const hhmm = e.detail.value
     newStartHHMM = hhmm
   }
@@ -44,15 +44,16 @@
     return taskObj.startDate && taskObj.startTime && taskObj.startYYYY
   }
 
-  function handleSwitchToggle(e) {
-    if (hasSpecificTime) {
+  function handleSwitchToggle() {
+    if (!displaySpecificTime) displaySpecificTime = true
+    else {
       updateTemplate({
         templateID: template.id,
         keyValueChanges: { startTime: "" },
         oldTemplate: template
       })
+      displaySpecificTime = false
     }
-    hasSpecificTime = e.detail.isChecked
   }
 </script>
 
@@ -87,20 +88,20 @@
       </div>
       <div>
         <UXToggleSwitch
-          isChecked={template.startTime}
+          isChecked={displaySpecificTime}
           on:new-checked-state={handleSwitchToggle}
         />
       </div>
       </div>
     {/if}
 
-    {#if hasSpecificTime}
+    {#if displaySpecificTime}
       <div style="max-width: 70px; margin-left: 8px;">
         <UXFormField
           pattern={'^[0-9:]*$'}
           fieldLabel="hh:mm"
           value={template.startTime}
-          willAutofocus={false}
+          willAutofocus={true}
           on:input={(e) => handleTaskStartInput(e)}
           placeholder="17:30"
         />
@@ -108,7 +109,7 @@
     {/if}
   </div>
 
-  {#if isEditingTaskStart}
+  {#if isEditingSpecificTime}
     <ReusableRoundButton
       on:click={saveStartTime}
       backgroundColor="rgb(0, 89, 125)"

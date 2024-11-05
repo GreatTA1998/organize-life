@@ -29,12 +29,12 @@
   })
 
   function handleDelete() {
-    if (
-      !confirm(
-        'Are you sure you want to delete this template and all its future instances?'
-      )
-    )
-      return
+    // if (
+    //   !confirm(
+    //     'Are you sure you want to delete this template and all its future instances?'
+    //   )
+    // )
+    //   return
     deleteTemplate({ templateID: template.id })
     isPopupOpen = false
   }

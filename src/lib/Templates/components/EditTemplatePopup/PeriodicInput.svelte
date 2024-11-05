@@ -18,6 +18,7 @@ function handleSave() {
   function handleSelectDay(i) {
     if (selectedDays.includes(i)) {
       selectedDays = selectedDays.filter((day) => day !== i)
+      if(selectedDays.length === 0) selectedDays = ['0']
     } else {
       selectedDays = [...selectedDays, i]
     }

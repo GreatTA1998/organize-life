@@ -12,8 +12,8 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
-const appSource = initializeApp(firebaseConfig);
+// const appSource = initializeApp(firebaseConfig);
 const db = getFirestore(app, "tokyo-db");
-const sourceDB = getFirestore(appSource, "tokyo-db");
+// const sourceDB = getFirestore(appSource, "tokyo-db");
 
-export { app, db, sourceDB };
+export { app, db };
