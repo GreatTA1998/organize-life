@@ -11,13 +11,14 @@
   import posthog from 'posthog-js'
   let unsubUserSnapListener = null
   let doingAuth = true
-
-  const hasConfirmedAuth = false
+  const startTime = performance.now()
+  
   onMount(() => {
     // fetching user takes around 300 - 500 ms
     onAuthStateChanged(getAuth(), async (resultUser) => {
+      const onAuthStateChangedTime = performance.now();
+      console.log(' to run a callback on auth took', onAuthStateChangedTime - startTime);
       if (!resultUser) {
-        console.log('no resultUser')
         user.set({})
         goto('/')
 
@@ -26,36 +27,28 @@
           api_host: 'https://us.i.posthog.com',
           person_profiles: 'always' // or 'always' to create profiles for anonymous users as well
         })
-      } 
-      
-      // USER IS LOGGED INTO FIREBASE AUTH
-      else {
-        // splitting on '/' gives' ['', '']
-        if ($page.url.pathname === '/') {
-          goto('/' + resultUser.uid)
-        }
+      } else {
+        // USER IS LOGGED INTO FIREBASE AUTH
+        const urlParts = $page.url.pathname.split('/')
 
-        else {
-          const urlParts = $page.url.pathname.split('/')
-
-          // for a full path, urlParts is ['', 'PfxP5N71jQVzDejF9tYwTgrVtGz2', 'mobile']
-          if (urlParts.length === 3 || urlParts[2] === 'mobile') {
-            if (!isMobile()) {
-              if (confirm('This is mobile mode. Use desktop mode instead?')) {
-                goto('/' + resultUser.uid)
-              }
+        // for a full path, urlParts is ['', 'PfxP5N71jQVzDejF9tYwTgrVtGz2', 'mobile']
+        if (urlParts.length === 3 || urlParts[2] === 'mobile') {
+          if (!isMobile()) {
+            if (confirm('This is mobile mode. Use desktop mode instead?')) {
+              goto('/' + resultUser.uid)
             }
           }
-          // desktop mode URL
-          else if (urlParts.length === 2) {
-            if (isMobile()) {
-              if (confirm('This is desktop mode. Use mobile mode instead?')) {
-                goto('/' + resultUser.uid + '/mobile')
-              }
-            } 
+        }
+        // desktop mode URL
+        else {
+          if (isMobile()) {
+            if (confirm('This is desktop mode. Use mobile mode instead?')) {
+              goto('/' + resultUser.uid + '/mobile')
+            }
+          } else {
+            goto('/' + resultUser.uid)
           }
         }
-
 
         // partially hydrate the user so we can redirect away ASAP (NOTE: v1 this shouldn't make a lot of difference to load time)
         user.set({
@@ -74,10 +67,16 @@
           }
         })
       }
+      const onAuthDoneTime = performance.now();
+      console.log('auth callback took to run', onAuthDoneTime - onAuthStateChangedTime);
       doingAuth = false
     })
   })
 
+  const trace = (y, x) => {
+    console.log(y, x)
+    return x
+  }
   // should be unnecessary because +layout getting destroyed means the App is closed
   onDestroy(() => {
     if (unsubUserSnapListener) unsubUserSnapListener()
