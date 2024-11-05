@@ -35,7 +35,7 @@
 <h4 class="bug-notice">
   Known Bugs:
   <ul>
-    <li>Updates to templates need a refresh to display on the calendar</li>
+    <li>non that we know of, please tell us</li>
   </ul>
 </h4>
 <div style="padding: 48px;">
