@@ -14,7 +14,8 @@ const getPeriodFromCrontab = (crontab) => {
     if (dayOfMonth !== '*' && month !== '*' && dayOfWeek === '*') return 'yearly';
     if (dayOfMonth !== '*' && month === '*' && dayOfWeek === '*') return 'monthly';
     if (dayOfMonth === '*' && month === '*' && dayOfWeek !== '*') return 'weekly';
-    throw new Error('unknown frequency');
+    console.error('unknown frequency', crontab);
+    return 'unknown';
   }
 
 
