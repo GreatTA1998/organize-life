@@ -38,8 +38,6 @@
   let clickedTaskID = ''
   let clickedTask = {}
 
-  let calStartDateClassObj = new Date()
-
   let unsub
   $: if (clickedTaskID) {
     if (clickedTaskID) clickedTask = findTaskByID(clickedTaskID)
