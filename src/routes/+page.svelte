@@ -15,10 +15,6 @@
           Github
         </a>
       </div>
-
-      <div>
-        (mobile version coming soon)
-      </div>
     </div>
      
     <div slot="content" style="display: flex; flex-grow: 1; height: 100%; padding: 2.5%; padding-top: 1%;" class="home-page-background">

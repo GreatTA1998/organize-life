@@ -79,7 +79,7 @@
         <FunctionalDoodleIcon
           {iconTask}
           on:task-click
-          on:task-checkbox-change
+          on:task-update
         />
       {/each}
     </div>
@@ -100,7 +100,6 @@
           cssWidth={'100%'}
           on:task-click
           on:task-update
-          on:task-checkbox-change
         />
       </div>
     {/each}

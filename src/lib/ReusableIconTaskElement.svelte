@@ -54,7 +54,7 @@
     <FunctionalDoodleIcon
       iconTask={task}
       on:task-click
-      on:task-checkbox-change
+      on:task-update
     />
 
     {#if isBulletPoint}
