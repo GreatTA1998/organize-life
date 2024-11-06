@@ -12,10 +12,6 @@
   import PopupCustomerSupport from '$lib/PopupCustomerSupport.svelte'
   import NavbarAndContentWrapper from '$lib/NavbarAndContentWrapper.svelte'
   import DetailedCardPopup from '$lib/DetailedCardPopup/DetailedCardPopup.svelte'
-<<<<<<< HEAD
-=======
-  import PeriodicTasks from '$lib/PeriodicTasks/PeriodicTasks.svelte'
->>>>>>> dev
   import MultiPhotoUploader from '$lib/MultiPhotoUploader.svelte'
   import {
     handleSW,
