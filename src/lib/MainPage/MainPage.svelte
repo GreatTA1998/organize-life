@@ -120,8 +120,7 @@
 {/if}
 
 <NavbarAndContentWrapper>
-  <div
-    slot="navbar"
+  <div slot="navbar"
     class="top-navbar"
     class:transparent-glow-navbar={currentMode === 'Day'}
   >
