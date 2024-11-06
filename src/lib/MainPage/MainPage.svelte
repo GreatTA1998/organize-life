@@ -1,6 +1,5 @@
 <script>
   import TheFunctionalCalendar from '$lib/TheFunctionalCalendar/TheFunctionalCalendar.svelte'
-  import { getDateInDDMMYYYY } from '/src/helpers/everythingElse.js'
   import {
     mostRecentlyCompletedTaskID,
     user,
@@ -85,16 +84,6 @@
     if (unsub) unsub()
   })
 
-  function incrementDateClassObj({ days }) {
-    const d = calStartDateClassObj
-    const offset = days * (24 * 60 * 60 * 1000)
-    d.setTime(d.getTime() + offset)
-    calStartDateClassObj = d // to manually trigger reactivity
-  }
-
-  // FOR DEBUGGING PURPOSES, TURN IT ON TO TRUE TO RUN SCRIPT ONCE
-  let testRunOnce = false
-
   function traverseAndUpdateTree({ fulfilsCriteria, applyFunc }) {
     const artificialRootNode = {
       name: 'root',
@@ -121,16 +110,6 @@
         await updateDoc(userRef, {
           reusableTaskTemplates: arrayUnion(task)
         })
-      }
-    })
-  }
-
-  async function changeTaskDeadline({ id, deadlineTime, deadlineDate }) {
-    updateTaskNode({
-      id,
-      keyValueChanges: {
-        deadlineTime: deadlineTime,
-        deadlineDate: deadlineDate
       }
     })
   }
@@ -178,18 +157,14 @@
     class="top-navbar"
     class:transparent-glow-navbar={currentMode === 'Day'}
   >
-    <!-- svelte-ignore a11y-click-events-have-key-events -->
-    <img
-      on:click={() => handleLogoClick()}
+    <img on:click={() => handleLogoClick()} on:keydown
       src="/trueoutput-square-nobg.png"
       style="width: 38px; height: 38px; margin-right: 6px; margin-left: -4px; cursor: pointer;"
       alt=""
     />
 
     <div class="day-week-toggle-segment">
-      <!-- svelte-ignore a11y-click-events-have-key-events -->
-      <div
-        on:click={() => (currentMode = 'AI')}
+      <div on:click={() => (currentMode = 'AI')} on:keydown
         class="ux-tab-item"
         class:active-ux-tab={currentMode === 'AI'}
         class:transparent-inactive-tab={currentMode === 'Day'}
@@ -199,15 +174,14 @@
         </span>
       </div>
 
-      <!-- quickfix so pressing home ALWAYS recalibrates you to today's region -->
-      <!-- svelte-ignore a11y-click-events-have-key-events -->
-      <div
+      <!-- pressing home recalibrates you to today's region -->
+      <div 
         on:click={async () => {
           if (currentMode === 'Week') {
             hasInitialScrolled.set(false)
           }
           currentMode = 'Week'
-        }}
+        }} on:keydown
         class="ux-tab-item"
         class:active-ux-tab={currentMode === 'Week'}
         class:transparent-inactive-tab={currentMode === 'Day'}
@@ -217,9 +191,7 @@
         </span>
       </div>
 
-      <!-- svelte-ignore a11y-click-events-have-key-events -->
-      <div
-        on:click={() => (currentMode = 'Templates')}
+      <div on:click={() => (currentMode = 'Templates')} on:keydown
         class="ux-tab-item"
         class:active-ux-tab={currentMode === 'Templates'}
         class:transparent-inactive-tab={currentMode === 'Day'}
@@ -233,9 +205,7 @@
         </span>
       </div>
 
-      <!-- svelte-ignore a11y-click-events-have-key-events -->
-      <div
-        on:click={() => (currentMode = 'Year')}
+      <div on:click={() => (currentMode = 'Year')} on:keydown
         class="ux-tab-item"
         class:active-ux-tab={currentMode === 'Year'}
         class:transparent-inactive-tab={currentMode === 'Day'}
@@ -250,9 +220,7 @@
       <MultiPhotoUploader />
 
       <PopupCustomerSupport let:setIsPopupOpen>
-        <!-- svelte-ignore a11y-click-events-have-key-events -->
-        <span
-          on:click={() => setIsPopupOpen({ newVal: true })}
+        <span on:click={() => setIsPopupOpen({ newVal: true })} on:keydown
           class="material-symbols-outlined mika-hover responsive-icon-size"
         >
           contact_support
@@ -261,12 +229,8 @@
     </div>
   </div>
 
-  <!-- WEEK MODE -->
   <div slot="content" style="display: flex; flex-grow: 1; height: 100%;">
-    <div
-      style="display: {currentMode === 'Week' ? 'flex' : 'none'}; width: 100%;"
-    >
-      <!-- 1st flex child -->
+    <div style="display: {currentMode === 'Week' ? 'flex' : 'none'}; width: 100%;">
       <NewThisWeekTodo
         on:new-root-task={(e) => createTaskNode(e.detail)}
         on:task-click={(e) => openDetailedCard(e.detail)}
@@ -290,22 +254,11 @@
       />
     </div>
 
-    <!-- END OF WEEK MODE SECTION -->
-
-    <!-- <div style="display: {currentMode === 'Year' ? 'block' : 'none'}">
-      <UncertainMilestones />
-    </div> -->
-
-    <div style="width: 100%; background: hsl(98, 40%, 96%); display: {currentMode === 'Templates' ? 'block' : 'none'}">
+    <div style="display: {currentMode === 'Templates' ? 'block' : 'none'}; width: 100%; background: hsl(98, 40%, 96%);">
       <PeriodicTasks />
     </div>
 
-    <div
-      style="width: 100%; background: var(--calendar-bg-color); display: {currentMode ===
-      'AI'
-        ? 'block'
-        : 'none'}"
-    >
+    <div style="display: {currentMode === 'AI'? 'block' : 'none'}; width: 100%; background: var(--calendar-bg-color);">
       <AI />
     </div>
   </div>
