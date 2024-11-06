@@ -61,7 +61,7 @@ const deleteFutureTasks = async ({ userID, id }) => {
   const deletePromises = tasksSnapshot.docs.map(taskDoc => {
     const task = taskDoc.data();
     const taskDateTime = DateTime.fromISO(
-      `${task.startDateISO}T${task.startTime || '00'}:00`,
+      `${task.startDateISO}T${task.startTime || '23:59'}:00`,
     );
     if (taskDateTime >= DateTime.now()) {
       return deleteDoc(doc(db, "users", userID, 'tasks', taskDoc.id));
@@ -75,7 +75,6 @@ const postFutureTasks = async ({ userID, id, newTemplate }) => {
   try {
     const offset = getPeriodFromCrontab(newTemplate.crontab) === 'yearly' ? { years: 2 } : { months: 2 };
     const startFromYesterday = !newTemplate.startTime || newTemplate.startTime > DateTime.now().toFormat('HH:mm');
-    console.log('startFromYesterday', startFromYesterday)
     const startDate = startFromYesterday ? DateTime.now().minus({ days: 1 }) : DateTime.now();
     const endDate = DateTime.now().plus(offset);
     const tasksArray = await buildFutureTasks({ template: newTemplate, startDateJS: new Date(startDate), endDateJS: new Date(endDate), userID, templateID: id });

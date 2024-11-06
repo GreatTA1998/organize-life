@@ -35,7 +35,7 @@
 <h4 class="bug-notice">
   Known Bugs:
   <ul>
-    <li>non that we know of, please tell us</li>
+    <li>None that we know of, please tell us</li>
   </ul>
 </h4>
 <div style="padding: 48px;">

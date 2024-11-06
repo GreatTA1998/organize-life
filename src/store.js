@@ -10,9 +10,10 @@ export const calendarTasks = writable(null)
 // templates
 export const templates = writable([])
 
+const fullISODate = ({ startDateISO, startTime }) => DateTime.fromISO(`${startDateISO}T${startTime || '23:59'}:00`).toISO()
+
 
 function deleteFutureTasks(templateID){
-  const fullISODate = ({ startDateISO, startTime }) => DateTime.fromISO(`${startDateISO}T${startTime || '00:00'}:00`).toISO()
   const afterNow = (taskISO) => taskISO > DateTime.now().toISO();
   const tasksToDelete = get(calendarTasks).filter(task => task.templateID === templateID && afterNow(fullISODate(task)))
   tasksToDelete.forEach(deleteFromLocalState);
@@ -40,7 +41,6 @@ const postFutureTasks = (hydratedTasks) => {
 }
 
 export async function updateTemplate({ templateID, keyValueChanges, oldTemplate }) {
-  console.log('keyValueChanges', keyValueChanges)
   const newTemplate = buildNewTemplate ({oldTemplate, keyValueChanges})
   const currentUser = get(user);
   const hydratedTasks = await Templates.updateWithTasks({
@@ -56,7 +56,6 @@ export async function updateTemplate({ templateID, keyValueChanges, oldTemplate 
   templates.update((templates) => templates.map((template) =>
     template.id === templateID ? { ...template, ...keyValueChanges } : template
   ))
-  const fullISODate = ({ startDateISO, startTime }) => DateTime.fromISO(`${startDateISO}T${startTime || '00:00'}:00`).toISO()
   const afterNow = (taskISO) => taskISO > DateTime.now().toISO();
   const tasksToUpdate = get(calendarTasks).filter(task => task.templateID === templateID && afterNow(fullISODate(task)))
   tasksToUpdate.forEach(({id}) => updateLocalState({ id, keyValueChanges }));

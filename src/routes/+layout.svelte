@@ -1,8 +1,7 @@
 <script>
   import '/src/app.css'
   import { db } from '../back-end/firestoreConnection'
-  import { page } from '$app/stores'
-  import { user, hasLogoExited, calendarTasks, todoTasks } from '../store.js'
+  import { user, calendarTasks, todoTasks } from '../store.js'
   import { goto } from '$app/navigation'
   import { getAuth, onAuthStateChanged } from 'firebase/auth'
   import { doc, setDoc, onSnapshot } from 'firebase/firestore'
@@ -25,34 +24,11 @@
           person_profiles: 'always' // or 'always' to create profiles for anonymous users as well
         })
       } else {
-        // USER IS LOGGED INTO FIREBASE AUTH
-        const urlParts = $page.url.pathname.split('/')
-
-        // for a full path, urlParts is ['', 'PfxP5N71jQVzDejF9tYwTgrVtGz2', 'mobile']
-        if (urlParts.length === 3 || urlParts[2] === 'mobile') {
-          if (!isMobile()) {
-            if (confirm('This is mobile mode. Use desktop mode instead?')) {
-              goto('/' + resultUser.uid)
-            }
-          }
-        }
-        // desktop mode URL
-        else {
-          if (isMobile()) {
-            if (confirm('This is desktop mode. Use mobile mode instead?')) {
-              goto('/' + resultUser.uid + '/mobile')
-            }
-          } else {
-            goto('/' + resultUser.uid)
-          }
-        }
-
-        // partially hydrate the user so we can redirect away ASAP (NOTE: v1 this shouldn't make a lot of difference to load time)
+        goto(`/${resultUser.uid}/${isMobile() ? 'mobile' : ''}`) 
         user.set({
           phoneNumber: resultUser.phoneNumber || '',
           uid: resultUser.uid
         })
-
         // handle the snapshot listener
         const ref = doc(db, '/users/' + resultUser.uid)
         unsubUserSnapListener = onSnapshot(ref, async (snap) => {
@@ -64,7 +40,6 @@
           }
         })
       }
-      const onAuthDoneTime = performance.now();
       doingAuth = false
     })
   })

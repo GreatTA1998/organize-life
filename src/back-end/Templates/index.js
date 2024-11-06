@@ -22,17 +22,11 @@ const create = async ({ userID, template, templateID }) => {
 };
 
 const updateWithTasks = async ({ userID, id, updates, newTemplate }) => {
-  console.log('updates', updates)
-  console.log('newTemplate', newTemplate)
     updateDoc(doc(db, "users", userID, 'templates', id), updates)
-   
     if(updates.crontab !== '0 0 0 * *' && newTemplate.crontab !== '0 0 * * 0'){
-      console.log('deleting future tasks')
       deleteFutureTasks({ userID, id });
-      console.log('posting future tasks')
       return await postFutureTasks({ userID, id, newTemplate })
     }
-    
     return [];
 };
 
