@@ -20,7 +20,6 @@
   }
 
   function saveStartTime() {
-    console.log('saving start time', newStartHHMM)
     updateTemplate({
       templateID: template.id,
       keyValueChanges: { startTime: newStartHHMM },

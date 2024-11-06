@@ -10,7 +10,7 @@
   import posthog from 'posthog-js'
   let unsubUserSnapListener = null
   let doingAuth = true
-  
+
   onMount(() => {
     // fetching user takes around 300 - 500 ms
     onAuthStateChanged(getAuth(), async (resultUser) => {
@@ -24,7 +24,7 @@
           person_profiles: 'always' // or 'always' to create profiles for anonymous users as well
         })
       } else {
-        goto(`/${resultUser.uid}/${isMobile() ? 'mobile' : ''}`) 
+        goto(`/${resultUser.uid}/${isMobile() ? 'mobile' : ''}`)
         user.set({
           phoneNumber: resultUser.phoneNumber || '',
           uid: resultUser.uid
@@ -36,18 +36,12 @@
             initializeNewFirestoreUser(ref, resultUser)
           } else {
             user.set({ ...snap.data() }) // augment with id, path, etc. when needed in the future
-            guaranteeBackwardsCompatibility($user)
           }
         })
       }
       doingAuth = false
     })
   })
-
-  const trace = (y, x) => {
-    console.log(y, x)
-    return x
-  }
   // should be unnecessary because +layout getting destroyed means the App is closed
   onDestroy(() => {
     if (unsubUserSnapListener) unsubUserSnapListener()
@@ -55,16 +49,6 @@
 
   function isMobile() {
     return window.innerWidth <= 768 // You can adjust the width threshold as needed
-  }
-
-  // NOTE: somewhat brittle code. If `.journal` is every empty temporariliy, for whatever reason, the entire journal will wipe.
-  function guaranteeBackwardsCompatibility(userDoc) {
-    const correctionObj = {}
-    if (!userDoc.journal) correctionObj.journal = {}
-    if (!userDoc.journalTitleFromMMDD) correctionObj.journalTitleFromMMDD = {}
-    if (!userDoc.reusableTaskTemplates) correctionObj.reusableTaskTemplates = []
-
-    updateFirestoreDoc(`/users/${userDoc.uid}`, correctionObj)
   }
 
   async function initializeNewFirestoreUser(ref, resultUser) {
@@ -85,7 +69,10 @@
   id="loading-screen-logo-start"
   style="z-index: 99999; background: white; width: 100vw; height: 100vh"
   class="center"
-  class:invisible={!(doingAuth || ($user?.uid && (!$calendarTasks?.length || !$todoTasks?.length )))}
+  class:invisible={!(
+    doingAuth ||
+    ($user?.uid && !$calendarTasks?.length && !$todoTasks?.length)
+  )}
 >
   <img
     src="/trueoutput-square-nobg.png"

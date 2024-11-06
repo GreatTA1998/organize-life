@@ -52,7 +52,6 @@
 
   onMount(async () => {
     if (!dev) {
-      console.log('running handleNotificationPermission')
       try {
         handleNotificationPermission($user)
         handleSW()

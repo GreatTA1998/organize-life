@@ -16,17 +16,11 @@
     try {
       const provider = new GoogleAuthProvider()
       const result = await signInWithPopup(auth, provider)
-
-      console.log("google login result =", result)
-
       // This gives you a Google Access Token. You can use it to access the Google API.
       const credential = GoogleAuthProvider.credentialFromResult(result);
       const token = credential.accessToken;
       // The signed-in user info.
       const user = result.user;
-
-      console.log('user =', user)
-
       // standardization
       userInfoFromAuthProvider.set({
         email: user.email,
@@ -37,7 +31,7 @@
       // IdP data available using getAdditionalUserInfo(result)
       // ...
     } catch(error) {
-      console.log("error =", error)
+      console.error("error =", error)
 
       // Handle Errors here.
       const errorCode = error.code;

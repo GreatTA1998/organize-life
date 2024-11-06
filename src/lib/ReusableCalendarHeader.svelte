@@ -52,11 +52,6 @@
     whatIsBeingDraggedID.set('')
     whatIsBeingDragged.set('')
   }
- const trace = (x, y) => {
-  console.log(x,y);
-  return y
- }
-  console.log(('$tasksScheduledOn[ISODate]', $tasksScheduledOn?.[ISODate]));
 </script>
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
@@ -100,9 +95,7 @@
               />
             {/each}
           </div>
-          {console.log('$tasksScheduledOn[ISODate]', $tasksScheduledOn?.[ISODate])}
           {#each $tasksScheduledOn[ISODate].noStartTime.noIcon as flexibleDayTask (flexibleDayTask.id)}
-          {console.log('flexibleDayTask', flexibleDayTask)}
             <div
               on:click={() => dispatch('task-click', { task: flexibleDayTask })}
               style="width: var(--calendar-day-section-width); font-size: 12px; display: flex; gap: 4px; margin-top: 8px; margin-left: 4px; margin-right: 4px;"

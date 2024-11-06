@@ -49,7 +49,6 @@ export function computeOffset ({ startTime }, pxPerHour, calendarStartTime) {
   const hoursOffset = Number(hh) + (Number(mm) / 60) - parseInt(calendarStartTime.substring(0, 2)) // 8 refers to "8 am"
 
   // offsetFromTop = hoursOffset * pxPerHour
-  // console.log('offsetFromTop =', offsetFromTop)
   return (hoursOffset * pxPerHour) || 1 // quickfix so computeOffset doesn't return a falsy value
 }
 

@@ -23,22 +23,16 @@ const getPeriodFromCrontab = (crontab) => {
 const buildFutureTasks = async ({ template, startDateJS, endDateJS, userID, templateID }) => {
   return new Promise(async (resolve, reject) => {
     try {
-      console.log('startDateJS', startDateJS)
-      console.log('endDateJS', endDateJS)
-      console.log('template in buildFutureTasks', template)
       const interval = parseExpression(template.crontab, ({ currentDate: startDateJS, endDate: endDateJS, iterator: true }));
       const generatedTasks = [];
       while (true) {
-        console.log('interval', interval)
         const cronObj = interval.next();
-        console.log('cronObj', cronObj)
         const ISODate = DateTime.fromJSDate(new Date(cronObj.value.toString())).toFormat('yyyy-MM-dd')
         const task = buildTaskFromTemplate(template, ISODate, templateID);
         Joi.attempt(task, TaskSchema);
         generatedTasks.push(task);
         if (cronObj.done) {
           await updateDoc(doc(db, "users", userID, 'templates', templateID), { lastGeneratedTask: ISODate });
-          console.log(generatedTasks.sort((a, b) => a.startDateISO - b.startDateISO))
           resolve(generatedTasks);
           return;
         }
