@@ -134,33 +134,6 @@
       }
     })
   }
-
-  // move to this week's todo
-  function putTaskToThisWeekTodo(e) {
-    e.preventDefault()
-    // for backwards compatibility
-    let id
-    if (e.detail.id) {
-      id = e.detail.id
-    } else {
-      id = e.dataTransfer.getData('text/plain')
-    }
-    // get next week's date class object
-    const d = new Date()
-    for (let i = 0; i < 7; i++) {
-      d.setDate(d.getDate() + 1)
-    }
-
-    updateTaskNode({
-      id,
-      keyValueChanges: {
-        startTime: '',
-        startDate: '',
-        deadlineDate: getDateInDDMMYYYY(d),
-        deadlineTime: '07:00'
-      }
-    })
-  }
 </script>
 
 {#if clickedTaskID}
@@ -296,7 +269,6 @@
       <!-- 1st flex child -->
       <NewThisWeekTodo
         on:new-root-task={(e) => createTaskNode(e.detail)}
-        on:task-unscheduled={(e) => putTaskToThisWeekTodo(e)}
         on:task-click={(e) => openDetailedCard(e.detail)}
         on:subtask-create={(e) => createSubtask(e.detail)}
         on:task-checkbox-change={(e) =>
@@ -308,9 +280,7 @@
 
       <TheFunctionalCalendar
         on:new-root-task={(e) => createTaskNode(e.detail)}
-        on:task-unscheduled={(e) => putTaskToThisWeekTodo(e)}
         on:task-click={(e) => openDetailedCard(e.detail)}
-        on:subtask-create={(e) => createSubtask(e.detail)}
         on:task-update={(e) =>
           updateTaskNode({
             id: e.detail.id,
