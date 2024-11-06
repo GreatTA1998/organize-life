@@ -12,7 +12,7 @@
       <FunctionalDoodleIcon
         {iconTask}
         on:task-click
-        on:task-checkbox-change
+        on:task-update
       />
     {/each}
   </div>

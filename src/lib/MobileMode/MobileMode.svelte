@@ -67,6 +67,16 @@
         on:task-duration-adjusted
         on:task-click={(e) => openDetailedCard(e.detail)}
       />
+    {:else if activeTabName === 'CALENDAR_VIEW'}
+      <TheFunctionalCalendar
+        on:new-root-task={(e) => createTaskNode(e.detail)}
+        on:task-click={(e) => openDetailedCard(e.detail)}
+        on:task-update={(e) => updateTaskNode({
+            id: e.detail.id,
+            keyValueChanges: e.detail.keyValueChanges
+          })
+        }
+      />
     {/if}
   </div>
 
@@ -103,16 +113,37 @@
         </div>
       </div>
     </div>
+
+    <div class="bottom-nav-tab" 
+      on:click={() => {
+        if (activeTabName === 'CALENDAR_VIEW') {
+          hasInitialScrolled.set(false)
+        }
+        else activeTabName = 'CALENDAR_VIEW'
+      }} on:keydown
+      class:active-nav-tab={activeTabName === 'CALENDAR_VIEW'}
+    >
+      <div style="text-align: center;">
+        <span class=" material-icons nav-tab-icon">
+          home
+        </span>
+        <div class="nav-tab-desc">
+          FULL CALENDAR
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 
 <script>
+  import TheFunctionalCalendar from '$lib/TheFunctionalCalendar/TheFunctionalCalendar.svelte'
+
   import { 
     getRandomID, 
     getDateInMMDD, 
     getDateInDDMMYYYY,
   } from '/src/helpers/everythingElse.js'
-  import { user, todoMemoryTree } from '/src/store.js'
+  import { user, todoMemoryTree, hasInitialScrolled } from '/src/store.js'
   import { onDestroy, onMount } from 'svelte'
   import ScheduleView from '$lib/MobileMode/ScheduleView.svelte'
   import ListView from '$lib/MobileMode/ListView.svelte'

@@ -1,5 +1,6 @@
+<!-- {timeIndicatorOffset} -->
 <div class="current-time-indicator-container" 
-  style="top: {timeIndicatorOffset}px;"
+  style="top: {timeIndicatorOffset}px"
 > 
   <hr 
     style="border: 2px solid var(--location-indicator-color); border-radius: 5px; width: 100%; margin-top: 0px; margin-bottom: 0px;"
@@ -12,7 +13,7 @@
 
 <script>
   import { DateTime, Interval } from 'luxon'
-  import { onMount, onDestroy } from 'svelte'
+  import { onMount, onDestroy, tick } from 'svelte'
   import { hasInitialScrolled } from '/src/store.js'
 
   export let pixelsPerMinute
@@ -23,7 +24,12 @@
   let currentTimeString
 
   // this reacts to the Home icon click which resets us back to today's position
-  $: if (!$hasInitialScrolled) {
+
+  // pase a function directly into a store to be called
+  // scrollToCurrentDay()
+  // but a boolean is helpful for disabling the intersection observer
+
+  $: if (!$hasInitialScrolled && CurrentTimeIndicator) {
     requestAnimationFrame(() => {
       scrollToTimeIndicator()
     })

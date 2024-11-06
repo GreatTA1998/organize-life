@@ -24,10 +24,10 @@
   export let timestamps = [];
 
   export let pixelsPerHour;
-  export let timeBlockDurationInMinutes;
   export let calendarBeginningDateClassObject;
 
-  let overallContainerHeight;
+  let timeBlockDurationInMinutes = 60
+  let numOfHourBlocksDisplayed = 24;
   let OverallContainer;
   const dispatch = createEventDispatcher();
   let isDirectlyCreatingTask = false;
@@ -153,19 +153,14 @@
 <!-- https://github.com/sveltejs/svelte/issues/6016 -->
 <div
   bind:this={OverallContainer}
-  class="scroll-container"
-  style="
-    position: relative;
-    width: var(--calendar-day-section-width);
-    background-color: var(--calendar-bg-color);
-    flex-grow: 1;
-  "
+  class="overall-container"
 >
   <!-- NOTE: this is a tall rectangular container that only encompasses the timestamps -->
   <!-- svelte-ignore a11y-click-events-have-key-events -->
+   <!-- TO-DO: refator and deprecate this code somehow-->
   <div
     class="calendar-day-container"
-    style="height: {timestamps.length *
+    style="height: {numOfHourBlocksDisplayed *
       timeBlockDurationInMinutes *
       pixelsPerMinute}px; 
       margin-bottom: 1px; 
@@ -192,10 +187,10 @@
         style="
           position: absolute; 
           top: {computeOffsetGeneral({
-          d1: calendarBeginningDateClassObject,
-          d2: getJSDateFromTask(task),
-          pixelsPerMinute,
-        })}px;
+            d1: calendarBeginningDateClassObject,
+            d2: getJSDateFromTask(task),
+            pixelsPerMinute,
+          })}px;
           left: 0;
           right: 0;
           margin-left: auto;
@@ -211,7 +206,6 @@
             fontSize={0.8}
             on:task-click
             on:task-update
-            on:task-checkbox-change
           />
         {:else if task.imageDownloadURL}
           <ReusablePhotoTaskElement
@@ -221,7 +215,6 @@
             hasCheckbox
             on:task-click
             on:task-update
-            on:task-checkbox-change
           />
         {:else}
           <ReusableTaskElement
@@ -231,7 +224,6 @@
             hasCheckbox
             on:task-click
             on:task-update
-            on:task-checkbox-change
           />
         {/if}
       </div>
@@ -288,10 +280,13 @@
   }
 
   /* DO NOT REMOVE, BREAKS DRAG-AND-DROP AND DURATION ADJUSTMENT */
-  .scroll-container {
+  .overall-container {
+    position: relative;
     height: fit-content;
     overflow-y: hidden;
     overflow-x: hidden;
+    width: var(--calendar-day-section-width);
+    background-color: var(--calendar-bg-color);
   }
 
   .highlighted-background {

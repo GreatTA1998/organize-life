@@ -21,3 +21,25 @@ export function lazyCallable (node, callback) {
 
   observer.observe(node)
 }
+
+export function trackHeight(node, onHeightChange) {
+  const ro = new ResizeObserver((entries) => {
+    const exactHeight = entries[0].contentRect.height
+    onHeightChange(exactHeight)
+
+    // crazy that boundingClientRect flickers between integers and decimals
+  })
+  
+  ro.observe(node)
+  
+  return {
+    destroy() {
+      ro.disconnect()
+    },
+    
+    // Allow updating the callback
+    update(newCallback) {
+      onHeightChange = newCallback
+    }
+  }
+}
