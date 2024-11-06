@@ -114,7 +114,6 @@
   ></TheSnackbar>
 {/if}
 
-<!-- Copy & paste snackbar -->
 {#if $showSnackbar}
   <TheSnackbar>Email copied to clipboard successfully.</TheSnackbar>
 {/if}
