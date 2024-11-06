@@ -33,19 +33,15 @@
   import { dev } from '$app/environment'
 
   let currentMode = 'Week'
-  const userDocPath = `users/${$user.uid}`
 
   let clickedTaskID = ''
   let clickedTask = {}
 
   let unsub
+
   $: if (clickedTaskID) {
     if (clickedTaskID) clickedTask = findTaskByID(clickedTaskID)
     else clickedTask = {}
-  }
-
-  function openDetailedCard({ task }) {
-    clickedTaskID = task.id
   }
 
   onMount(async () => {
@@ -61,6 +57,10 @@
     handleInitialTasks($user.uid)
   })
 
+  function openDetailedCard({ task }) {
+    clickedTaskID = task.id
+  }
+
   function handleLogoClick() {
     if (confirm('Log out and return to home page tutorials?')) {
       const auth = getAuth()
@@ -69,6 +69,7 @@
     }
   }
 
+  // TO-DO: should probably deprecate
   function createSubtask({ id, parentID, newTaskObj }) {
     // the parent needs to update its pointers
     updateTaskNode({
@@ -81,43 +82,12 @@
   onDestroy(() => {
     if (unsub) unsub()
   })
-
-  function traverseAndUpdateTree({ fulfilsCriteria, applyFunc }) {
-    const artificialRootNode = {
-      name: 'root',
-      children: allTasks
-    }
-    helperFunction({ node: artificialRootNode, fulfilsCriteria, applyFunc })
-  }
-
-  // useful helper function for task update operations
-  function helperFunction({ node, fulfilsCriteria, applyFunc }) {
-    if (fulfilsCriteria(node)) {
-      applyFunc(node)
-    }
-    for (const child of node.children) {
-      helperFunction({ node: child, fulfilsCriteria, applyFunc })
-    }
-  }
-
-  async function createReusableTaskTemplate(id) {
-    traverseAndUpdateTree({
-      fulfilsCriteria: (task) => task.id === id,
-      applyFunc: async (task) => {
-        const userRef = doc(db, userDocPath)
-        await updateDoc(userRef, {
-          reusableTaskTemplates: arrayUnion(task)
-        })
-      }
-    })
-  }
 </script>
 
 {#if clickedTaskID}
   <DetailedCardPopup
     taskObject={clickedTask}
     on:task-update={(e) => updateTaskNode(e.detail)}
-    on:task-reusable={() => createReusableTaskTemplate(clickedTask.id)}
     on:task-click={(e) => openDetailedCard(e.detail)}
     on:card-close={() => (clickedTaskID = '')}
     on:task-delete={(e) => deleteTaskNode(e.detail)}
