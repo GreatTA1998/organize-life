@@ -68,7 +68,15 @@
         on:task-click={(e) => openDetailedCard(e.detail)}
       />
     {:else if activeTabName === 'CALENDAR_VIEW'}
-      <TheFunctionalCalendar/>
+      <TheFunctionalCalendar
+        on:new-root-task={(e) => createTaskNode(e.detail)}
+        on:task-click={(e) => openDetailedCard(e.detail)}
+        on:task-update={(e) => updateTaskNode({
+            id: e.detail.id,
+            keyValueChanges: e.detail.keyValueChanges
+          })
+        }
+      />
     {/if}
   </div>
 
