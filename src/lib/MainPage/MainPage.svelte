@@ -164,9 +164,8 @@
         class:active-ux-tab={currentMode === 'Templates'}
         class:transparent-inactive-tab={currentMode === 'Day'}
       >
-        <span
+        <span class:blue-icon={currentMode === 'Dashboard'}
           class="material-symbols-outlined"
-          class:blue-icon={currentMode === 'Dashboard'}
           style="font-size: 32px;"
         >
           restart_alt
