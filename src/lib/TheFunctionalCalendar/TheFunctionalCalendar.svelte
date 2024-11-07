@@ -24,6 +24,7 @@
   let ScrollParent
   let scrollParentWidth // width doesn't change during scroll, so bind:clientWidth shouldn't cause performance issues
   let scrollX = middleIdx * COLUMN_WIDTH
+  let initialScrollParentWidth
 
   let leftEdgeIdx
   let rightEdgeIdx
@@ -51,6 +52,7 @@
   }
 
   function setupInitialColumnsAndVariables () {
+    initialScrollParentWidth = scrollParentWidth
     setLeftEdgeIdx()
     setRightEdgeIdx()
 
@@ -129,7 +131,7 @@
   }
 
   function setRightEdgeIdx () {
-    rightEdgeIdx = Math.ceil((scrollX + scrollParentWidth) / COLUMN_WIDTH)
+    rightEdgeIdx = Math.ceil((scrollX + initialScrollParentWidth) / COLUMN_WIDTH)
   }
 
   function scrollToTodayColumn () {
