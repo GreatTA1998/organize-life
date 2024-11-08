@@ -109,8 +109,12 @@
 
 <style>
   .responsive-icon-size {
-    font-size: clamp(1rem, 4vw, 1.5rem);  /* font-size: 24px;  */
+    font-size: 32px;
+    /* clamp(1rem, 4vw, 1.5rem);   */
+    /* font-size: 24px;  */
     cursor: pointer; 
-    color: rgb(120, 120, 120);
+    color: black;
+    font-weight: 400;
+    /* rgb(120, 120, 120); */
   }
 </style>

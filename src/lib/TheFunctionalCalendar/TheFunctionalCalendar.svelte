@@ -3,6 +3,8 @@
   import DayHeader from './DayHeader.svelte'
   import CalendarTimestamps from './CalendarTimestamps.svelte'
   import YearAndMonthTile from './YearAndMonthTile.svelte'
+  import MultiPhotoUploader from '../MultiPhotoUploader.svelte'
+  import FloatingButtonWrapper from '../MobileMode/FloatingButtonWrapper.svelte'
 
   import Tasks from "/src/back-end/Tasks"
   import { buildCalendarDataStructures } from '/src/helpers/maintainState.js'
@@ -142,6 +144,17 @@
 </script>
 
 <div class="calendar-wrapper">
+  <div style="position: absolute; right: 36px; bottom: 36px; z-index: 1; 
+    border: 1px solid rgb(40, 40, 40);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2); 
+    height: 54px;
+    width: 54px;
+    border-radius: 30px;  display: flex;
+    align-items: center;
+    justify-content: center;">
+    <MultiPhotoUploader />
+  </div>  
+
   <YearAndMonthTile
     {leftEdgeIdx}
     {calOriginDT}

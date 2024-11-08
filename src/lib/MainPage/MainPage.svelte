@@ -33,6 +33,7 @@
   import { dev } from '$app/environment'
 
   let currentMode = 'Week'
+  let isShowingAI = false
 
   let clickedTaskID = ''
   let clickedTask = {}
@@ -130,15 +131,6 @@
     />
 
     <div class="day-week-toggle-segment">
-      <div on:click={() => (currentMode = 'AI')} on:keydown
-        class="ux-tab-item"
-        class:active-ux-tab={currentMode === 'AI'}
-        class:transparent-inactive-tab={currentMode === 'Day'}
-      >
-        <span class="material-symbols-outlined" style="font-size: 32px;">
-          psychology
-        </span>
-      </div>
 
       <!-- pressing home recalibrates you to today's region -->
       <div 
@@ -166,31 +158,22 @@
           class="material-symbols-outlined"
           style="font-size: 32px;"
         >
-          restart_alt
-        </span>
-      </div>
-
-      <div on:click={() => (currentMode = 'Year')} on:keydown
-        class="ux-tab-item"
-        class:active-ux-tab={currentMode === 'Year'}
-        class:transparent-inactive-tab={currentMode === 'Day'}
-      >
-        <span class="material-symbols-outlined" style="font-size: 36px;">
-          sports_score
+          autorenew
         </span>
       </div>
     </div>
 
-    <div style="display: flex; gap: 24px; align-items: center;">
-      <MultiPhotoUploader />
-
-      <PopupCustomerSupport let:setIsPopupOpen>
+    <div style="display: flex; gap: 28px; align-items: center;">
+      <span on:click={() => isShowingAI = !isShowingAI} on:keydown class="material-symbols-outlined" style="font-size: 28px; cursor: pointer;">
+        smart_toy
+      </span>
+      <!-- <PopupCustomerSupport let:setIsPopupOpen>
         <span on:click={() => setIsPopupOpen({ newVal: true })} on:keydown
           class="material-symbols-outlined mika-hover responsive-icon-size"
         >
           contact_support
         </span>
-      </PopupCustomerSupport>
+      </PopupCustomerSupport> -->
     </div>
   </div>
 
@@ -217,14 +200,14 @@
           })
         }
       />
+
+      <div style="display: {isShowingAI ? 'block' : 'none'}; flex: 0 0 320px;">
+        <AI />
+      </div>
     </div>
 
     <div style="display: {currentMode === 'Templates' ? 'block' : 'none'}; width: 100%; background: hsl(98, 40%, 96%);">
       <PeriodicTasks />
-    </div>
-
-    <div style="display: {currentMode === 'AI'? 'block' : 'none'}; width: 100%; background: var(--calendar-bg-color);">
-      <AI />
     </div>
   </div>
 </NavbarAndContentWrapper>

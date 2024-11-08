@@ -4,16 +4,14 @@
   }
 
   .column {
-    width: 100vw;
+    width: 100%;
   }
 
   .intro {
     margin: 5% auto;
-    width: 80vw;
   }
 
   .chat-box {
-    width: 66%;
     margin: auto;
     height: 50vh;
     padding: 10px;
@@ -21,7 +19,6 @@
     border-radius: 4px;
     background-color: #f9f9f9;
     overflow-y: scroll;
-    font-family: monospace;
     white-space: pre-wrap;
   }
 
