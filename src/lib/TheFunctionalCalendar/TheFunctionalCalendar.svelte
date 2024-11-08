@@ -6,9 +6,7 @@
 
   import Tasks from "/src/back-end/Tasks"
   import { buildCalendarDataStructures } from '/src/helpers/maintainState.js'
-  import { trackHeight } from '/src/helpers/actions.js'
-
-  import { onDestroy, onMount } from 'svelte'
+  import { trackWidth, trackHeight } from '/src/helpers/actions.js'
   import { DateTime } from 'luxon'
   import { tasksScheduledOn, user, calendarTasks, hasInitialScrolled } from '/src/store.js'
 
@@ -23,50 +21,49 @@
   let calOriginDT = DateTime.now().startOf('day').minus({ days: TOTAL_COLUMNS / 2 })
   let dtOfActiveColumns = []
 
-  let leftTriggerIdx 
-  let rightTriggerIdx
-  let prevLeftEdgeIdx
-  let prevRightEdgeIdx
-
   let ScrollParent
   let scrollParentWidth // width doesn't change during scroll, so bind:clientWidth shouldn't cause performance issues
   let scrollX = middleIdx * COLUMN_WIDTH
+  let initialScrollParentWidth
+
+  let leftEdgeIdx
+  let rightEdgeIdx
+
+  let leftTriggerIdx
+  let rightTriggerIdx
+
+  let prevLeftEdgeIdx
+  let prevRightEdgeIdx
 
   let isShowingDockingArea = true
   let exactHeight = CORNER_LABEL_HEIGHT
 
-  $: leftEdgeIdx = Math.floor(scrollX / COLUMN_WIDTH)
-  $: rightEdgeIdx = Math.ceil((scrollX + scrollParentWidth) / COLUMN_WIDTH)
+  $: setLeftEdgeIdx(scrollX)
+  $: setRightEdgeIdx(scrollX) 
 
   $: reactToScroll(leftEdgeIdx, rightEdgeIdx)
 
-  $: if (!$hasInitialScrolled && ScrollParent) {
-    requestAnimationFrame(() => {
-      ScrollParent.scrollLeft = middleIdx * COLUMN_WIDTH // don't set `hasInitialScrolled` to true, let <CurrentTimeIndicator/> finish off the rest of the logic when it mounts
-    })
+  $: if (scrollParentWidth && !leftTriggerIdx && !rightTriggerIdx) {
+    setupInitialColumnsAndVariables()
   }
 
-  onMount(async () => {    
+  $: if (!$hasInitialScrolled && ScrollParent) {
+    scrollToTodayColumn()
+  }
+
+  function setupInitialColumnsAndVariables () {
+    initialScrollParentWidth = scrollParentWidth
+    setLeftEdgeIdx()
+    setRightEdgeIdx()
+
     leftTriggerIdx = leftEdgeIdx - c
     rightTriggerIdx = rightEdgeIdx + c
 
     updateActiveColumns()
-  })
-
-  function updateActiveColumns () {
-    const output = []
-    for (let i = leftEdgeIdx - 2*c; i <= rightEdgeIdx + 2*c; i++) {
-      output.push(
-        calOriginDT.plus({ days: i })
-      )
-    }
-    dtOfActiveColumns = output
-
-    prevRightEdgeIdx = rightEdgeIdx
-    prevLeftEdgeIdx = leftEdgeIdx
   }
 
   function reactToScroll (leftEdgeIdx, rightEdgeIdx) {
+    // HANDLE DATA
     // note: `leftEdgeIdx` jumps non-consecutively sometimes depending on how fast the user is scrolling
     if (leftEdgeIdx <= leftTriggerIdx && leftEdgeIdx !== prevLeftEdgeIdx) {
       fetchMorePastTasks(leftTriggerIdx) // even though jumps can be arbitrarily wide, the function calls will resolve in a weakly decreasing order of their `leftTriggerIdx`
@@ -77,6 +74,7 @@
       rightTriggerIdx += (2*c + 1)
     }
     
+    // HANDLE DISPLAY
     if (leftEdgeIdx <= prevLeftEdgeIdx - c || rightEdgeIdx >= prevRightEdgeIdx + c) {
       updateActiveColumns()
     }
@@ -114,6 +112,33 @@
       resolve()
     })
   }
+
+  function updateActiveColumns () {
+    const output = []
+    for (let i = leftEdgeIdx - 2*c; i <= rightEdgeIdx + 2*c; i++) {
+      output.push(
+        calOriginDT.plus({ days: i })
+      )
+    }
+    dtOfActiveColumns = output
+
+    prevRightEdgeIdx = rightEdgeIdx
+    prevLeftEdgeIdx = leftEdgeIdx
+  }
+
+  function setLeftEdgeIdx () {
+    leftEdgeIdx = Math.floor(scrollX / COLUMN_WIDTH)
+  }
+
+  function setRightEdgeIdx () {
+    rightEdgeIdx = Math.ceil((scrollX + initialScrollParentWidth) / COLUMN_WIDTH)
+  }
+
+  function scrollToTodayColumn () {
+    requestAnimationFrame(() => {
+      ScrollParent.scrollLeft = middleIdx * COLUMN_WIDTH
+    }) // we don't set `hasInitialScrolled` to true, let <CurrentTimeIndicator/> finish off the rest of the logic when it mounts
+  }
 </script>
 
 <div class="calendar-wrapper">
@@ -127,7 +152,7 @@
 
   <div id="scroll-parent" 
     bind:this={ScrollParent}
-    bind:clientWidth={scrollParentWidth}
+    use:trackWidth={newWidth => scrollParentWidth = newWidth}
     on:scroll={(e) => scrollX = e.target.scrollLeft}
   >
     <div class="scroll-content" style:width="{TOTAL_COLUMNS * COLUMN_WIDTH}px">
@@ -178,6 +203,7 @@
     --calendar-left-padding: 16px;
   }
 
+  /* I vaguely remember I had to use grid so the children naturally take up 100% height */
   .calendar-wrapper {
     height: 100%;
     display: grid;

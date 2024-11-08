@@ -53,9 +53,11 @@
         -->
         <ReusableCheckbox
           value={task.isDone}
-          on:change={(e) => dispatch('task-checkbox-change', {
+          on:change={(e) => dispatch('task-update', {
             id: task.id,
-            isDone: e.target.checked
+            keyValueChanges: {
+              isDone: e.target.checked
+            }
           })}
         />
       </div>
