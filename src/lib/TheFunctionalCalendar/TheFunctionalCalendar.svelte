@@ -9,6 +9,7 @@
   import { trackWidth, trackHeight } from '/src/helpers/actions.js'
   import { DateTime } from 'luxon'
   import { tasksScheduledOn, user, calendarTasks, hasInitialScrolled } from '/src/store.js'
+  import { onMount, onDestroy } from 'svelte'
 
   const TOTAL_COLUMNS = 365
   const COLUMN_WIDTH = 200
@@ -43,24 +44,24 @@
 
   $: reactToScroll(leftEdgeIdx, rightEdgeIdx)
 
-  $: if (scrollParentWidth && !leftTriggerIdx && !rightTriggerIdx) {
-    setupInitialColumnsAndVariables()
-  }
-
   $: if (!$hasInitialScrolled && ScrollParent) {
     scrollToTodayColumn()
   }
 
-  function setupInitialColumnsAndVariables () {
-    initialScrollParentWidth = scrollParentWidth
-    setLeftEdgeIdx()
-    setRightEdgeIdx()
+  onMount(() => {
+    console.log('onMount scrollParent.boundingClientRect.width', ScrollParent.getBoundingClientRect().width)
 
-    leftTriggerIdx = leftEdgeIdx - c
-    rightTriggerIdx = rightEdgeIdx + c
+    requestAnimationFrame(() => {
+      initialScrollParentWidth = ScrollParent.getBoundingClientRect().width // 10px more than the observer width because it includes the scrollbar
+      setLeftEdgeIdx()
+      setRightEdgeIdx()
 
-    updateActiveColumns()
-  }
+      leftTriggerIdx = leftEdgeIdx - c
+      rightTriggerIdx = rightEdgeIdx + c
+
+      updateActiveColumns()
+    })
+  })
 
   function reactToScroll (leftEdgeIdx, rightEdgeIdx) {
     // HANDLE DATA
