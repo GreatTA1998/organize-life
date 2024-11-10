@@ -109,7 +109,7 @@
 
 <style>
   .responsive-icon-size {
-    font-size: 32px;
+    font-size: 34px;
     /* clamp(1rem, 4vw, 1.5rem);   */
     /* font-size: 24px;  */
     cursor: pointer; 
