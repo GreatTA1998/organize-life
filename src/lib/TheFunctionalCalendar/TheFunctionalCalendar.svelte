@@ -145,13 +145,14 @@
 
 <div class="calendar-wrapper">
   <div style="position: absolute; right: 2vw; bottom: 2vw; z-index: 1; 
-    border: 0px solid lightgrey;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3); 
-    height: 48px;
-    width: 48px;
+    border: 1px solid lightgrey;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15); 
+    height: 50px;
+    width: 50px;
     border-radius: 30px;  display: flex;
     align-items: center;
-    justify-content: center;"
+    justify-content: center;
+    background-color: hsl(98, 40%, {90 + 2}%, 0.4);"
   >
     <MultiPhotoUploader />
   </div>  

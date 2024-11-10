@@ -114,7 +114,7 @@
     /* font-size: 24px;  */
     cursor: pointer; 
     color: black;
-    font-weight: 400;
+    font-weight: 300;
     /* rgb(120, 120, 120); */
   }
 </style>
