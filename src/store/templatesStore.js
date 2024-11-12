@@ -66,8 +66,6 @@ function deleteFutureTasksLocally(templateID) {
 
 const postFutureTasksLocally = (hydratedTasks) => {
   calendarTasks.update((calendarTasks) => [...calendarTasks, ...hydratedTasks])
-  console.log('hydratedTasks', hydratedTasks);
-  console.log('calendarTasks', get(calendarTasks))
 }
 
 function fullISODate({ startDateISO, startTime }) {

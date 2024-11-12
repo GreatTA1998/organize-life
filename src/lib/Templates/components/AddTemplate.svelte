@@ -18,7 +18,6 @@
   }
 
   async function createTemplate() {
-    console.log('crontab', crontab)
     if (!newTaskName.trim()) return
     const newTemplate = {
       name: newTaskName,

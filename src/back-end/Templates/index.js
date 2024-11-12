@@ -27,7 +27,7 @@ const update = async ({ userID, id, updates, newTemplate }) => {
 
 const updateWithTasks = async ({ userID, id, updates, newTemplate }) => {
   updateDoc(doc(db, "users", userID, 'templates', id), updates)
-  if (updates.crontab !== '0 0 0 * *' && newTemplate.crontab !== '0 0 * * 0') {
+  if (newTemplate.crontab !== '0 0 0 * *' && newTemplate.crontab !== '0 0 * * 0') {
     deleteFutureTasks({ userID, id });
     return postFutureTasks({ userID, id, newTemplate })
   }

@@ -35,7 +35,8 @@
 <h4 class="bug-notice">
   Known Bugs:
   <ul>
-    <li>None that we know of, please tell us</li>
+    <li> If you deselect all the days, it does not delete tasks from the calendar, to handle: delete template or just set a new day of the week</li>
+    <li> Yearly does not work </li>
   </ul>
 </h4>
 <div style="padding: 48px;">
