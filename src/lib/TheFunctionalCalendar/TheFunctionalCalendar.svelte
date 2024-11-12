@@ -3,6 +3,8 @@
   import DayHeader from './DayHeader.svelte'
   import CalendarTimestamps from './CalendarTimestamps.svelte'
   import YearAndMonthTile from './YearAndMonthTile.svelte'
+  import MultiPhotoUploader from '../MultiPhotoUploader.svelte'
+  import FloatingButtonWrapper from '../MobileMode/FloatingButtonWrapper.svelte'
 
   import Tasks from '/src/back-end/Tasks'
   import { buildCalendarDataStructures } from '/src/helpers/maintainState.js'
@@ -179,6 +181,19 @@
 </script>
 
 <div class="calendar-wrapper">
+  <div style="position: absolute; right: 2vw; bottom: 2vw; z-index: 1; 
+    border: 1px solid lightgrey;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15); 
+    height: 50px;
+    width: 50px;
+    border-radius: 30px;  display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: hsl(98, 40%, {90 + 2}%, 0.4);"
+  >
+    <MultiPhotoUploader />
+  </div>  
+
   <YearAndMonthTile
     {leftEdgeIdx}
     {calOriginDT}
@@ -259,6 +274,9 @@
   #scroll-parent {
     overflow: auto;
     position: relative;
+    
+    /* FIRST: do no harm (this property has downsides) But it's a last-resort fallback if there are performance issues */
+    /* will-change: scroll-position; */
   }
 
   .scroll-content {
