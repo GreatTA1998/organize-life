@@ -25,7 +25,7 @@
     whatIsBeingDraggedID, 
     whatIsBeingDraggedFullObj,
     user 
-  } from '/src/store.js'
+  } from '/src/store'
   import { increment, writeBatch, doc } from 'firebase/firestore'
   import {db} from '../back-end/firestoreConnection'
 

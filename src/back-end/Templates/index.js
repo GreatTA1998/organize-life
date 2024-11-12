@@ -4,30 +4,34 @@ import {
   getDocs,
   collection,
   query,
-  where,
   setDoc,
   updateDoc,
   deleteDoc,
-  getDoc
 } from "firebase/firestore";
-import { DateTime } from 'luxon';
+import Tasks from '../Tasks.js';
 import { getPeriodFromCrontab, deleteFutureTasks, postFutureTasks, getTotalStats } from './utils.js';
 import Joi from 'joi';
 import TemplateSchema from '../Schemas/TemplateSchema.js';
 
-const create = async ({ userID, template, templateID }) => {
-  Joi.assert(template, TemplateSchema);
+const create = async ({ userID, newTemplate, templateID }) => {
+  Joi.assert(newTemplate, TemplateSchema);
   const docRef = doc(db, "users", userID, 'templates', templateID);
-  return setDoc(docRef, template);
+  return setDoc(docRef, newTemplate);
 };
 
+const update = async ({ userID, id, updates, newTemplate }) => {
+  Joi.assert(newTemplate, TemplateSchema);
+  Tasks.updateQuickTasks({userID, templateID: id, updates})
+  updateDoc(doc(db, "users", userID, 'templates', id), updates)
+}
+
 const updateWithTasks = async ({ userID, id, updates, newTemplate }) => {
-    updateDoc(doc(db, "users", userID, 'templates', id), updates)
-    if(updates.crontab !== '0 0 0 * *' && newTemplate.crontab !== '0 0 * * 0'){
-      deleteFutureTasks({ userID, id });
-      return await postFutureTasks({ userID, id, newTemplate })
-    }
-    return [];
+  updateDoc(doc(db, "users", userID, 'templates', id), updates)
+  if (updates.crontab !== '0 0 0 * *' && newTemplate.crontab !== '0 0 * * 0') {
+    deleteFutureTasks({ userID, id });
+    return postFutureTasks({ userID, id, newTemplate })
+  }
+  return [];
 };
 
 const getAll = async ({ userID, includeStats = true }) => {
@@ -49,4 +53,4 @@ const deleteTemplate = async ({ userID, id }) => {
   return deleteDoc(doc(db, "users", userID, "templates", id));
 };
 
-export default { create, updateWithTasks, getAll, deleteTemplate, getPeriodFromCrontab };
+export default { create, update, updateWithTasks, getAll, deleteTemplate, getPeriodFromCrontab };

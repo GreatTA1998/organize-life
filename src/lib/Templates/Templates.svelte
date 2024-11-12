@@ -1,7 +1,7 @@
 <script>
   import TemplateColumn from './TemplateColumn.svelte'
   import { onMount } from 'svelte'
-  import { user, templates, calendarTasks } from '/src/store.js'
+  import { user, templates, calendarTasks } from '/src/store'
   import Templates from '/src/back-end/Templates'
   import { filterByType } from './utils.js'
 

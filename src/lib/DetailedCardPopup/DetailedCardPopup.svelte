@@ -78,7 +78,7 @@
 
 <script>
 import { createEventDispatcher, onMount, onDestroy, tick } from 'svelte'
-import { mostRecentlyCompletedTaskID } from '/src/store.js'
+import { mostRecentlyCompletedTaskID } from '/src/store'
 import _ from 'lodash'
 import RecursiveBulletPoint from '$lib/DetailedCardPopup/RecursiveBulletPoint.svelte'
 import UXFormTextArea from '$lib/DetailedCardPopup/UXFormTextArea.svelte'

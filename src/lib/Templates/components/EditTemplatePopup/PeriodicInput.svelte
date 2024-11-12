@@ -11,6 +11,7 @@
   let isEditingPeriodicity = false
 
 function handleSave() {
+  console.log('selectedDays', selectedDays)
   updateCrontab({selectedDays, template, crontabIndex})
   isEditingPeriodicity = false
 }
@@ -22,6 +23,7 @@ function handleSave() {
     } else {
       selectedDays = [...selectedDays, i]
     }
+    console.log('selectedDays', selectedDays)
   }
 
   $: {

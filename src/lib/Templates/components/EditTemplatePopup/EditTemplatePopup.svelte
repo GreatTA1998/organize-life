@@ -1,9 +1,8 @@
 <script>
-  import { doodleIcons } from '/src/store.js'
   import PeriodicInput from '$lib/Templates/components/EditTemplatePopup/PeriodicInput.svelte'
   import YearlyInput from '$lib/Templates/components/EditTemplatePopup/YearlyInput.svelte'
   import EditTime from '$lib/Templates/components/EditTemplatePopup/EditTime.svelte'
-  import { user, updateTemplate, deleteTemplate } from '/src/store.js'
+  import { user, updateTemplate, deleteTemplate, doodleIcons } from '/src/store'
   import Templates from '/src/back-end/Templates/index.js'
   import { onMount } from 'svelte'
   import _ from 'lodash'
@@ -29,12 +28,6 @@
   })
 
   function handleDelete() {
-    // if (
-    //   !confirm(
-    //     'Are you sure you want to delete this template and all its future instances?'
-    //   )
-    // )
-    //   return
     deleteTemplate({ templateID: template.id })
     isPopupOpen = false
   }
@@ -43,7 +36,6 @@
     isPopupOpen = newVal
   }
 </script>
-
 <slot {setIsPopupOpen}></slot>
 
 {#if isPopupOpen}

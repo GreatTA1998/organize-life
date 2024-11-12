@@ -5,7 +5,7 @@
     user,
     showSnackbar,
     hasInitialScrolled
-  } from '/src/store.js'
+  } from '/src/store'
   import Templates from '$lib/Templates/Templates.svelte'
   import AI from '../AI/AI.svelte'
   import TheSnackbar from '$lib/TheSnackbar.svelte'
@@ -17,11 +17,10 @@
     handleSW,
     handleNotificationPermission
   } from './handleNotifications.js'
-  import { onDestroy, onMount, tick } from 'svelte'
+  import { onDestroy, onMount } from 'svelte'
   import { goto } from '$app/navigation'
   import { getAuth, signOut } from 'firebase/auth'
-  import { db } from '../../back-end/firestoreConnection.js'
-  import { doc, updateDoc, arrayUnion, arrayRemove } from 'firebase/firestore'
+  import { arrayUnion } from 'firebase/firestore'
   import NewThisWeekTodo from '$lib/NewThisWeekTodo.svelte'
   import { handleInitialTasks } from './handleTasks.js'
   import {
@@ -168,16 +167,6 @@
           restart_alt
         </span>
       </div>
-
-      <div on:click={() => (currentMode = 'Year')} on:keydown
-        class="ux-tab-item"
-        class:active-ux-tab={currentMode === 'Year'}
-        class:transparent-inactive-tab={currentMode === 'Day'}
-      >
-        <span class="material-symbols-outlined" style="font-size: 36px;">
-          sports_score
-        </span>
-      </div>
     </div>
 
     <div style="display: flex; gap: 24px; align-items: center;">
@@ -217,13 +206,6 @@
         }
       />
     </div>
-
-    <!-- END OF WEEK MODE SECTION -->
-
-    <!-- <div style="display: {currentMode === 'Year' ? 'block' : 'none'}">
-      <UncertainMilestones />
-    </div> -->
-
     <div style="width: 100%; background: hsl(98, 40%, 96%); display: {currentMode === 'Templates' ? 'block' : 'none'}">
       <Templates />
     </div>

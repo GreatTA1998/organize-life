@@ -26,5 +26,5 @@
 
 <script>
   import GrandTreeTodoReusableList from '$lib/GrandTreeTodoReusableList.svelte'
-  import { inclusiveWeekTodo } from '/src/store.js'
+  import { inclusiveWeekTodo } from '/src/store'
 </script>

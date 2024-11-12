@@ -11,6 +11,13 @@ import {
   deleteDoc,
 } from "firebase/firestore";
 
+const updateQuickTasks = async ({userID, templateID, updates}) => {
+  const q = query(collection(db, "users", userID, "tasks"), where("templateID", "==", templateID));
+  const snapshot = await getDocs(q);
+  const updatePromises = snapshot.docs.map(doc => updateDoc(doc.ref, updates));
+  return Promise.all(updatePromises);
+}
+
 const getByDateRange = (userUID, startDate, endDate) => {
   try {
     const q = query(
@@ -85,6 +92,7 @@ const getTasksJSONByRange = async (uid, startDate, endDate) => {
 };
 
 export default {
+  updateQuickTasks,
   getByDateRange,
   getUnscheduled,
   post,

@@ -1,15 +1,10 @@
-<!-- 
-  <div style="font-size: 2px;">{iconTask.name}</div>
-  <div style="font-size: 2px;">{iconTask.repeatGroupID}</div> 
--->
-
 <script>
   import {
     whatIsBeingDragged,
     whatIsBeingDraggedID,
     whatIsBeingDraggedFullObj,
     yPosWithinBlock
-  } from '/src/store.js'
+  } from '/src/store'
   import { createEventDispatcher } from 'svelte'
 
   export let iconTask
@@ -30,7 +25,6 @@
           isDone: !iconTask.isDone
         }
       })
-
     } 
     else {
       timer = setTimeout(() => {

@@ -1,5 +1,5 @@
 <script>
-  import { user, doodleIcons, updateTemplate } from '/src/store.js'
+  import { user, doodleIcons, updateTemplate } from '/src/store'
   import PremiumPopup from './PremiumPopup.svelte'
   import BasicWhiteboard from './BasicWhiteboard.svelte'
   import Icons from '/src/back-end/Icons.js'
@@ -17,7 +17,6 @@
     }
   }
 </script>
-
 {#if !$user.isSubscriber}
   <!-- svelte-ignore a11y-click-events-have-key-events -->
   <div
@@ -72,24 +71,6 @@
 {/if}
 
 <style>
-  .remove-icon-button {
-    width: 48px;
-    height: 48px;
-    background-color: #e6f3ff;
-    border-radius: 4px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
-    font-size: 24px;
-    color: #0085ff;
-    transition: background-color 0.2s ease;
-  }
-
-  .remove-icon-button:hover {
-    background-color: #cce6ff;
-  }
-
   .orange-border {
     border: 1px solid var(--logo-twig-color);
     background-image: linear-gradient(

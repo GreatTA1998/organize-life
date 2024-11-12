@@ -72,10 +72,14 @@ const postFutureTasks = async ({ userID, id, newTemplate }) => {
     const startDate = startFromYesterday ? DateTime.now().minus({ days: 1 }) : DateTime.now();
     const endDate = DateTime.now().plus(offset);
     const tasksArray = await buildFutureTasks({ template: newTemplate, startDateJS: new Date(startDate), endDateJS: new Date(endDate), userID, templateID: id });
+    console.log('tasksArray', tasksArray)
     const hydratedTasks = [];
-    tasksArray.forEach(task => {
+    // there is a phantom bug where sometimes the tasks are not set,
+    // adding this somehow fixes it, TODO: figure out why
+    // setDoc(doc(db, 'users', userID, 'tasks', '112312312345'), {name: '123123123'});
+    tasksArray.forEach(async task => {
       const taskID = getRandomID()
-      setDoc(doc(db, "users", userID, 'tasks', taskID), task);
+      setDoc(doc(db, "users", userID, 'tasks', taskID), task)
       const hydratedTask = { ...task, id: taskID }
       hydratedTasks.push(hydratedTask)
     });

@@ -143,7 +143,7 @@
     getDateInMMDD, 
     getDateInDDMMYYYY,
   } from '/src/helpers/everythingElse.js'
-  import { user, todoMemoryTree, hasInitialScrolled } from '/src/store.js'
+  import { user, todoMemoryTree, hasInitialScrolled } from '/src/store'
   import { onDestroy, onMount } from 'svelte'
   import ScheduleView from '$lib/MobileMode/ScheduleView.svelte'
   import ListView from '$lib/MobileMode/ListView.svelte'

@@ -2,7 +2,7 @@
   import UXFormField from '$lib/UXFormField.svelte'
   import UXToggleSwitch from '$lib/UXToggleSwitch.svelte'
   import ReusableRoundButton from '$lib/ReusableRoundButton.svelte'
-  import { updateTemplate } from '/src/store.js'
+  import { updateTemplate } from '/src/store'
   export let template
 
   let isEditingSpecificTime = false

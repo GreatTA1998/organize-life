@@ -6,7 +6,27 @@ import TemplateSchema from '../Schemas/TemplateSchema.js';
 import UserSchema from '../Schemas/UserSchema.js';
 import IconSchema from '../Schemas/IconSchema.js';
 
-const migrateUser = async (userID) => {
+
+// only once
+// migrateIconsCollection()
+
+
+// totalMigrations('46OCRjQornhVCBmt0uz7ITASqOP2','Asia/Taipei')
+
+// '46OCRjQornhVCBmt0uz7ITASqOP2';  // 'Asia/Taipei' Elton's Dad 
+//  '6uIcMMsBEkQ85OINCDADtrygzZx1'; 'Asia/Tokyo' Maryus 
+// 'FrMRSz5BwTXGjcAevXGCBVBn26J3'; 'Asia/Taipei' Elton's Mom
+// 'yGVJSutBrnS1156uopQQOBuwpMl2'; 'Asia/Tokyo' Elton
+
+async function totalMigrations(userID, timeZone) {
+     await migrateUser(userID)
+     await migrateTemplates(userID, timeZone)
+     await migrateTasks(userID, timeZone)
+     console.log(`Successfully migrated user: ${userID}`);
+     return ""
+}
+
+async function migrateUser(userID) {
     const userRef = doc(sourceDB, 'users', userID);
     const userSnapshot = await getDoc(userRef);
     const newUser = {
@@ -19,18 +39,16 @@ const migrateUser = async (userID) => {
     }
     Joi.attempt(newUser, UserSchema, "Error in user: " + userID);
     const newUserRef = doc(destinationDB, 'users', userID);
-    await setDoc(newUserRef, newUser);
-    return;
+    return setDoc(newUserRef, newUser);
 }
 
-const migrateTemplates = async (userID) => {
+async function migrateTemplates(userID, timeZone) {
     try {
         const templatesRef = collection(sourceDB, 'users', userID, 'periodicTasks');
         const templatesSnapshot = await getDocs(query(templatesRef));
         const batch = writeBatch(destinationDB);
         templatesSnapshot.forEach((templateDoc) => {
             if (!templateDoc.data().name) return;
-
             const newDocRef = doc(collection(destinationDB, 'users', userID, 'templates'), templateDoc.id);
             const newTemplate = {
                 name: templateDoc.data().name,
@@ -39,7 +57,7 @@ const migrateTemplates = async (userID) => {
                 crontab: templateDoc.data().crontab || '',
                 iconURL: templateDoc.data().iconURL || templateDoc.data().iconUrl || '',
                 tags: templateDoc.data().tags || '',
-                timeZone: templateDoc.data().timeZone || 'Asia/Tokyo',
+                timeZone: templateDoc.data().timeZone || timeZone,
                 notes: templateDoc.data().notes || '',
                 notify: templateDoc.data().notify || '',
                 duration: templateDoc.data().duration || 0,
@@ -48,24 +66,17 @@ const migrateTemplates = async (userID) => {
             Joi.attempt(newTemplate, TemplateSchema);
             batch.set(newDocRef, newTemplate);
         });
-        await batch.commit();
         console.log(`Successfully migrated documents to 'templates' collection`);
+        return batch.commit();
     } catch (error) {
         console.error('Error updating collection:', error);
         throw error;
     }
 };
 
-const checkTaskCount = async (userID) => {
-    const tasksColl = await (collection(sourceDB, 'users', userID, 'tasks'))
-    const snapshot = await getCountFromServer(tasksColl);
-    console.log('count: ', snapshot.data().count);
-}
-
-const migrateTasks = async (userID) => {
+async function migrateTasks(userID, timeZone) {
     try {
         const tasks = await getDocs(query(collection(sourceDB, 'users', userID, 'tasks')))
-        console.log(tasks.size);
         const batch = writeBatch(destinationDB);
         tasks.forEach((taskDoc) => {
             const newDocRef = doc(collection(destinationDB, 'users', userID, 'tasks'), taskDoc.id);
@@ -78,7 +89,7 @@ const migrateTasks = async (userID) => {
                 startDateISO: taskDoc.data().startDateISO || '',
                 startTime: taskDoc.data().startTime || '',
                 notify: taskDoc.data().notify || '',
-                timeZone: taskDoc.data().timeZone || 'Asia/Tokyo',
+                timeZone: taskDoc.data().timeZone || timeZone,
                 templateID: taskDoc.data().templateID || taskDoc.data().periodicTaskId || taskDoc.data().reusableTemplateID || '',
                 iconURL: taskDoc.data().iconURL || taskDoc.data().iconUrl || '',
                 notes: taskDoc.data().notes || '',
@@ -90,8 +101,8 @@ const migrateTasks = async (userID) => {
             Joi.attempt(newTask, TaskSchema, "Error in task: " + taskDoc.id,);
             batch.set(newDocRef, newTask);
         });
-        await batch.commit();
         console.log(`Successfully updated tasks`);
+        return batch.commit();
     } catch (error) {
         console.error('Error updating tasks:', error);
         throw error;
@@ -117,20 +128,4 @@ async function migrateIconsCollection() {
     })
     await batch.commit()
 }
-
-// '46OCRjQornhVCBmt0uz7ITASqOP2';
-//  '6uIcMMsBEkQ85OINCDADtrygzZx1';
-// 'FrMRSz5BwTXGjcAevXGCBVBn26J3';
-// 'yGVJSutBrnS1156uopQQOBuwpMl2';
-
-// only once
-// migrateIconsCollection()
-
-// one at a time, doesnt auto cancel, so have to quit manually 
-// migrateUser('FrMRSz5BwTXGjcAevXGCBVBn26J3')
-// migrateTemplates('FrMRSz5BwTXGjcAevXGCBVBn26J3')
-// checkTaskCount('FrMRSz5BwTXGjcAevXGCBVBn26J3')
-// migrateTasks('FrMRSz5BwTXGjcAevXGCBVBn26J3')
-
-// const tasks = await getDocs(query(collection(db, 'users', userID, 'tasks')))
 

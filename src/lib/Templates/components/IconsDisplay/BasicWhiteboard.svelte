@@ -1,8 +1,6 @@
 <script>
   import { onMount } from 'svelte'
-  import { getRandomColor } from '/src/helpers/everythingElse.js'
-  import { user } from '/src/store.js'
-  import { doodleIcons } from '/src/store.js'
+  import { doodleIcons, user } from '/src/store'
   import Icons from '/src/back-end/Icons.js'
   import { getRandomID } from '/src/helpers/everythingElse.js'
   import ColorPicker from './ColorPicker.svelte'
@@ -10,12 +8,6 @@
   let name = ''
   let tags = ''
   let isShareable = false
-
-  onMount(() => {
-    canvas = document.getElementById('whiteboard')
-    ctx = canvas.getContext('2d')
-  })
-
   let drawing = false
   let color = 'black'
   let colorPickerColor = ''
@@ -26,6 +18,12 @@
 
   let showColorPicker = false;
 
+  onMount(() => {
+    canvas = document.getElementById('whiteboard')
+    ctx = canvas.getContext('2d')
+  })
+
+
   function toggleColorPicker() {
     showColorPicker = !showColorPicker;
   }
@@ -35,7 +33,7 @@
     colorPickerColor = colorUpdate;
   }
 
-  function handleSave() {
+  function handleSave() {    
     const dataURL = canvas.toDataURL()
     Icons.uploadIconDataURL({
       createdBy: $user.uid,

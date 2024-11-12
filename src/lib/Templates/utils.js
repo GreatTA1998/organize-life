@@ -1,4 +1,4 @@
-import { updateTemplate } from '/src/store.js'
+import { updateTemplate } from '/src/store'
 import Templates from '/src/back-end/Templates/index.js'
 
 export const filterByType = (tasks, type) =>
@@ -16,13 +16,13 @@ export const getDisplayLength = ({ template, templateWidthInPx }) => {
 }
 
 export const updateCrontab = ({ selectedDays, template, crontabIndex }) => {
+  console.log('crontabIndex', crontabIndex)
   let updatedCrontab = template.crontab.split(" ");
   if (crontabIndex == 'yearly') {
     updatedCrontab = selectedDays;
   } else {
     const selectedDaysFiltered = selectedDays.filter(day => day !== '0');
-    updatedCrontab[crontabIndex] = selectedDaysFiltered.length ? selectedDaysFiltered.sort().join(',') :
-      crontabIndex == 2 ? '0' : '*';
+    updatedCrontab[crontabIndex] = selectedDaysFiltered.length ? selectedDaysFiltered.sort().join(',') : '0';
     updatedCrontab = updatedCrontab.join(' ');
   }
   updateTemplate({

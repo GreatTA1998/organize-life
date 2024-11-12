@@ -17,4 +17,4 @@ const db = getFirestore(app, "schema-compliant");
 // const sourceDB = getFirestore(appSource, "asian-alliance");
 // const destinationDB = db
 
-export { app, db };
+export { app, db};

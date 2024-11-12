@@ -1,12 +1,11 @@
 <script>
   import '/src/app.css'
   import { db } from '../back-end/firestoreConnection'
-  import { user, calendarTasks, todoTasks } from '../store.js'
+  import { user, loadingTasks } from '../store/index.js'
   import { goto } from '$app/navigation'
   import { getAuth, onAuthStateChanged } from 'firebase/auth'
   import { doc, setDoc, onSnapshot } from 'firebase/firestore'
-  import { onDestroy, onMount } from 'svelte'
-  import { updateFirestoreDoc } from '/src/helpers/firestoreHelpers.js'
+  import { onMount } from 'svelte'
   import posthog from 'posthog-js'
   let unsubUserSnapListener = null
   let doingAuth = true
@@ -42,10 +41,6 @@
       doingAuth = false
     })
   })
-  // should be unnecessary because +layout getting destroyed means the App is closed
-  onDestroy(() => {
-    if (unsubUserSnapListener) unsubUserSnapListener()
-  })
 
   function isMobile() {
     return window.innerWidth <= 768 // You can adjust the width threshold as needed
@@ -70,8 +65,7 @@
   style="z-index: 99999; background: white; width: 100vw; height: 100vh"
   class="center"
   class:invisible={!(
-    doingAuth ||
-    ($user?.uid && !$calendarTasks?.length && !$todoTasks?.length)
+    doingAuth || $loadingTasks
   )}
 >
   <img

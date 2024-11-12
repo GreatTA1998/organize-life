@@ -1,4 +1,4 @@
-import { todoTasks, calendarTasks } from '/src/store.js'
+import { todoTasks, calendarTasks } from '/src/store'
 import { get } from "svelte/store";
 
 export function trace(x, y) {

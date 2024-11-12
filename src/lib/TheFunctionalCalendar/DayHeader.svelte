@@ -2,28 +2,20 @@
   import ReusableCreateTaskDirectly from '$lib/ReusableCreateTaskDirectly.svelte'
   import ReusableFlexibleDayTask from '$lib/ReusableFlexibleDayTask.svelte'
   import FunctionalDoodleIcon from '$lib/FunctionalDoodleIcon.svelte'
-  import { onMount, createEventDispatcher, afterUpdate } from 'svelte'
+  import { createEventDispatcher } from 'svelte'
   import {
     tasksScheduledOn,
     whatIsBeingDraggedFullObj,
     whatIsBeingDragged,
     whatIsBeingDraggedID
-  } from '/src/store.js'
-  import { getFirestoreCollection } from '/src/helpers/firestoreHelpers.js'
+  } from '/src/store'
   import { DateTime } from 'luxon'
 
   export let ISODate
   export let isShowingDockingArea
 
-  let doodleIcons = null
-
   const dispatch = createEventDispatcher()
   let isDirectlyCreatingTask = false
-
-  onMount(async () => {
-    const temp = await getFirestoreCollection('/doodleIcons')
-    doodleIcons = temp
-  })
 
   function dragover_handler(e) {
     e.preventDefault()
@@ -84,15 +76,11 @@
 
   {#if isShowingDockingArea}
     <div style="overflow: hidden; margin-top: 4px;">
-      {#if $tasksScheduledOn && doodleIcons}
+      {#if $tasksScheduledOn}
         {#if $tasksScheduledOn[ISODate]}
           <div style="display: flex; flex-wrap: wrap;">
             {#each $tasksScheduledOn[ISODate].noStartTime.hasIcon as iconTask (iconTask.id)}
-              <FunctionalDoodleIcon
-                {iconTask}
-                on:task-click
-                on:task-update
-              />
+              <FunctionalDoodleIcon {iconTask} on:task-click on:task-update />
             {/each}
           </div>
           {#each $tasksScheduledOn[ISODate].noStartTime.noIcon as flexibleDayTask (flexibleDayTask.id)}

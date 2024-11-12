@@ -9,7 +9,7 @@ import TaskSchema from "/src/back-end/Schemas/TaskSchema.js"
 import Joi from "joi"
 import Tasks from "/src/back-end/Tasks.js"
 import { get } from 'svelte/store'
-import { user, calendarTasks, todoTasks } from '/src/store.js'
+import { user, calendarTasks, todoTasks } from '/src/store/index.js'
 
 export async function createTaskNode({ id, newTaskObj }) {
   try {

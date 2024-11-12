@@ -19,7 +19,7 @@
     whatIsBeingDraggedFullObj,
     whatIsBeingDragged,
     whatIsBeingDraggedID
-  } from '/src/store.js'
+  } from '/src/store/index.js'
   import { writeBatch, doc, increment } from 'firebase/firestore'
   import { db } from '../back-end/firestoreConnection'
   import { DateTime } from 'luxon'

@@ -16,7 +16,7 @@
     whatIsBeingDraggedFullObj,
     whatIsBeingDraggedID,
     whatIsBeingDragged
-  } from "/src/store.js";
+  } from "/src/store";
   import ReusableCreateTaskDirectly from "$lib/ReusableCreateTaskDirectly.svelte";
   import ReusableCalendarColumnTimeIndicator from "$lib/ReusableCalendarColumnTimeIndicator.svelte"
 

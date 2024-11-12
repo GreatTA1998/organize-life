@@ -4,7 +4,7 @@
   import {
     getRandomID,
   } from '/src/helpers/everythingElse.js'
-  import { user } from '/src/store.js'
+  import { user } from '/src/store'
   import { onMount, createEventDispatcher } from 'svelte'
   import { DateTime } from 'luxon'
 

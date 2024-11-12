@@ -46,7 +46,7 @@
 {/if}
 
 <script>
-  import { showSnackbar } from '/src/store.js'
+  import { showSnackbar } from '/src/store'
   import { clickOutside } from '/src/helpers/everythingElse.js'
 
 

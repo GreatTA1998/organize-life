@@ -1,5 +1,5 @@
 <script>
-  import { user, templates } from '/src/store.js'
+  import { user, templates } from '/src/store'
   import ReusableRoundButton from '$lib/ReusableRoundButton.svelte'
   import { DateTime } from 'luxon'
   import Templates from '/src/back-end/Templates'
@@ -18,6 +18,7 @@
   }
 
   async function createTemplate() {
+    console.log('crontab', crontab)
     if (!newTaskName.trim()) return
     const newTemplate = {
       name: newTaskName,
@@ -33,7 +34,7 @@
       tags: ''
     }
     const templateID = getRandomID()
-    Templates.create({ userID: $user.uid, template: newTemplate, templateID })
+    Templates.create({ userID: $user.uid, newTemplate, templateID })
     $templates = [
       ...$templates,
       { ...newTemplate, id: templateID, userID: $user.uid }

@@ -1,7 +1,7 @@
 <script>
   import ReusableFlexibleDayTask from '$lib/ReusableFlexibleDayTask.svelte'
   import FunctionalDoodleIcon from '$lib/FunctionalDoodleIcon.svelte'
-  import { tasksScheduledOn } from '/src/store.js'
+  import { tasksScheduledOn } from '/src/store'
   import { createEventDispatcher, onMount } from 'svelte'
   import {
     getTimeInHHMM,
