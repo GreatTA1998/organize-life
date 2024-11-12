@@ -1,43 +1,9 @@
-<div>
-  <input 
-    value={value} 
-    on:input={(e) => dispatch('input', { typedHHMM: e.target.value })} 
-    on:click={() => isMenuDisplayed = !isMenuDisplayed} 
-    style="
-      width: 64px; 
-      font-size: 16px; 
-      text-align: center; 
-      height: 30px; 
-      border-radius: 4px;
-      border: 1px solid lightgrey;
-    "
-    on:focusout={() => {
-      setTimeout(() => isMenuDisplayed = false, 500)
-    }}
-  >
-
-  {#if isMenuDisplayed}
-    <div class="core-shadow cast-shadow" style="position: absolute; background: white; overflow-y: auto; overflow-x: hidden; width: fit-content;">
-      <div class="my-grid">
-        {#each hourChoices as hourChoice}
-          <div on:click={() => selectTime(hourChoice)}
-            class="time-option" 
-            class:selected={Number(hourChoice.split(':')[0]) === new Date().getHours()}
-            class:highlighted-option={value === hourChoice}
-            class:closest-to-current-time={Number(hourChoice.split(':')[0]) === new Date().getHours()}
-          >
-            {hourChoice}
-          </div>
-        {/each}
-      </div>
-    </div>  
-  {/if}
-</div>
-
 <script>
   import { createEventDispatcher, onMount, tick } from 'svelte'
 
   export let value = ''
+  export let placeholder;
+  export let pattern;
 
   $: if (isMenuDisplayed) {
     tick().then(() => {
@@ -58,21 +24,64 @@
     hourChoices.push(hh + ':' + '30')
   }
 
-  function scrollToSelected () {
+  function scrollToSelected() {
     const elements = document.getElementsByClassName('selected')
     const el = elements[0]
     if (el) {
-      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      el.scrollIntoView({ behavior: 'smooth', block: 'center' })
     }
   }
 
-  function selectTime (hourChoice) {
+  function selectTime(hourChoice) {
     dispatch('time-selected', { selectedHHMM: hourChoice })
     isMenuDisplayed = false
   }
-
 </script>
 
+<div>
+  <input
+    {value}
+    placeholder={placeholder}
+    pattern={pattern}
+    on:input={(e) => dispatch('input', { typedHHMM: e.target.value })}
+    on:click={() => (isMenuDisplayed = !isMenuDisplayed)}
+    style="
+      width: 64px; 
+      font-size: 16px; 
+      text-align: center; 
+      height: 30px; 
+      border-radius: 4px;
+      border: 1px solid lightgrey;
+    "
+    on:focusout={() => {
+      setTimeout(() => (isMenuDisplayed = false), 500)
+    }}
+  />
+
+  {#if isMenuDisplayed}
+    <div
+      class="core-shadow cast-shadow"
+      style="position: absolute; background: white; overflow-y: auto; overflow-x: hidden; width: fit-content;"
+    >
+      <div class="my-grid">
+        {#each hourChoices as hourChoice}
+          <!-- svelte-ignore a11y-click-events-have-key-events -->
+          <div
+            on:click={() => selectTime(hourChoice)}
+            class="time-option"
+            class:selected={Number(hourChoice.split(':')[0]) ===
+              new Date().getHours()}
+            class:highlighted-option={value === hourChoice}
+            class:closest-to-current-time={Number(hourChoice.split(':')[0]) ===
+              new Date().getHours()}
+          >
+            {hourChoice}
+          </div>
+        {/each}
+      </div>
+    </div>
+  {/if}
+</div>
 
 <style lang="scss">
   .my-grid {
@@ -85,15 +94,15 @@
 
   .time-option {
     padding: 4px 8px;
-    font-size: 16px; 
+    font-size: 16px;
 
-    display: flex; 
+    display: flex;
     align-items: center;
     justify-content: center;
-    width: 100%; 
+    width: 100%;
 
-    border: 1px solid lightgrey; 
-    border-radius: 0px; 
+    border: 1px solid lightgrey;
+    border-radius: 0px;
   }
 
   .option-highlight {
@@ -101,7 +110,7 @@
   }
 
   .time-option:hover {
-    @extend .option-highlight
+    @extend .option-highlight;
   }
 
   .closest-to-current-time {

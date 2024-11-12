@@ -56,7 +56,7 @@
   import CalendarViewDay from '$lib/MobileMode/CalendarViewDay.svelte'
   import UXFormField from '$lib/UXFormField.svelte'
   import { onMount } from 'svelte'
-  import { tasksScheduledOn, user } from '/src/store.js'
+  import { tasksScheduledOn, user } from '/src/store'
   import { getFirestoreCollection } from '/src/helpers/firestoreHelpers.js'
   import { DateTime } from 'luxon'
   import { buildDates } from '/src/helpers/dataStructures.js'

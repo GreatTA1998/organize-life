@@ -1,5 +1,5 @@
 <script>
-  import { tasksScheduledOn } from '/src/store.js'
+  import { tasksScheduledOn } from '/src/store'
   import { createEventDispatcher } from 'svelte'
 
   export let exactHeight

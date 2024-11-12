@@ -33,10 +33,8 @@ export const handleSW = async () => {
   const existingRegistration = await navigator.serviceWorker.getRegistration("/firebase-messaging-sw.js");
 
   if (existingRegistration) {
-    console.log("Existing Service Worker found. Updating...");
     await existingRegistration.update().catch(err => console.error("Error updating Service Worker", err));
   } else {
-    console.log("No existing Service Worker found. Registering new one...");
     await navigator.serviceWorker.register("/firebase-messaging-sw.js").catch(err => console.error("Error registering Service Worker", err));
   }
 

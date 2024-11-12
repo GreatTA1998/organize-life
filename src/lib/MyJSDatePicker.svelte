@@ -1,28 +1,21 @@
-
-<!-- To prevent the iOS keyboard from showing 
-     inputmode='none'
-     https://stackoverflow.com/a/65358992/7812829 
--->
-<input bind:this={AttachTarget}
-  class="my-date-field"
-  inputmode='none'
-  readonly
->
-
 <script>
   import 'js-datepicker/dist/datepicker.min.css'
   import { onMount, createEventDispatcher } from 'svelte'
-  import { getDateInMMDD, convertMMDDToDateClassObject } from '/src/helpers/everythingElse.js'
+  import {
+    getDateInMMDD,
+    convertMMDDToDateClassObject
+  } from '/src/helpers/everythingElse.js'
 
-  // THIS COMPONENT STILL USES THE LEGACY API where `startDate` is mm/dd and `startYYYY` is yyyy 
+  // THIS COMPONENT STILL USES THE LEGACY API where `startDate` is mm/dd and `startYYYY` is yyyy
 
-  export let MMDD 
+  export let MMDD
   export let YYYY
+  export let placeholder
 
   let AttachTarget
   const dispatch = createEventDispatcher()
   let picker
-  
+
   onMount(async () => {
     const datepicker = await import('js-datepicker')
 
@@ -34,7 +27,7 @@
             selectedDate: newMMDD,
             selectedYear: date.getFullYear() // notice this is a Number
           })
-        } 
+        }
 
         // the 2nd click on the same date will cancel it
         else {
@@ -42,18 +35,18 @@
             selectedDate: '',
             selectedYear: ''
           })
-          // selecting a real date will close the datepicker, 
+          // selecting a real date will close the datepicker,
           // but unselecting doesn't so we do it manually here
-          picker.hide() 
+          picker.hide()
         }
       },
       formatter: (input, date, instance) => {
-        const options = { month: 'short', day: 'numeric' };
+        const options = { month: 'short', day: 'numeric' }
         const value = date.toLocaleDateString('en-US', options)
         input.value = value // => Jul 19
       }
     })
-  
+
     // initialize the picker to today's date
     if (MMDD && YYYY) {
       picker.setDate(convertMMDDToDateClassObject(MMDD, YYYY), true)
@@ -61,13 +54,25 @@
   })
 </script>
 
+<!-- To prevent the iOS keyboard from showing 
+     inputmode='none'
+     https://stackoverflow.com/a/65358992/7812829 
+-->
+<input
+  bind:this={AttachTarget}
+  class="my-date-field"
+  inputmode="none"
+  readonly
+  placeholder={placeholder}
+/>
+
 <style>
   .my-date-field {
     padding-left: 6px;
     height: 30px;
     border-radius: 4px;
     border: 1px solid lightgrey;
-    width: 64px; 
-    font-size: 16px; 
+    width: 64px;
+    font-size: 16px;
   }
 </style>

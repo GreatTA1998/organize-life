@@ -1,22 +1,13 @@
 <script>
-  import { user, doodleIcons, updateTemplate } from '/src/store.js'
+  import { user, doodleIcons, updateTemplate } from '/src/store'
   import PremiumPopup from './PremiumPopup.svelte'
   import BasicWhiteboard from './BasicWhiteboard.svelte'
   import Icons from '/src/back-end/Icons.js'
   export let template
-  export let setIsPopupOpen  // magic that closes the popup 
   let isShowingPremiumPopup = false
 
-  function handleSelectIcon(iconUrl) {
-    updateTemplate({ templateID: template.id, keyValueChanges: { iconUrl } })
-    // setIsPopupOpen({ newVal: false })
-  }
-
-  function handleUnselectIcon() {
-    updateTemplate({
-      templateID: template.id,
-      keyValueChanges: { iconUrl: '' }
-    })
+  function handleSelectIcon(iconURL = '') {
+    updateTemplate({ templateID: template.id, keyValueChanges: { iconURL }, oldTemplate: template })
   }
 
   function handleDeleteIcon({ id, url }) {
@@ -26,7 +17,6 @@
     }
   }
 </script>
-
 {#if !$user.isSubscriber}
   <!-- svelte-ignore a11y-click-events-have-key-events -->
   <div
@@ -51,10 +41,10 @@
           <!-- svelte-ignore a11y-missing-attribute -->
           <!-- svelte-ignore a11y-click-events-have-key-events -->
           <img
-            on:click={() => handleSelectIcon(doodleIcon.url)}
+            on:click={() => handleSelectIcon(template.iconURL === doodleIcon.url ? '' : doodleIcon.url)}
             src={doodleIcon.url}
             style="width: 48px; height: 48px; cursor: pointer;"
-            class:orange-border={template.iconUrl === doodleIcon.url}
+            class:orange-border={template.iconURL === doodleIcon.url}
           />
           {#if doodleIcon.createdBy === $user.uid}
             <!-- svelte-ignore a11y-click-events-have-key-events -->
@@ -72,12 +62,6 @@
           {/if}
         </div>
       {/each}
-      {#if template.iconUrl}
-        <!-- svelte-ignore a11y-click-events-have-key-events -->
-        <div on:click={handleUnselectIcon} class="remove-icon-button">
-          X
-        </div>
-      {/if}
     {/if}
   </div>
 
@@ -87,24 +71,6 @@
 {/if}
 
 <style>
-  .remove-icon-button {
-    width: 48px;
-    height: 48px;
-    background-color: #e6f3ff;
-    border-radius: 4px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
-    font-size: 24px;
-    color: #0085ff;
-    transition: background-color 0.2s ease;
-  }
-
-  .remove-icon-button:hover {
-    background-color: #cce6ff;
-  }
-
   .orange-border {
     border: 1px solid var(--logo-twig-color);
     background-image: linear-gradient(

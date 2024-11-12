@@ -1,9 +1,9 @@
 <script>
-  import { user, periodicTasks } from '/src/store.js'
+  import { user, templates } from '/src/store'
   import ReusableRoundButton from '$lib/ReusableRoundButton.svelte'
   import { DateTime } from 'luxon'
-  import PeriodicTasks from '/src/back-end/PeriodicTasks'
-
+  import Templates from '/src/back-end/Templates'
+  import { getRandomID } from '/src/helpers/everythingElse.js'
   export let defaultOrderValue = 1
   export let crontab
   let isPopupOpen = false
@@ -11,8 +11,15 @@
 
   const setIsPopupOpen = ({ newVal }) => (isPopupOpen = newVal)
 
+  function handleKeyPress(event) {
+    if (event.key === 'Enter' && newTaskName.trim()) {
+      createTemplate()
+    }
+  }
+
   async function createTemplate() {
-    const newTask = {
+    if (!newTaskName.trim()) return
+    const newTemplate = {
       name: newTaskName,
       duration: 5,
       orderValue: defaultOrderValue + Math.random() * 0.5,
@@ -22,12 +29,15 @@
       notify: '',
       startTime: '',
       lastGeneratedTask: DateTime.now().toFormat('yyyy-MM-dd'),
-      iconUrl: '',
+      iconURL: '',
       tags: ''
     }
-    const id = await PeriodicTasks.create({ userID: $user.uid, task: newTask })
-    newTask.id = id
-    $periodicTasks = [...$periodicTasks, { ...newTask, id, userID: $user.uid }]
+    const templateID = getRandomID()
+    Templates.create({ userID: $user.uid, newTemplate, templateID })
+    $templates = [
+      ...$templates,
+      { ...newTemplate, id: templateID, userID: $user.uid }
+    ]
     newTaskName = ''
     isPopupOpen = false
   }
@@ -35,10 +45,11 @@
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <div style="font-size: 24px; margin-bottom: 12px; cursor: pointer;">
-  <span style ="cursor:pointer" on:click={() => setIsPopupOpen({ newVal: true })} >
-    {PeriodicTasks.getPeriodFromCrontab(
-      crontab
-    ).toUpperCase()}</span
+  <span
+    style="cursor:pointer"
+    on:click={() => setIsPopupOpen({ newVal: true })}
+  >
+    {Templates.getPeriodFromCrontab(crontab).toUpperCase()}</span
   >
   <!-- svelte-ignore a11y-click-events-have-key-events -->
   <span
@@ -62,7 +73,8 @@
         <input
           type="text"
           bind:value={newTaskName}
-          placeholder="Untitled"
+          on:keypress={handleKeyPress}
+          placeholder="name"
           style="margin-left: 12px; width: 100%; font-size: 24px;"
           class="title-underline-input"
           autofocus
@@ -73,6 +85,7 @@
         margin-top: 16px;"
         >
           <ReusableRoundButton
+            isDisabled={!newTaskName.trim()}
             on:click={createTemplate}
             backgroundColor="rgb(0, 89, 125)"
             textColor="white"
@@ -141,7 +154,6 @@
     color: #8e8e93;
   }
 
-
   .close-button {
     position: absolute;
     top: 10px;
@@ -170,7 +182,6 @@
     align-items: center;
     justify-content: center;
     height: 100%;
-    margin-top: -2px; 
+    margin-top: -2px;
   }
-
 </style>

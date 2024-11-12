@@ -156,7 +156,7 @@ function myHelper ({ node, rootAncestor, tasksScheduledOn }) {
       }
     }
     if (!node.startTime) {
-      if (node.iconUrl) tasksScheduledOn[startDateISO].noStartTime.hasIcon.push(node)
+      if (node.iconURL) tasksScheduledOn[startDateISO].noStartTime.hasIcon.push(node)
       else tasksScheduledOn[startDateISO].noStartTime.noIcon.push(node)
     } 
     else {

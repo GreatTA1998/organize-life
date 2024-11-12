@@ -63,8 +63,9 @@
       </div>
     {/if}
 
-    {#if task.iconUrl}
-      <img src={task.iconUrl} style="pointer-events: none; width: 32px; height: 32px;">
+    {#if task.iconURL}
+      <!-- svelte-ignore a11y-missing-attribute -->
+      <img src={task.iconURL} style="pointer-events: none; width: 32px; height: 32px;">
     {:else}
       <div class="task-name truncate-to-one-line" style="color: {isBulletPoint ? '' : 'white'}">
         {task.name}
@@ -105,7 +106,7 @@
   // Assumes `task` is hydrated
   import { createEventDispatcher } from 'svelte'
   import { getTrueY } from '/src/helpers/everythingElse.js'
-  import { yPosWithinBlock, whatIsBeingDragged, whatIsBeingDraggedID, whatIsBeingDraggedFullObj } from '/src/store.js'
+  import { yPosWithinBlock, whatIsBeingDragged, whatIsBeingDraggedID, whatIsBeingDraggedFullObj } from '/src/store'
   import ReusableCheckbox from '$lib/ReusableCheckbox.svelte'
 
   export let task = null

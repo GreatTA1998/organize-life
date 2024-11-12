@@ -27,11 +27,3 @@ async function migrateIcons() {
     }
 }
 
-
-const examinePeriodicTasks = async () => {
-    const periodicTasksRef = collection(db, 'users', "46OCRjQornhVCBmt0uz7ITASqOP2", "periodicTasks");
-    const querySnapshot = await getDocs(periodicTasksRef);
-    console.log(querySnapshot.docs.map(doc => doc.data()));
-    return;
-}
-

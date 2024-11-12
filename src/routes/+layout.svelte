@@ -1,23 +1,18 @@
 <script>
   import '/src/app.css'
   import { db } from '../back-end/firestoreConnection'
-  import { page } from '$app/stores'
-  import { user, hasLogoExited, calendarTasks, todoTasks } from '../store.js'
+  import { user, loadingTasks } from '../store/index.js'
   import { goto } from '$app/navigation'
   import { getAuth, onAuthStateChanged } from 'firebase/auth'
   import { doc, setDoc, onSnapshot } from 'firebase/firestore'
-  import { onDestroy, onMount } from 'svelte'
-  import { updateFirestoreDoc } from '/src/helpers/firestoreHelpers.js'
+  import { onMount } from 'svelte'
   import posthog from 'posthog-js'
   let unsubUserSnapListener = null
   let doingAuth = true
-  const startTime = performance.now()
-  
+
   onMount(() => {
     // fetching user takes around 300 - 500 ms
     onAuthStateChanged(getAuth(), async (resultUser) => {
-      const onAuthStateChangedTime = performance.now();
-      console.log(' to run a callback on auth took', onAuthStateChangedTime - startTime);
       if (!resultUser) {
         user.set({})
         goto('/')
@@ -28,34 +23,11 @@
           person_profiles: 'always' // or 'always' to create profiles for anonymous users as well
         })
       } else {
-        // USER IS LOGGED INTO FIREBASE AUTH
-        const urlParts = $page.url.pathname.split('/')
-
-        // for a full path, urlParts is ['', 'PfxP5N71jQVzDejF9tYwTgrVtGz2', 'mobile']
-        if (urlParts.length === 3 || urlParts[2] === 'mobile') {
-          if (!isMobile()) {
-            if (confirm('This is mobile mode. Use desktop mode instead?')) {
-              goto('/' + resultUser.uid)
-            }
-          }
-        }
-        // desktop mode URL
-        else {
-          if (isMobile()) {
-            if (confirm('This is desktop mode. Use mobile mode instead?')) {
-              goto('/' + resultUser.uid + '/mobile')
-            }
-          } else {
-            goto('/' + resultUser.uid)
-          }
-        }
-
-        // partially hydrate the user so we can redirect away ASAP (NOTE: v1 this shouldn't make a lot of difference to load time)
+        goto(`/${resultUser.uid}/${isMobile() ? 'mobile' : ''}`)
         user.set({
           phoneNumber: resultUser.phoneNumber || '',
           uid: resultUser.uid
         })
-
         // handle the snapshot listener
         const ref = doc(db, '/users/' + resultUser.uid)
         unsubUserSnapListener = onSnapshot(ref, async (snap) => {
@@ -63,37 +35,15 @@
             initializeNewFirestoreUser(ref, resultUser)
           } else {
             user.set({ ...snap.data() }) // augment with id, path, etc. when needed in the future
-            guaranteeBackwardsCompatibility($user)
           }
         })
       }
-      const onAuthDoneTime = performance.now();
-      console.log('auth callback took to run', onAuthDoneTime - onAuthStateChangedTime);
       doingAuth = false
     })
   })
 
-  const trace = (y, x) => {
-    console.log(y, x)
-    return x
-  }
-  // should be unnecessary because +layout getting destroyed means the App is closed
-  onDestroy(() => {
-    if (unsubUserSnapListener) unsubUserSnapListener()
-  })
-
   function isMobile() {
     return window.innerWidth <= 768 // You can adjust the width threshold as needed
-  }
-
-  // NOTE: somewhat brittle code. If `.journal` is every empty temporariliy, for whatever reason, the entire journal will wipe.
-  function guaranteeBackwardsCompatibility(userDoc) {
-    const correctionObj = {}
-    if (!userDoc.journal) correctionObj.journal = {}
-    if (!userDoc.journalTitleFromMMDD) correctionObj.journalTitleFromMMDD = {}
-    if (!userDoc.reusableTaskTemplates) correctionObj.reusableTaskTemplates = []
-
-    updateFirestoreDoc(`/users/${userDoc.uid}`, correctionObj)
   }
 
   async function initializeNewFirestoreUser(ref, resultUser) {
@@ -114,7 +64,9 @@
   id="loading-screen-logo-start"
   style="z-index: 99999; background: white; width: 100vw; height: 100vh"
   class="center"
-  class:invisible={!(doingAuth || ($user?.uid && (!$calendarTasks?.length || !$todoTasks?.length )))}
+  class:invisible={!(
+    doingAuth || $loadingTasks
+  )}
 >
   <img
     src="/trueoutput-square-nobg.png"

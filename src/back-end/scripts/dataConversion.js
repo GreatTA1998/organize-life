@@ -23,7 +23,8 @@ const nesseryProperties = [
   "imageFullPath",
 ];
 
-migrateUserDataToNewFormat("46OCRjQornhVCBmt0uz7ITASqOP2"); //Elton
+// migrateUserDataToNewFormat("46OCRjQornhVCBmt0uz7ITASqOP2"); //Elton father or mother
+
 
 // migrateUserDataToNewFormat("6uIcMMsBEkQ85OINCDADtrygzZx1"); //Marius
 
@@ -62,7 +63,7 @@ async function convert(dataArray) {
               task.startDate.split("/")[1]
             }`
           : "",
-        iconUrl: iconMap[task.iconDataURL] ? iconMap[task.iconDataURL] : "",
+        iconURL: iconMap[task.iconDataURL] ? iconMap[task.iconDataURL] : "",
       };
 
       const convertedTask = {

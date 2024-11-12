@@ -78,7 +78,7 @@
 
 <script>
 import { createEventDispatcher, onMount, onDestroy, tick } from 'svelte'
-import { mostRecentlyCompletedTaskID } from '/src/store.js'
+import { mostRecentlyCompletedTaskID } from '/src/store'
 import _ from 'lodash'
 import RecursiveBulletPoint from '$lib/DetailedCardPopup/RecursiveBulletPoint.svelte'
 import UXFormTextArea from '$lib/DetailedCardPopup/UXFormTextArea.svelte'
@@ -157,10 +157,10 @@ const debouncedSaveTitle = _.debounce(saveTitle, 800)
 const debouncedSaveNotes = _.debounce(saveNotes, 1500)
 
 function confirmDelete () {
-  if (confirm('Are you sure you want to delete the task? This is irreversible.')) {
+  // if (confirm('Are you sure you want to delete the task? This is irreversible.')) {
     dispatch('task-delete', {...taskObject})
     dispatch('card-close')
-  } 
+  // } 
 }
 
 function handleClickOutside (e) {

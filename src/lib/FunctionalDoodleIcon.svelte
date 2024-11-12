@@ -1,29 +1,10 @@
-<div style="position: relative;">
-  <img 
-    on:click|stopPropagation={handleSingleOrDoubleClick}
-    src={iconTask.iconUrl} 
-    class:clearly-visible={iconTask.isDone}
-    class:task-not-done={!iconTask.isDone}
-    style="width: 32px; height: 32px; border: 0px solid blue; cursor: pointer;"
-    class:radial-glow={iconTask.isDone}
-    class="ios-3d-touch-disable unselectable"
-    draggable="true"
-    on:dragstart|self={(e) => startDragMove(e, iconTask.id)} 
-  >
-</div>
-
-<!-- 
-  <div style="font-size: 2px;">{iconTask.name}</div>
-  <div style="font-size: 2px;">{iconTask.repeatGroupID}</div> 
--->
-
 <script>
-  import { 
-    whatIsBeingDragged, 
-    whatIsBeingDraggedID, 
+  import {
+    whatIsBeingDragged,
+    whatIsBeingDraggedID,
     whatIsBeingDraggedFullObj,
     yPosWithinBlock
-  } from "/src/store.js"
+  } from '/src/store'
   import { createEventDispatcher } from 'svelte'
 
   export let iconTask
@@ -33,7 +14,7 @@
 
   const dispatch = createEventDispatcher()
 
-  function handleSingleOrDoubleClick () {
+  function handleSingleOrDoubleClick() {
     if (timer) {
       clearTimeout(timer)
       timer = null
@@ -44,19 +25,18 @@
           isDone: !iconTask.isDone
         }
       })
-
     } 
     else {
       timer = setTimeout(() => {
         dispatch('task-click', { task: iconTask })
-      
+
         timer = null
       }, delay)
     }
   }
 
-  function startDragMove (e, id) {
-    e.dataTransfer.setData("text/plain", id)
+  function startDragMove(e, id) {
+    e.dataTransfer.setData('text/plain', id)
 
     // record distance from the top of the element
     const rect = e.target.getBoundingClientRect()
@@ -69,6 +49,22 @@
     yPosWithinBlock.set(y)
   }
 </script>
+
+<div style="position: relative;">
+  <!-- svelte-ignore a11y-click-events-have-key-events -->
+  <!-- svelte-ignore a11y-missing-attribute -->
+  <img
+    on:click|stopPropagation={handleSingleOrDoubleClick}
+    src={iconTask.iconURL}
+    class:clearly-visible={iconTask.isDone}
+    class:task-not-done={!iconTask.isDone}
+    style="width: 32px; height: 32px; border: 0px solid blue; cursor: pointer;"
+    class:radial-glow={iconTask.isDone}
+    class="ios-3d-touch-disable unselectable"
+    draggable="true"
+    on:dragstart|self={(e) => startDragMove(e, iconTask.id)}
+  />
+</div>
 
 <style>
   .ios-3d-touch-disable {

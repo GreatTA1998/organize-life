@@ -8,24 +8,15 @@ import {
   where,
   setDoc,
   updateDoc,
+  deleteDoc,
 } from "firebase/firestore";
 
-const Schema = {
-  startTime: "",
-  notes: "",
-  reusableTemplateID: "",
-  parentID: "",
-  name: "",
-  orderValue: 0,
-  duration: 30,
-  isDone: false,
-  imageDownloadURL: "",
-  imageFullPath: "",
-  startDateISO: "",
-  iconUrl: "",
-  timeZone: "",
-  notify: "", //string so "0" means notification at 0 minutes instead of false
-};
+const updateQuickTasks = async ({userID, templateID, updates}) => {
+  const q = query(collection(db, "users", userID, "tasks"), where("templateID", "==", templateID));
+  const snapshot = await getDocs(q);
+  const updatePromises = snapshot.docs.map(doc => updateDoc(doc.ref, updates));
+  return Promise.all(updatePromises);
+}
 
 const getByDateRange = (userUID, startDate, endDate) => {
   try {
@@ -54,16 +45,25 @@ const getUnscheduled = (userUID) => {
   );
 };
 
-const post = (userUID, task) => {
-  return setDoc(doc(db, "users", userUID, getRandomID()), task);
+const post = ({ userUID, task, taskID }) => {
+  return setDoc(doc(db, "users", userUID, 'tasks', taskID), task);
 };
 
-const update = (userUID, taskID, keyValueChanges) => {
-  return updateDoc(doc(db, "users", userUID, taskID), keyValueChanges);
+const update = ({ userUID, taskID, keyValueChanges }) => {
+  return updateDoc(doc(db, "users", userUID, 'tasks', taskID), keyValueChanges);
 };
 
-const remove = (userUID, taskID) =>
-  deleteDoc(doc(db, "users", userUID, taskID));
+const remove = async ({ userUID, taskID }) => {
+  deleteDoc(doc(db, "users", userUID, 'tasks', taskID));
+  const childrenSnapshot = await getDocs(query(collection(db, "users", userUID, "tasks"), where("parentID", "==", taskID)));
+  if (!childrenSnapshot.empty) {
+    const updatePromises = childrenSnapshot.docs.map(child =>
+      updateDoc(child.ref, { parentID: "" })
+    );
+    await Promise.all(updatePromises);
+  }
+  return;
+}
 
 const getTasksJSONByRange = async (uid, startDate, endDate) => {
   const neededProperties = [
@@ -92,6 +92,7 @@ const getTasksJSONByRange = async (uid, startDate, endDate) => {
 };
 
 export default {
+  updateQuickTasks,
   getByDateRange,
   getUnscheduled,
   post,
