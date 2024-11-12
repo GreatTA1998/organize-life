@@ -229,6 +229,9 @@
   #scroll-parent {
     overflow: auto;
     position: relative;
+    
+    /* FIRST: do no harm (this property has downsides) But it's a last-resort fallback if there are performance issues */
+    /* will-change: scroll-position; */
   }
 
   .scroll-content {
