@@ -6,11 +6,16 @@
   import MultiPhotoUploader from '../MultiPhotoUploader.svelte'
   import FloatingButtonWrapper from '../MobileMode/FloatingButtonWrapper.svelte'
 
-  import Tasks from "/src/back-end/Tasks"
+  import Tasks from '/src/back-end/Tasks'
   import { buildCalendarDataStructures } from '/src/helpers/maintainState.js'
   import { trackWidth, trackHeight } from '/src/helpers/actions.js'
   import { DateTime } from 'luxon'
-  import { tasksScheduledOn, user, calendarTasks, hasInitialScrolled } from '/src/store.js'
+  import {
+    tasksScheduledOn,
+    user,
+    calendarTasks,
+    hasInitialScrolled
+  } from '/src/store'
 
   const TOTAL_COLUMNS = 365
   const COLUMN_WIDTH = 200
@@ -20,7 +25,9 @@
 
   const c = 4 // 2c = 8, total rendered will be visible columns + (8)(2), so 16 additional columns
 
-  let calOriginDT = DateTime.now().startOf('day').minus({ days: TOTAL_COLUMNS / 2 })
+  let calOriginDT = DateTime.now()
+    .startOf('day')
+    .minus({ days: TOTAL_COLUMNS / 2 })
   let dtOfActiveColumns = []
 
   let ScrollParent
@@ -41,7 +48,7 @@
   let exactHeight = CORNER_LABEL_HEIGHT
 
   $: setLeftEdgeIdx(scrollX)
-  $: setRightEdgeIdx(scrollX) 
+  $: setRightEdgeIdx(scrollX)
 
   $: reactToScroll(leftEdgeIdx, rightEdgeIdx)
 
@@ -53,7 +60,7 @@
     scrollToTodayColumn()
   }
 
-  function setupInitialColumnsAndVariables () {
+  function setupInitialColumnsAndVariables() {
     initialScrollParentWidth = scrollParentWidth
     setLeftEdgeIdx()
     setRightEdgeIdx()
@@ -64,63 +71,91 @@
     updateActiveColumns()
   }
 
-  function reactToScroll (leftEdgeIdx, rightEdgeIdx) {
+  function reactToScroll(leftEdgeIdx, rightEdgeIdx) {
     // HANDLE DATA
     // note: `leftEdgeIdx` jumps non-consecutively sometimes depending on how fast the user is scrolling
     if (leftEdgeIdx <= leftTriggerIdx && leftEdgeIdx !== prevLeftEdgeIdx) {
       fetchMorePastTasks(leftTriggerIdx) // even though jumps can be arbitrarily wide, the function calls will resolve in a weakly decreasing order of their `leftTriggerIdx`
-      leftTriggerIdx -= (2*c + 1)
-    } 
-    else if (rightEdgeIdx >= rightTriggerIdx && rightEdgeIdx !== prevRightEdgeIdx) {
+      leftTriggerIdx -= 2 * c + 1
+    } else if (
+      rightEdgeIdx >= rightTriggerIdx &&
+      rightEdgeIdx !== prevRightEdgeIdx
+    ) {
       fetchMoreFutureTasks(rightTriggerIdx)
-      rightTriggerIdx += (2*c + 1)
+      rightTriggerIdx += 2 * c + 1
     }
-    
+
     // HANDLE DISPLAY
-    if (leftEdgeIdx <= prevLeftEdgeIdx - c || rightEdgeIdx >= prevRightEdgeIdx + c) {
+    if (
+      leftEdgeIdx <= prevLeftEdgeIdx - c ||
+      rightEdgeIdx >= prevRightEdgeIdx + c
+    ) {
       updateActiveColumns()
     }
   }
 
-  async function fetchMorePastTasks (triggerIdx) {
-    return new Promise(async (resolve) => {
-      const triggerDT = calOriginDT.plus({ days: triggerIdx })
-      const rightBound = triggerDT.minus({ days: (c+1) })
-      const leftBound = rightBound.minus({ days: 2*c })  
+  async function fetchMorePastTasks(triggerIdx) {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const triggerDT = calOriginDT.plus({ days: triggerIdx })
+        const rightBound = triggerDT.minus({ days: c + 1 })
+        const leftBound = rightBound.minus({ days: 2 * c })
 
-      const newTasks = await Tasks.getByDateRange($user.uid, leftBound.toISODate(), rightBound.toISODate())
+        const newTasks = await Tasks.getByDateRange(
+          $user.uid,
+          leftBound.toISODate(),
+          rightBound.toISODate()
+        )
 
-      buildCalendarDataStructures({
-        flatArray: [...newTasks, ...$calendarTasks]
-      })
-
-      resolve()
+        const mergedTasks = removeDuplicateTasks([
+          ...newTasks,
+          ...$calendarTasks
+        ])
+        buildCalendarDataStructures({ flatArray: mergedTasks })
+        resolve('done')
+      } catch (err) {
+        console.error('error in fetchMorePastTasks', err)
+        reject(err)
+      }
     })
   }
 
-  async function fetchMoreFutureTasks (triggerIdx) {
-    return new Promise(async (resolve) => {
-      const triggerDT = calOriginDT.plus({ days: triggerIdx })
-      const leftBound = triggerDT.plus({ days: (c+1) })
-      const rightBound = leftBound.plus({ days: 2*c })
+  function removeDuplicateTasks(tasks) {
+    return tasks.filter(
+      (task, index, self) => index === self.findIndex((t) => t.id === task.id)
+    )
+  }
 
-      // note each new loaded intervals should not be overlapping
-      const newTasks = await Tasks.getByDateRange($user.uid, leftBound.toISODate(), rightBound.toISODate())
+  async function fetchMoreFutureTasks(triggerIdx) {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const triggerDT = calOriginDT.plus({ days: triggerIdx })
+        const leftBound = triggerDT.plus({ days: c + 1 })
+        const rightBound = leftBound.plus({ days: 2 * c })
 
-      buildCalendarDataStructures({
-        flatArray: [...$calendarTasks, ...newTasks]
-      })
-
-      resolve()
+        // note each new loaded intervals should not be overlapping
+        const newTasks = await Tasks.getByDateRange(
+          $user.uid,
+          leftBound.toISODate(),
+          rightBound.toISODate()
+        )
+        const mergedTasks = removeDuplicateTasks([
+          ...newTasks,
+          ...$calendarTasks
+        ])
+        buildCalendarDataStructures({ flatArray: mergedTasks })
+        resolve('done')
+      } catch (err) {
+        console.error('error in fetchMorePastTasks', err)
+        reject(err)
+      }
     })
   }
 
-  function updateActiveColumns () {
+  function updateActiveColumns() {
     const output = []
-    for (let i = leftEdgeIdx - 2*c; i <= rightEdgeIdx + 2*c; i++) {
-      output.push(
-        calOriginDT.plus({ days: i })
-      )
+    for (let i = leftEdgeIdx - 2 * c; i <= rightEdgeIdx + 2 * c; i++) {
+      output.push(calOriginDT.plus({ days: i }))
     }
     dtOfActiveColumns = output
 
@@ -128,15 +163,17 @@
     prevLeftEdgeIdx = leftEdgeIdx
   }
 
-  function setLeftEdgeIdx () {
+  function setLeftEdgeIdx() {
     leftEdgeIdx = Math.floor(scrollX / COLUMN_WIDTH)
   }
 
-  function setRightEdgeIdx () {
-    rightEdgeIdx = Math.ceil((scrollX + initialScrollParentWidth) / COLUMN_WIDTH)
+  function setRightEdgeIdx() {
+    rightEdgeIdx = Math.ceil(
+      (scrollX + initialScrollParentWidth) / COLUMN_WIDTH
+    )
   }
 
-  function scrollToTodayColumn () {
+  function scrollToTodayColumn() {
     requestAnimationFrame(() => {
       ScrollParent.scrollLeft = middleIdx * COLUMN_WIDTH
     }) // we don't set `hasInitialScrolled` to true, let <CurrentTimeIndicator/> finish off the rest of the logic when it mounts
@@ -162,25 +199,29 @@
     {calOriginDT}
     {exactHeight}
     {isShowingDockingArea}
-    on:toggle-docking-area={() => isShowingDockingArea = !isShowingDockingArea}
+    on:toggle-docking-area={() =>
+      (isShowingDockingArea = !isShowingDockingArea)}
   />
 
-  <div id="scroll-parent" 
+  <div
+    id="scroll-parent"
     bind:this={ScrollParent}
-    use:trackWidth={newWidth => scrollParentWidth = newWidth}
-    on:scroll={(e) => scrollX = e.target.scrollLeft}
+    use:trackWidth={(newWidth) => (scrollParentWidth = newWidth)}
+    on:scroll={(e) => (scrollX = e.target.scrollLeft)}
   >
     <div class="scroll-content" style:width="{TOTAL_COLUMNS * COLUMN_WIDTH}px">
-      <CalendarTimestamps 
+      <CalendarTimestamps
         pixelsPerHour={PIXELS_PER_HOUR}
         topMargin={exactHeight}
       />
       {#if dtOfActiveColumns[0] && $tasksScheduledOn}
-        <div class="visible-days"
+        <div
+          class="visible-days"
           style:transform={`translateX(${dtOfActiveColumns[0].diff(calOriginDT, 'days').days * COLUMN_WIDTH}px)`}
         >
-          <div class="headers-flexbox" 
-            use:trackHeight={newHeight => exactHeight = newHeight}
+          <div
+            class="headers-flexbox"
+            use:trackHeight={(newHeight) => (exactHeight = newHeight)}
             class:bottom-border={$tasksScheduledOn}
           >
             {#each dtOfActiveColumns as currentDate, i (currentDate.toMillis() + `${i}`)}
@@ -196,10 +237,14 @@
 
           <div class="day-columns">
             {#each dtOfActiveColumns as currentDate (currentDate.toMillis())}
-              <DayColumn 
-                calendarBeginningDateClassObject={DateTime.fromISO(currentDate.toFormat('yyyy-MM-dd')).toJSDate()}
+              <DayColumn
+                calendarBeginningDateClassObject={DateTime.fromISO(
+                  currentDate.toFormat('yyyy-MM-dd')
+                ).toJSDate()}
                 pixelsPerHour={PIXELS_PER_HOUR}
-                scheduledTasks={$tasksScheduledOn[currentDate.toFormat('yyyy-MM-dd')]?.hasStartTime ?? []}
+                scheduledTasks={$tasksScheduledOn[
+                  currentDate.toFormat('yyyy-MM-dd')
+                ]?.hasStartTime ?? []}
                 on:task-update
                 on:task-click
                 on:new-root-task
@@ -236,7 +281,7 @@
 
   .scroll-content {
     position: relative;
-    display: flex; 
+    display: flex;
     background-color: var(--calendar-bg-color);
   }
 
@@ -260,4 +305,4 @@
   .bottom-border {
     border-bottom: 1px solid lightgrey;
   }
-</style> 
+</style>

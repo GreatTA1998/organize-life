@@ -43,8 +43,8 @@
      </span>
    {/if}
 
-   {#if task.iconUrl}
-     <img src={task.iconUrl} style="pointer-events: none; width: 32px; height: 32px;">
+   {#if task.iconURL}
+     <img src={task.iconURL} style="pointer-events: none; width: 32px; height: 32px;">
    {:else}
       <div style="position: relative; width: 100%; padding-left: 6px; padding-top: 4px;">
         <div 
@@ -98,7 +98,7 @@
  // Assumes `task` is hydrated
  import { createEventDispatcher } from 'svelte'
  import { getTrueY } from '/src/helpers/everythingElse.js'
- import { yPosWithinBlock, whatIsBeingDragged, whatIsBeingDraggedID, whatIsBeingDraggedFullObj } from '/src/store.js'
+ import { yPosWithinBlock, whatIsBeingDragged, whatIsBeingDraggedID, whatIsBeingDraggedFullObj } from '/src/store'
  import { lazyCallable } from '/src/helpers/actions.js'
 
  export let task = null

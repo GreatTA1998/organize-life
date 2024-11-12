@@ -141,7 +141,7 @@
     whatIsBeingDragged, 
     whatIsBeingDraggedID,
     whatIsBeingDraggedFullObj
-  } from '/src/store.js'
+  } from '/src/store'
 
   export let taskObj
   export let depth 

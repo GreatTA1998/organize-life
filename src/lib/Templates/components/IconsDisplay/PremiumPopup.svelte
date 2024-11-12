@@ -1,6 +1,6 @@
 <script>
   import ReusableRoundButton from '$lib/ReusableRoundButton.svelte'
-  import { user } from '/src/store.js'
+  import { user } from '/src/store'
   import { onMount } from 'svelte'
   import Icons from '/src/back-end/Icons'
   import User from '/src/back-end/User'

@@ -6,7 +6,9 @@ function getRandomID() {
   }
   return autoId;
 }
+
 const getPeriodFromCrontab = (crontab) => {
+  if (crontab === '') return 'quick';
   const parts = crontab.split(' ');
   if (parts.length !== 5) throw new Error('Invalid crontab format', crontab, parts);
   const [minute, hour, dayOfMonth, month, dayOfWeek] = parts;

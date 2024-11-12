@@ -1,10 +1,9 @@
 <script>
-  import { doodleIcons } from '/src/store.js'
-  import PeriodicInput from '$lib/PeriodicTasks/components/EditTemplatePopup/PeriodicInput.svelte'
-  import YearlyInput from '$lib/PeriodicTasks/components/EditTemplatePopup/YearlyInput.svelte'
-  import EditTime from '$lib/PeriodicTasks/components/EditTemplatePopup/EditTime.svelte'
-  import { user, updateTemplate, deleteTemplate } from '/src/store.js'
-  import PeriodicTasks from '/src/back-end/PeriodicTasks'
+  import PeriodicInput from '$lib/Templates/components/EditTemplatePopup/PeriodicInput.svelte'
+  import YearlyInput from '$lib/Templates/components/EditTemplatePopup/YearlyInput.svelte'
+  import EditTime from '$lib/Templates/components/EditTemplatePopup/EditTime.svelte'
+  import { user, updateTemplate, deleteTemplate, doodleIcons } from '/src/store'
+  import Templates from '/src/back-end/Templates/index.js'
   import { onMount } from 'svelte'
   import _ from 'lodash'
   import IconsDisplay from '../IconsDisplay/IconsDisplay.svelte'
@@ -17,8 +16,10 @@
     (newVal) =>
       updateTemplate({
         templateID: template.id,
-        keyValueChanges: { name: newVal }
+        keyValueChanges: { name: newVal },
+        oldTemplate: template
       }),
+
     800
   )
 
@@ -27,12 +28,6 @@
   })
 
   function handleDelete() {
-    if (
-      !confirm(
-        'Are you sure you want to delete this template and all its future instances?'
-      )
-    )
-      return
     deleteTemplate({ templateID: template.id })
     isPopupOpen = false
   }
@@ -41,7 +36,6 @@
     isPopupOpen = newVal
   }
 </script>
-
 <slot {setIsPopupOpen}></slot>
 
 {#if isPopupOpen}
@@ -64,11 +58,11 @@
       />
 
       <div style="display: flex; align-items: center; margin-top: 24px;">
-        {#if PeriodicTasks.getPeriodFromCrontab(template.crontab) === 'weekly'}
+        {#if Templates.getPeriodFromCrontab(template.crontab) === 'weekly'}
           <PeriodicInput {template} maxDays={7} crontabIndex={4} />
-        {:else if PeriodicTasks.getPeriodFromCrontab(template.crontab) === 'monthly'}
+        {:else if Templates.getPeriodFromCrontab(template.crontab) === 'monthly'}
           <PeriodicInput {template} maxDays={31} crontabIndex={2} />
-        {:else if PeriodicTasks.getPeriodFromCrontab(template.crontab) === 'yearly'}
+        {:else if Templates.getPeriodFromCrontab(template.crontab) === 'yearly'}
           <YearlyInput {template} />
         {/if}
 
@@ -82,7 +76,7 @@
         </span>
       </div>
       <EditTime {template} />
-      <IconsDisplay {setIsPopupOpen} {template} />
+      <IconsDisplay {template} />
     </div>
   </div>
 {/if}

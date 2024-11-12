@@ -1,12 +1,10 @@
 <script>
   import UXFormField from '$lib/UXFormField.svelte'
-  import { getFirestoreCollection } from '/src/helpers/firestoreHelpers.js'
+  import Templates from '/src/back-end/Templates/index.js'
   import {
     getRandomID,
-    getDateInMMDD,
-    getHHMM
   } from '/src/helpers/everythingElse.js'
-  import { user } from '/src/store.js'
+  import { user } from '/src/store'
   import { onMount, createEventDispatcher } from 'svelte'
   import { DateTime } from 'luxon'
 
@@ -21,9 +19,7 @@
   const dispatch = createEventDispatcher()
 
   onMount(async () => {
-    const temp = await getFirestoreCollection(
-      `/users/${$user.uid}/periodicTasks`
-    )
+    const temp = await Templates.getAll({ userID: $user.uid, includeStats: false })
     reusableTaskTemplates = temp
   })
 
@@ -52,7 +48,7 @@
 
   async function createNewInstanceOfReusableTask(taskObj) {
     const copy = { ...taskObj }
-    copy.reusableTemplateID = taskObj.id
+    copy.templateID = taskObj.id
     copy.isDone = false
     copy.startDateISO = DateTime.fromJSDate(resultantDateClassObject).toFormat(
       'yyyy-MM-dd'
@@ -112,15 +108,15 @@
           on:click={() => createNewInstanceOfReusableTask(taskTemplate)}
           class:option-highlight={taskTemplateSearchResults.length === 1}
         >
-          {#if taskTemplate.iconUrl}
+          {#if taskTemplate.iconURL}
             <!-- svelte-ignore a11y-missing-attribute -->
             <img
-              src={taskTemplate.iconUrl}
+              src={taskTemplate.iconURL}
               style="width: 24px; height: 24px;"
             />
           {/if}
 
-          <div style="margin-left: {taskTemplate.iconUrl ? '0px' : '12px'}">
+          <div style="margin-left: {taskTemplate.iconURL ? '0px' : '12px'}">
             {taskTemplate.name}
           </div>
         </div>

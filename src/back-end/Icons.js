@@ -7,16 +7,7 @@ import {
     uploadString,
     deleteObject
 } from "firebase/storage";
-import { update } from "lodash";
-
-const IconSchema = {
-    dataURL: "", // to be replaced by url after storing in bucket
-    name: "",
-    isShareable: false,
-    createdBy: "",
-    tags: "",
-}
-
+import IconSchema from "./Schemas/IconSchema.js";
 async function getAvailable(uid) {
     const q = query(
         collection(db, "icons"),
@@ -32,10 +23,11 @@ async function getAvailable(uid) {
 async function uploadIconDataURL(iconObject) {
     const url = await storeIconToBucket(iconObject.id, iconObject.dataURL);
     delete iconObject.dataURL;
+    Joi.assert({...iconObject, url}, IconSchema);
     return setDoc(doc(db, "icons", iconObject.id), {
         ...iconObject,
         url,
-    }).then(() => ({ ...iconObject, url })).catch((err) => console.error("error in User.addIcon", err));
+    }).then(() => ({ ...iconObject, url }));
 }
 
 async function deleteRecursively({ id, uid, url }) {
@@ -43,7 +35,7 @@ async function deleteRecursively({ id, uid, url }) {
     const iconRef = ref(storage, `icons/${id}.png`);
     await deleteObject(iconRef);
     await deleteDoc(doc(db, "icons", id));
-    deleteIconsFromPeriodicTasks({ uid, url });
+    deleteIconsFromTemplates({ uid, url });
     deleteIconsFromTasks({ uid, url });
     return true;
 }
@@ -57,25 +49,25 @@ function storeIconToBucket(id, icon) {
     ).catch((err) => console.error("error in storeIconToBucket", err));
 }
 
-async function deleteIconsFromPeriodicTasks({ uid, url }) {
-    const periodicRef = collection(db, 'users', uid, "periodicTasks");
-    const q = query(periodicRef, where("iconUrl", "==", url));  
-    const periodicTasks = await getDocs(q);
-    if (!periodicTasks.length) return;
-    for (const task of periodicTasks) {
-        updateDoc(task, {
-            iconUrl: "",
+async function deleteIconsFromTemplates({ uid, url }) {
+    const templateRef = collection(db, 'users', uid, "templates");
+    const q = query(templateRef, where("iconURL", "==", url));  
+    const templates = await getDocs(q);
+    if (!templates.length) return;
+    for (const template of templates) {
+        updateDoc(template, {
+            iconURL: "",
         });
     }
 }
 async function deleteIconsFromTasks({ uid, url }) {
     const tasksRef = collection(db, 'users', uid, "tasks");
-    const q = query(tasksRef, where("iconUrl", "==", url));
+    const q = query(tasksRef, where("iconURL", "==", url));
     const tasks = await getDocs(q);
     if (!tasks.length) return;
     for (const task of tasks) {
         updateDoc(task, {
-            iconUrl: "",
+            iconURL: "",
         });
     }
 }

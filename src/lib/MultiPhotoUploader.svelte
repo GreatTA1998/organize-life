@@ -17,7 +17,7 @@
   import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage"
   import { setFirestoreDoc } from '/src/helpers/firestoreHelpers.js'
   import { getRandomID, getTimeInHHMM } from '/src/helpers/everythingElse.js'
-  import { user } from '/src/store.js'
+  import { user } from '/src/store'
   import { onMount } from 'svelte'
   import { DateTime } from 'luxon'
   import { createOnLocalState } from "/src/helpers/maintainState.js"

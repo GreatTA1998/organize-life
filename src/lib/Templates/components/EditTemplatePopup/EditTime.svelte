@@ -2,29 +2,30 @@
   import UXFormField from '$lib/UXFormField.svelte'
   import UXToggleSwitch from '$lib/UXToggleSwitch.svelte'
   import ReusableRoundButton from '$lib/ReusableRoundButton.svelte'
-  import { updateTemplate } from '/src/store.js'
+  import { updateTemplate } from '/src/store'
   export let template
 
-  let isEditingTaskStart = false
+  let isEditingSpecificTime = false
   let isEditingDuration = false
   let newDuration = template.duration
   let newStartHHMM = template.startTime
-  let hasSpecificTime = !!template.startTime
+  let displaySpecificTime = !!template.startTime
 
   function saveDuration() {
     updateTemplate({
       templateID: template.id,
-      keyValueChanges: { duration: newDuration }
+      keyValueChanges: { duration: newDuration },
+      oldTemplate: template
     })
-    isEditingDuration = false
   }
 
   function saveStartTime() {
     updateTemplate({
       templateID: template.id,
-      keyValueChanges: { startTime: newStartHHMM }
+      keyValueChanges: { startTime: newStartHHMM },
+      oldTemplate: template
     })
-    isEditingTaskStart = false
+    isEditingSpecificTime = false;
   }
 
   function handleDurationInput(e) {
@@ -33,7 +34,7 @@
   }
 
   function handleTaskStartInput(e) {
-    isEditingTaskStart = true
+    isEditingSpecificTime = true
     const hhmm = e.detail.value
     newStartHHMM = hhmm
   }
@@ -42,14 +43,16 @@
     return taskObj.startDate && taskObj.startTime && taskObj.startYYYY
   }
 
-  function handleSwitchToggle(e) {
-    if (hasSpecificTime) {
+  function handleSwitchToggle() {
+    if (!displaySpecificTime) displaySpecificTime = true
+    else {
       updateTemplate({
         templateID: template.id,
-        keyValueChanges: { startTime: "" }
+        keyValueChanges: { startTime: "" },
+        oldTemplate: template
       })
+      displaySpecificTime = false
     }
-    hasSpecificTime = e.detail.isChecked
   }
 </script>
 
@@ -77,25 +80,27 @@
       </UXFormField>
     </div>
 
+    {#if template.crontab !== ''}
     <div style="margin-top: 0px; margin-left: 16px;">
       <div style="font-size: 14px; rgb(100, 100, 100); margin-bottom: 8px;">
         start time
       </div>
       <div>
         <UXToggleSwitch
-          isChecked={template.startTime}
+          isChecked={displaySpecificTime}
           on:new-checked-state={handleSwitchToggle}
         />
       </div>
-    </div>
+      </div>
+    {/if}
 
-    {#if hasSpecificTime}
+    {#if displaySpecificTime}
       <div style="max-width: 70px; margin-left: 8px;">
         <UXFormField
           pattern={'^[0-9:]*$'}
           fieldLabel="hh:mm"
           value={template.startTime}
-          willAutofocus={false}
+          willAutofocus={true}
           on:input={(e) => handleTaskStartInput(e)}
           placeholder="17:30"
         />
@@ -103,7 +108,7 @@
     {/if}
   </div>
 
-  {#if isEditingTaskStart}
+  {#if isEditingSpecificTime}
     <ReusableRoundButton
       on:click={saveStartTime}
       backgroundColor="rgb(0, 89, 125)"

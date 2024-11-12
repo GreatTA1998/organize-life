@@ -1,25 +1,9 @@
-import { writable, readable, get } from 'svelte/store'
-import PeriodicTasks from './back-end/PeriodicTasks'
+import { writable } from 'svelte/store'
+export { templates, deleteTemplate, updateTemplate } from './templatesStore.js'
 
-export const periodicTasks = writable([])
-
-export function deleteTemplate({ templateID }) {
-  const currentUser = get(user)
-  PeriodicTasks.deleteTemplate({ id: templateID, userID: currentUser.uid })
-  periodicTasks.update((tasks) => tasks.filter((task) => task.id !== templateID))
-}
-
-export function updateTemplate({ templateID, keyValueChanges }) {
-  const currentUser = get(user);
-  PeriodicTasks.updateWithTasks({
-    userID: currentUser.uid,
-    id: templateID,
-    updates: keyValueChanges
-  })
-  periodicTasks.update((tasks) => tasks.map((task) =>
-    task.id === templateID ? { ...task, ...keyValueChanges } : task
-  ))
-}
+export const todoTasks = writable(null)
+export const calendarTasks = writable(null)
+export const loadingTasks = writable(false);
 
 export const user = writable({}) // {} means not logged in, cannot be null
 export const doodleIcons = writable([])
@@ -60,8 +44,5 @@ export const yPosWithinBlock = writable(0)
 
 export const todoMemoryTree = writable(null)
 export const calendarMemoryTree = writable(null)
-
-export const todoTasks = writable(null)
-export const calendarTasks = writable(null)
 
 export const daysToRender = writable([])

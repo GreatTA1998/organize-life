@@ -5,23 +5,22 @@
     user,
     showSnackbar,
     hasInitialScrolled
-  } from '/src/store.js'
+  } from '/src/store'
+  import Templates from '$lib/Templates/Templates.svelte'
   import AI from '../AI/AI.svelte'
   import TheSnackbar from '$lib/TheSnackbar.svelte'
   import PopupCustomerSupport from '$lib/PopupCustomerSupport.svelte'
   import NavbarAndContentWrapper from '$lib/NavbarAndContentWrapper.svelte'
   import DetailedCardPopup from '$lib/DetailedCardPopup/DetailedCardPopup.svelte'
-  import PeriodicTasks from '$lib/PeriodicTasks/PeriodicTasks.svelte'
   import MultiPhotoUploader from '$lib/MultiPhotoUploader.svelte'
   import {
     handleSW,
     handleNotificationPermission
   } from './handleNotifications.js'
-  import { onDestroy, onMount, tick } from 'svelte'
+  import { onDestroy, onMount } from 'svelte'
   import { goto } from '$app/navigation'
   import { getAuth, signOut } from 'firebase/auth'
-  import { db } from '../../back-end/firestoreConnection.js'
-  import { doc, updateDoc, arrayUnion, arrayRemove } from 'firebase/firestore'
+  import { arrayUnion } from 'firebase/firestore'
   import NewThisWeekTodo from '$lib/NewThisWeekTodo.svelte'
   import { handleInitialTasks } from './handleTasks.js'
   import {
@@ -47,7 +46,6 @@
 
   onMount(async () => {
     if (!dev) {
-      console.log('running handleNotificationPermission')
       try {
         handleNotificationPermission($user)
         handleSW()
@@ -205,9 +203,8 @@
         <AI />
       </div>
     </div>
-
-    <div style="display: {currentMode === 'Templates' ? 'block' : 'none'}; width: 100%; background: hsl(98, 40%, 96%);">
-      <PeriodicTasks />
+    <div style="width: 100%; background: hsl(98, 40%, 96%); display: {currentMode === 'Templates' ? 'block' : 'none'}">
+      <Templates />
     </div>
   </div>
 </NavbarAndContentWrapper>

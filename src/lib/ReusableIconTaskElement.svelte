@@ -101,7 +101,7 @@
  // Assumes `task` is hydrated
  import { createEventDispatcher } from 'svelte'
  import { getTrueY } from '/src/helpers/everythingElse.js'
- import { yPosWithinBlock, whatIsBeingDragged, whatIsBeingDraggedID, whatIsBeingDraggedFullObj } from '/src/store.js'
+ import { yPosWithinBlock, whatIsBeingDragged, whatIsBeingDraggedID, whatIsBeingDraggedFullObj } from '/src/store'
  import FunctionalDoodleIcon from '$lib/FunctionalDoodleIcon.svelte'
 
  export let task = null

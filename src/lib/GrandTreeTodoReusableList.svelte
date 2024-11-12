@@ -1,100 +1,6 @@
-<div 
-  class="todo-list-container" 
-  style={$$props.style}
-  on:drop|stopPropagation={(e) => handleDroppedTask(e)}
-  on:dragover={(e) => dragover_handler(e)}
-> 
-  <div class="first-column" style="height: 100%; display: flex; flex-direction: column;">
-    {#if listTitle}
-      <div style="display: flex; align-items: center;">
-        <div style="font-weight: 600; font-size: 18px; color: rgb(80, 80, 80)">
-          {listTitle} 
-        </div> 
-        
-        <span on:click={startTypingNewTask} 
-          class="new-task-icon material-icons" 
-          style="margin-left: 10px; margin-bottom: 10px"
-        >
-          +
-        </span>
-      </div>
-    {/if}
-
-    <div 
-      style="flex-grow: 1; padding: 0px 6px;"
-      class:has-max-width={hasMaxWidth}
-      class:enable-scrolling={enableScrolling} 
-    >
-      {#if isTypingNewRootTask}
-        <UXFormField
-          fieldLabel="Task Name"
-          value={newRootTaskStringValue}
-          on:input={(e) => newRootTaskStringValue = e.detail.value}
-          on:focus-out={() => {
-            if (newRootTaskStringValue === '') {
-              isTypingNewRootTask = false
-            }
-          }}
-          on:task-entered={(e) => handleKeyDown(e)}
-        />
-        <div style="margin-bottom: 8px;"></div>
-      {/if}
-
-      <ReusableHelperDropzone
-        ancestorRoomIDs={['']}
-        roomsInThisLevel={tasksToDisplay}
-        idxInThisLevel={0}
-        parentID={''}
-        parentObj={{ subtreeDeadlineInMsElapsed: convertDDMMYYYYToDateClassObject(defaultDeadline).getTime() }}
-        colorForDebugging="purple"
-        {dueInHowManyDays}
-        heightInPx={36}
-      />
-
-      {#each tasksToDisplay as taskObj, i (taskObj.id)}
-        <RecursiveTaskElement 
-          {taskObj}
-          depth={0}
-          ancestorRoomIDs={['']}
-          doNotShowScheduledTasks={true}
-          doNotShowCompletedTasks={true}
-          {dueInHowManyDays}
-          {willShowCheckbox}
-          {isLargeFont}
-          {isRecursive}
-          on:task-click
-          on:task-checkbox-change
-          on:task-node-update
-          on:subtask-create
-        />
-
-        <ReusableHelperDropzone
-          ancestorRoomIDs={['']}
-          roomsInThisLevel={tasksToDisplay}
-          idxInThisLevel={i+1}
-          parentID={''}
-          parentObj={{ subtreeDeadlineInMsElapsed: convertDDMMYYYYToDateClassObject(defaultDeadline).getTime() }}
-          colorForDebugging="purple"
-          {dueInHowManyDays}
-          heightInPx={36}
-        />
-      {/each}
-
-      <!-- NOTE: BECAUSE WE DON'T DISPLAY TASKS THAT ARE COMPLETED,
-        WE HAVE A DEVIATION BETWEEN STATE AND UI
-        IN THE FUTURE IF THERE ARE UNEXPECTED BUGS, THIS IS THE LIKELY CAUSE
-      -->
-    </div>
-  </div>
-
-  <slot {startTypingNewTask}>
-
-  </slot>
-</div>
-
 <script>
-  import { 
-    getDateInDDMMYYYY, 
+  import {
+    getDateInDDMMYYYY,
     getRandomID,
     sortByUnscheduledThenByOrderValue,
     convertDDMMYYYYToDateClassObject
@@ -108,9 +14,15 @@
     maintainValidSubtreeDeadlines,
     correctDeadlineIfNecessary
   } from '/src/helpers/subtreeDragDrop.js'
-  import { user, whatIsBeingDraggedFullObj, whatIsBeingDragged, whatIsBeingDraggedID } from '/src/store.js'
-  import { getFirestore, writeBatch, doc, increment } from 'firebase/firestore'
-  import {db} from '../back-end/firestoreConnection'
+  import {
+    user,
+    whatIsBeingDraggedFullObj,
+    whatIsBeingDragged,
+    whatIsBeingDraggedID
+  } from '/src/store/index.js'
+  import { writeBatch, doc, increment } from 'firebase/firestore'
+  import { db } from '../back-end/firestoreConnection'
+  import { DateTime } from 'luxon'
 
   export let dueInHowManyDays = null // AF(null) means it's a life todo, otherwise it should be a number
   export let allTasksDue = []
@@ -128,7 +40,7 @@
   const dispatch = createEventDispatcher()
   let batch = writeBatch(db)
 
-  // COMPUTE DEFAULT DEADLINE 
+  // COMPUTE DEFAULT DEADLINE
   $: {
     const d = new Date()
     for (let i = 0; i < dueInHowManyDays; i++) {
@@ -142,21 +54,21 @@
     computeTasksToDisplay()
   }
 
-  function startTypingNewTask () {
+  function startTypingNewTask() {
     isTypingNewRootTask = true
   }
 
-  function computeTasksToDisplay () {
+  function computeTasksToDisplay() {
     const temp = sortByUnscheduledThenByOrderValue(allTasksDue)
-    tasksToDisplay = temp.filter(task => !task.isDone)
+    tasksToDisplay = temp.filter((task) => !task.isDone)
   }
 
-  function handleKeyDown (e) {
+  function handleKeyDown(e) {
     if (newRootTaskStringValue === '') {
       isTypingNewRootTask = false
     }
     // nice side-effect of this: double-tap ENTER to be done
-    else  {
+    else {
       createRootTaskWithDeadline(newRootTaskStringValue)
       // then reset
       newRootTaskStringValue = ''
@@ -164,24 +76,35 @@
   }
 
   // INTERFACE DIFFERENCE #2
-  function createRootTaskWithDeadline (taskName) {
+  function createRootTaskWithDeadline(taskName) {
     const newRootTaskObj = {
-      startDateISO: '',
       name: taskName,
-      parentID: ''
+      startTime: '',
+      notes: '',
+      templateID: '',
+      parentID: '',
+      orderValue: 0,
+      duration: 30,
+      isDone: false,
+      imageDownloadURL: '',
+      imageFullPath: '',
+      startDateISO: '',
+      iconURL: '',
+      timeZone: DateTime.local().zoneName,
+      notify: ''
     }
 
     if (tasksToDisplay.length > 0) {
-      newRootTaskObj.orderValue = (0 + tasksToDisplay[0].orderValue) / 2 
+      newRootTaskObj.orderValue = (0 + tasksToDisplay[0].orderValue) / 2
     } // otherwise the default `orderValue` will be `maxOrder`, handled by `applyTaskSchema`
 
-    dispatch('new-root-task', { 
-      id: getRandomID(), 
-      newTaskObj: newRootTaskObj 
+    dispatch('new-root-task', {
+      id: getRandomID(),
+      newTaskObj: newRootTaskObj
     })
   }
 
-  function handleDroppedTask (e) {
+  function handleDroppedTask(e) {
     e.preventDefault()
 
     // to be consistent with the API of <ReusableHelperDropzone {parentObj}/>
@@ -192,19 +115,18 @@
     if ($whatIsBeingDraggedFullObj.startDate) {
       const initialNumericalDifference = 3
       newVal = $user.maxOrderValue || initialNumericalDifference
-      batch.update(
-        doc(db, `/users/${$user.uid}/`), {
-          maxOrderValue: increment(initialNumericalDifference)
-        }
-      )
-    } 
-    else { // don't re-position the todo-task if it's already on the list, leave it as it is
+      batch.update(doc(db, `/users/${$user.uid}/`), {
+        maxOrderValue: increment(initialNumericalDifference)
+      })
+    } else {
+      // don't re-position the todo-task if it's already on the list, leave it as it is
       newVal = $whatIsBeingDraggedFullObj.orderValue
     }
 
     // 1. ORDER VALUE (and startTime)
     // only applies to the subtree's root
-    const { deadlineDate, deadlineTime, id, subtreeDeadlineInMsElapsed } = $whatIsBeingDraggedFullObj
+    const { deadlineDate, deadlineTime, id, subtreeDeadlineInMsElapsed } =
+      $whatIsBeingDraggedFullObj
 
     let updateObj = {
       orderValue: newVal,
@@ -213,16 +135,16 @@
       id,
       subtreeDeadlineInMsElapsed
     }
-    
+
     // 2. UNSCHEDULE: when you drag to the to-do list, it always unschedules it from the calendar
-    updateObj.startTime = '' 
+    updateObj.startTime = ''
     updateObj.startDate = ''
     updateObj.startYYYY = ''
 
     // 3. DEADLINE
-    updateObj = correctDeadlineIfNecessary({ 
-      node: updateObj, 
-      todoListUpperBound: dueInHowManyDays, 
+    updateObj = correctDeadlineIfNecessary({
+      node: updateObj,
+      todoListUpperBound: dueInHowManyDays,
       parentObj,
       batch,
       userDoc: $user
@@ -232,9 +154,9 @@
     updateObj = breakParentRelationIfNecessary(updateObj)
 
     // 2. HANDLE SUBTREE DEADLINES
-    maintainValidSubtreeDeadlines({ 
-      node: $whatIsBeingDraggedFullObj, 
-      todoListUpperBound: dueInHowManyDays, 
+    maintainValidSubtreeDeadlines({
+      node: $whatIsBeingDraggedFullObj,
+      todoListUpperBound: dueInHowManyDays,
       parentObj,
       batch,
       userDoc: $user
@@ -254,19 +176,126 @@
     whatIsBeingDragged.set('')
   }
 
-  function dragover_handler (e) {
+  function dragover_handler(e) {
     e.preventDefault()
   }
 
-  function dispatchNewDeadline ({ taskID, deadlineDateDDMMYYYY, deadlineTimeHHMM }) {
+  function dispatchNewDeadline({
+    taskID,
+    deadlineDateDDMMYYYY,
+    deadlineTimeHHMM
+  }) {
     dispatch('task-dragged', {
       id: taskID,
       timeOfDay: '',
-      deadlineTime: deadlineTimeHHMM, 
+      deadlineTime: deadlineTimeHHMM,
       deadlineDate: deadlineDateDDMMYYYY
     })
   }
 </script>
+
+<div
+  class="todo-list-container"
+  style={$$props.style}
+  on:drop|stopPropagation={(e) => handleDroppedTask(e)}
+  on:dragover={(e) => dragover_handler(e)}
+>
+  <div
+    class="first-column"
+    style="height: 100%; display: flex; flex-direction: column;"
+  >
+    {#if listTitle}
+      <div style="display: flex; align-items: center;">
+        <div style="font-weight: 600; font-size: 18px; color: rgb(80, 80, 80)">
+          {listTitle}
+        </div>
+
+        <!-- svelte-ignore a11y-click-events-have-key-events -->
+        <span
+          on:click={startTypingNewTask}
+          class="new-task-icon material-icons"
+          style="margin-left: 10px; margin-bottom: 10px"
+        >
+          +
+        </span>
+      </div>
+    {/if}
+
+    <div
+      style="flex-grow: 1; padding: 0px 6px;"
+      class:has-max-width={hasMaxWidth}
+      class:enable-scrolling={enableScrolling}
+    >
+      {#if isTypingNewRootTask}
+        <UXFormField
+          fieldLabel="Task Name"
+          value={newRootTaskStringValue}
+          on:input={(e) => (newRootTaskStringValue = e.detail.value)}
+          on:focus-out={() => {
+            if (newRootTaskStringValue === '') {
+              isTypingNewRootTask = false
+            }
+          }}
+          on:task-entered={(e) => handleKeyDown(e)}
+        />
+        <div style="margin-bottom: 8px;"></div>
+      {/if}
+
+      <ReusableHelperDropzone
+        ancestorRoomIDs={['']}
+        roomsInThisLevel={tasksToDisplay}
+        idxInThisLevel={0}
+        parentID={''}
+        parentObj={{
+          subtreeDeadlineInMsElapsed:
+            convertDDMMYYYYToDateClassObject(defaultDeadline).getTime()
+        }}
+        colorForDebugging="purple"
+        {dueInHowManyDays}
+        heightInPx={36}
+      />
+
+      {#each tasksToDisplay as taskObj, i (taskObj.id)}
+        <RecursiveTaskElement
+          {taskObj}
+          depth={0}
+          ancestorRoomIDs={['']}
+          doNotShowScheduledTasks={true}
+          doNotShowCompletedTasks={true}
+          {dueInHowManyDays}
+          {willShowCheckbox}
+          {isLargeFont}
+          {isRecursive}
+          on:task-click
+          on:task-checkbox-change
+          on:task-node-update
+          on:subtask-create
+        />
+
+        <ReusableHelperDropzone
+          ancestorRoomIDs={['']}
+          roomsInThisLevel={tasksToDisplay}
+          idxInThisLevel={i + 1}
+          parentID={''}
+          parentObj={{
+            subtreeDeadlineInMsElapsed:
+              convertDDMMYYYYToDateClassObject(defaultDeadline).getTime()
+          }}
+          colorForDebugging="purple"
+          {dueInHowManyDays}
+          heightInPx={36}
+        />
+      {/each}
+
+      <!-- NOTE: BECAUSE WE DON'T DISPLAY TASKS THAT ARE COMPLETED,
+        WE HAVE A DEVIATION BETWEEN STATE AND UI
+        IN THE FUTURE IF THERE ARE UNEXPECTED BUGS, THIS IS THE LIKELY CAUSE
+      -->
+    </div>
+  </div>
+
+  <slot {startTypingNewTask}></slot>
+</div>
 
 <style>
   .todo-list-container {
@@ -274,7 +303,7 @@
     height: 100%;
     background-color: var(--todo-list-bg-color);
     padding-bottom: 16px;
-    padding-left: 2vw; 
+    padding-left: 2vw;
     padding-right: 2vw;
     font-size: 2em;
   }
@@ -287,10 +316,10 @@
     it can get extremely complicated, and that CSS grid could be a better solution.
   */
   .has-max-width {
-    max-width: 21.2vw; 
+    max-width: 21.2vw;
   }
 
   .first-column {
-    flex-basis: 100%; 
+    flex-basis: 100%;
   }
 </style>

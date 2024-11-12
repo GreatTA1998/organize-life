@@ -1,14 +1,14 @@
 <script>
-    import { updateTemplate } from '/src/store.js'
-    export let template
-  
+  import { updateTemplate } from '/src/store'
+  export let template
+
   let yearlyDate = ''
   function validateAndSaveYearlyDate() {
     const dateRegex = /^(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$/
     if (dateRegex.test(yearlyDate)) {
       const [month, day] = yearlyDate.split('-')
       const crontab = `0 0 ${day} ${month} *`
-      updateTemplate({ templateID: template.id, keyValueChanges: { crontab: crontab } })
+      updateTemplate({ templateID: template.id, keyValueChanges: { crontab: crontab }, oldTemplate: template })
     } else {
       alert('Please enter a valid date in MM-DD format')
     }
