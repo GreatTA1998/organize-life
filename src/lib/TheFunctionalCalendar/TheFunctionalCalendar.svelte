@@ -17,6 +17,9 @@
     hasInitialScrolled
   } from '/src/store'
 
+  // Video explanation for this component (refer to related videos in the "Two-way infinite scroll" folder)
+  // https://www.explanations.io/uRNISfkw0mE404Zn4GgH/ePfUWAU6CXL7leApJ9GP
+
   const TOTAL_COLUMNS = 365
   const COLUMN_WIDTH = 200
   const PIXELS_PER_HOUR = 80
