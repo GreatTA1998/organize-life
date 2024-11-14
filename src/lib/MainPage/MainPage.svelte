@@ -4,7 +4,7 @@
     mostRecentlyCompletedTaskID,
     user,
     showSnackbar,
-    hasInitialScrolled
+    hasInitialScrolled,
   } from '/src/store'
   import Templates from '$lib/Templates/Templates.svelte'
   import AI from '../AI/AI.svelte'
@@ -13,7 +13,7 @@
   import DetailedCardPopup from '$lib/DetailedCardPopup/DetailedCardPopup.svelte'
   import {
     handleSW,
-    handleNotificationPermission
+    handleNotificationPermission,
   } from './handleNotifications.js'
   import { onDestroy, onMount } from 'svelte'
   import { goto } from '$app/navigation'
@@ -24,7 +24,7 @@
   import {
     createTaskNode,
     updateTaskNode,
-    deleteTaskNode
+    deleteTaskNode,
   } from '/src/helpers/crud.js'
   import { findTaskByID } from '/src/helpers/utils.js'
   import { dev } from '$app/environment'
@@ -101,7 +101,7 @@
     // the parent needs to update its pointers
     updateTaskNode({
       id: parentID,
-      keyValueChanges: { children: arrayUnion(id) }
+      keyValueChanges: { children: arrayUnion(id) },
     })
     createTaskNode({ id, newTaskObj })
   }
@@ -110,14 +110,14 @@
 {#if clickedTaskID}
   <DetailedCardPopup
     taskObject={clickedTask}
-    on:task-update={(e) => updateTaskNode(e.detail)}
-    on:task-click={(e) => openDetailedCard(e.detail)}
+    on:task-update={e => updateTaskNode(e.detail)}
+    on:task-click={e => openDetailedCard(e.detail)}
     on:card-close={() => (clickedTaskID = '')}
-    on:task-delete={(e) => deleteTaskNode(e.detail)}
-    on:task-checkbox-change={(e) =>
+    on:task-delete={e => deleteTaskNode(e.detail)}
+    on:task-checkbox-change={e =>
       updateTaskNode({
         id: e.detail.id,
-        keyValueChanges: { isDone: e.detail.isDone }
+        keyValueChanges: { isDone: e.detail.isDone },
       })}
   />
 {/if}
@@ -129,8 +129,8 @@
       updateTaskNode({
         id: $mostRecentlyCompletedTaskID,
         keyValueChanges: {
-          isDone: false
-        }
+          isDone: false,
+        },
       })
       mostRecentlyCompletedTaskID.set('')
     }}
@@ -215,29 +215,29 @@
       style="display: {currentMode === 'Week' ? 'flex' : 'none'}; width: 100%;"
     >
       <NewThisWeekTodo
-        on:new-root-task={(e) => createTaskNode(e.detail)}
-        on:task-click={(e) => openDetailedCard(e.detail)}
-        on:subtask-create={(e) => createSubtask(e.detail)}
-        on:task-checkbox-change={(e) =>
+        on:new-root-task={e => createTaskNode(e.detail)}
+        on:task-click={e => openDetailedCard(e.detail)}
+        on:subtask-create={e => createSubtask(e.detail)}
+        on:task-checkbox-change={e =>
           updateTaskNode({
             id: e.detail.id,
-            keyValueChanges: { isDone: e.detail.isDone }
+            keyValueChanges: { isDone: e.detail.isDone },
           })}
       />
       <TheFunctionalCalendar
         {isResizing}
-        on:new-root-task={(e) => createTaskNode(e.detail)}
-        on:task-click={(e) => openDetailedCard(e.detail)}
-        on:task-update={(e) =>
+        on:new-root-task={e => createTaskNode(e.detail)}
+        on:task-click={e => openDetailedCard(e.detail)}
+        on:task-update={e =>
           updateTaskNode({
             id: e.detail.id,
-            keyValueChanges: e.detail.keyValueChanges
+            keyValueChanges: e.detail.keyValueChanges,
           })}
       />
       <div
-        style="display: {isShowingAI
-          ? 'block'
-          : 'none'}; flex: 0 0 {aiPanelWidth}px; position: relative; background-color: var(--navbar-bg-color);"
+        style="display: {isShowingAI ? 'block' : (
+          'none'
+        )}; flex: 0 0 {aiPanelWidth}px; position: relative; background-color: var(--navbar-bg-color);"
       >
         <div
           class="resize-handle"
@@ -297,10 +297,11 @@
       </div>
     </div>
     <div
-      style="width: 100%; background: hsl(98, 40%, 96%); display: {currentMode ===
-      'Templates'
-        ? 'block'
-        : 'none'}"
+      style="width: 100%; background: hsl(98, 40%, 96%); display: {(
+        currentMode === 'Templates'
+      ) ?
+        'block'
+      : 'none'}"
     >
       <Templates />
     </div>
