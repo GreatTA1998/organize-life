@@ -77,7 +77,9 @@
 </div>
 
 <div>
-  <slot></slot>
+
+  <h1> Out for Maintenance </h1>
+  <!-- <slot></slot> -->
 </div>
 
 <style>
