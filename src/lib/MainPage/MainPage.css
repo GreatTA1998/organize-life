@@ -4,6 +4,15 @@
     color: rgb(120, 120, 120);
   }
 
+  .collapsed-ai-indicator:hover {
+    color: #333;
+    transform: translate(-50%, -50%) scale(1.1);
+  }
+
+  .resize-handle:hover {
+    background: rgba(0, 0, 0, 0.1);
+  }
+
   .rounded-card {
     padding: 24px;
     border-radius: 6px;
