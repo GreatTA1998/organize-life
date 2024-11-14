@@ -77,8 +77,8 @@
 </div>
 
 <div>
-  <!-- <slot></slot> -->
-   <h1>Website out for maintenance</h1>
+  <slot></slot>
+   <!-- <h1>Website out for maintenance</h1> -->
 </div>
 
 <style>
