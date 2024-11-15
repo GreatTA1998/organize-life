@@ -67,7 +67,7 @@
       <!-- svelte-ignore a11y-missing-attribute -->
       <img src={task.iconURL} style="pointer-events: none; width: 32px; height: 32px;">
     {:else}
-      <div class="task-name truncate-to-one-line" style="color: {isBulletPoint ? '' : 'white'}">
+      <div class="task-name truncate-to-one-line unselectable" style="color: {isBulletPoint ? '' : 'white'}">
         {task.name}
       </div>
     {/if}

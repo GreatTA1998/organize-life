@@ -48,7 +48,7 @@
    {:else}
       <div style="position: relative; width: 100%; padding-left: 6px; padding-top: 4px;">
         <div 
-          class="task-name truncate-to-one-line" 
+          class="task-name truncate-to-one-line unselectable" 
           style="
             color: {isBulletPoint ? '' : 'black'}; 
             position: relative;
