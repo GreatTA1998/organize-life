@@ -217,10 +217,15 @@
         pixelsPerHour={PIXELS_PER_HOUR}
         topMargin={exactHeight}
       />
+
+
+
+      <!-- style:transform={`translateX(${dtOfActiveColumns[0].diff(calOriginDT, 'days').days * COLUMN_WIDTH}px)`} -->
       {#if dtOfActiveColumns[0] && $tasksScheduledOn}
         <div
           class="visible-days"
-          style:transform={`translateX(${dtOfActiveColumns[0].diff(calOriginDT, 'days').days * COLUMN_WIDTH}px)`}
+          style="position: absolute"
+          style:left={`${dtOfActiveColumns[0].diff(calOriginDT, 'days').days * COLUMN_WIDTH}px`}
         >
           <div
             class="headers-flexbox"
