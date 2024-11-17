@@ -10,6 +10,7 @@
   };
 
   function handleDragStart(e) {
+    e.preventDefault()
     e.dataTransfer.setData("text/plain", "test-data");
   }
 </script>
