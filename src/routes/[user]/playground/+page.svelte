@@ -68,10 +68,10 @@
     width: 200px;
     height: 80px;
     background: #e0e0e0;
-    display: flex;
+    /* display: flex;
     align-items: center;
     justify-content: center;
-    cursor: move;
+    cursor: move; */
   }
 
   .absolute-container {

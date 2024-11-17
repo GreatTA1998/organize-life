@@ -61,7 +61,7 @@
   }
 </script>
 
-<div
+<!-- <div
   id="loading-screen-logo-start"
   style="z-index: 99999; background: white; width: 100vw; height: 100vh"
   class="center"
@@ -75,9 +75,9 @@
     alt="logo"
     style="width: 48px; height: 48px;"
   />
-</div>
+</div> -->
 
-<div>
+<div style="border: 4px solid red;">
   <slot></slot>
 </div>
 
