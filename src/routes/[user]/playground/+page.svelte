@@ -16,7 +16,7 @@
 
 <div class="test-container">
   <div class="example">
-    <div class="dragdemo" draggable="true">drag me</div>
+    <div class="dragdemo" draggable="true" on:dragstart={handleDragStart}>drag me</div>
 
   </div>
 
