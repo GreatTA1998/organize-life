@@ -2,18 +2,24 @@
   export let pixelsPerHour
 
   export let topMargin
-  let numOfHourBlocksDisplayed = 24
-  let timesOfDay = getTimesOfDay()
+  export let compactTimestamps = false
 
-  function getTimesOfDay() {
+  let numOfHourBlocksDisplayed = 24
+  let timesOfDay = getTimesOfDay(compactTimestamps)
+
+  function getTimesOfDay () {
     const temp = [];
     let currentHour = 0;
     for (let i = 0; i < numOfHourBlocksDisplayed; i++) {
       if (currentHour === 24) {
         currentHour = 0;
       }
-      if (currentHour < 10) temp.push("0" + currentHour + ":00");
-      else temp.push(currentHour + ":00");
+      let timestamp = currentHour <  10 ? `0${currentHour}` : `${currentHour}`
+      if (!compactTimestamps) {
+        timestamp = timestamp + ':00'
+      }
+      temp.push(timestamp)
+
       currentHour += 1;
     }
     return temp;
@@ -33,7 +39,7 @@
 
 <style>
   :root {
-    --timestamps-column-width: 64px;
+    --timestamps-column-width: 32px;
   }
 
   .timestamps {

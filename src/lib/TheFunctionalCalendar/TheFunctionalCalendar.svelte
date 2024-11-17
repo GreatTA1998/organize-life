@@ -17,6 +17,8 @@
     hasInitialScrolled
   } from '/src/store'
 
+  export let compactTimestamps
+
   // Video explanation for this component (refer to related videos in the "Two-way infinite scroll" folder)
   // https://www.explanations.io/uRNISfkw0mE404Zn4GgH/ePfUWAU6CXL7leApJ9GP
 
@@ -216,6 +218,7 @@
       <CalendarTimestamps
         pixelsPerHour={PIXELS_PER_HOUR}
         topMargin={exactHeight}
+        {compactTimestamps}
       />
       {#if dtOfActiveColumns[0] && $tasksScheduledOn}
         <div

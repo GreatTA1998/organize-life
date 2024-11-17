@@ -69,6 +69,7 @@
       />
     {:else if activeTabName === 'CALENDAR_VIEW'}
       <TheFunctionalCalendar
+        compactTimestamps={true}
         on:new-root-task={(e) => createTaskNode(e.detail)}
         on:task-click={(e) => openDetailedCard(e.detail)}
         on:task-update={(e) => updateTaskNode({
@@ -92,28 +93,6 @@
       </div>
     </div>
 
-    <div on:click={() => activeTabName = 'TODAY_VIEW'} class="bottom-nav-tab" class:active-nav-tab={activeTabName === 'TODAY_VIEW'}>
-      <div style="text-align: center;">
-        <span class="material-symbols-outlined nav-tab-icon">
-          sunny
-        </span>
-        <div class="nav-tab-desc">
-          Calendar View
-        </div>
-      </div>
-    </div>
-
-    <div class="bottom-nav-tab" on:click={() => activeTabName = 'FUTURE_VIEW'} class:active-nav-tab={activeTabName === 'FUTURE_VIEW'}>
-      <div style="text-align: center;">
-        <span class=" material-icons nav-tab-icon">
-          upcoming
-        </span>
-        <div class="nav-tab-desc">
-          Future Overview
-        </div>
-      </div>
-    </div>
-
     <div class="bottom-nav-tab" 
       on:click={() => {
         if (activeTabName === 'CALENDAR_VIEW') {
@@ -128,7 +107,18 @@
           home
         </span>
         <div class="nav-tab-desc">
-          FULL CALENDAR
+          Calendar
+        </div>
+      </div>
+    </div>
+
+    <div class="bottom-nav-tab" on:click={() => activeTabName = 'FUTURE_VIEW'} class:active-nav-tab={activeTabName === 'FUTURE_VIEW'}>
+      <div style="text-align: center;">
+        <span class=" material-icons nav-tab-icon">
+          upcoming
+        </span>
+        <div class="nav-tab-desc">
+          Schedule
         </div>
       </div>
     </div>
