@@ -10,7 +10,8 @@
   };
 
   function handleDragStart(e) {
-    e.preventDefault()
+    // calling prevent default will just make it not draggable, weird
+    // e.preventDefault()
     e.dataTransfer.setData("text/plain", "test-data");
   }
 </script>
