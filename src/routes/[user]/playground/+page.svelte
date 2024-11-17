@@ -15,6 +15,12 @@
 </script>
 
 <div class="test-container">
+  <div class="example">
+    <div class="dragdemo" draggable="true">drag me</div>
+
+  </div>
+
+
   <h3>1. Baseline Draggable Div</h3>
   <div 
     class="baseline-div" 
@@ -57,6 +63,15 @@
 </div>
 
 <style>
+  .example {
+    border: 1px solid #ccc;
+    background: #f7f6f5;
+    border-radius: 8px;
+    margin: 1em;
+    padding: 2em;
+    color: #333;
+  }
+
   .test-container {
     padding: 20px;
     display: flex;
@@ -64,11 +79,22 @@
     gap: 2rem;
   }
 
+  .dragdemo {
+    width: 170px;
+    height: 100px;
+    line-height: 100px;
+    text-align: center;
+    border-radius: 6px;
+    background: green;
+    color: #efe;
+  }
+
   .baseline-div {
     width: 200px;
     height: 80px;
     background: #e0e0e0;
     -webkit-user-drag: element;
+    user-select: none;
 
     /* display: flex;
     align-items: center;
