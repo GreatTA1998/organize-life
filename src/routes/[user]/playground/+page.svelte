@@ -20,6 +20,15 @@
 
   </div>
 
+  <div class="example">
+    <div 
+      class="baseline-div" 
+      draggable="true" 
+      on:dragstart={handleDragStart}
+    >
+      Same parent baseline div
+    </div>
+  </div>
 
   <h3>1. Baseline Draggable Div</h3>
   <div 
@@ -96,6 +105,8 @@
     width: 200px;
     height: 80px;
     line-height: 80px;
+
+
     background: #e0e0e0;
     -webkit-user-drag: element;
     user-select: none;
