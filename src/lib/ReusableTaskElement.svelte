@@ -137,6 +137,9 @@
 
   function startAdjustingDuration (e) {
     startY = getTrueY(e)
+    whatIsBeingDraggedFullObj.set({ 
+      isDraggingDuration: true 
+    })
   }
 
   function adjustDuration (e, task) {
@@ -157,6 +160,7 @@
         duration: Math.max(1, task.duration + durationChange) // can't have a 0 duration event
       }      
     })
+    whatIsBeingDraggedFullObj.set(null)
   }
 </script> 
 

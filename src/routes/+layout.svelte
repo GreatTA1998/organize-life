@@ -23,7 +23,8 @@
           person_profiles: 'always' // or 'always' to create profiles for anonymous users as well
         })
       } else {
-        goto(`/${resultUser.uid}/${isMobile() ? 'mobile' : ''}`)
+        // DNAGER: REMOVED TEMPORARILY FOR TESTING
+        // goto(`/${resultUser.uid}/${isMobile() ? 'mobile' : ''}`)
         user.set({
           phoneNumber: resultUser.phoneNumber || '',
           uid: resultUser.uid
