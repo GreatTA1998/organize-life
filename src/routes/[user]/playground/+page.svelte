@@ -87,6 +87,9 @@
     border-radius: 6px;
     background: green;
     color: #efe;
+
+    -webkit-user-drag: element;
+    user-select: none;
   }
 
   .baseline-div {
