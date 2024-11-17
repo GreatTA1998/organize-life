@@ -89,7 +89,7 @@
   }
 
   .dragdemo {
-    width: 170px;
+    width: 200px;
     height: 100px;
     line-height: 100px;
     text-align: center;
@@ -102,7 +102,7 @@
   }
 
   .baseline-div {
-    width: 170px;
+    width: 190px;
     height: 100px;
     line-height: 100px;
 
