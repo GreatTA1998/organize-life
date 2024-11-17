@@ -170,6 +170,28 @@
     --experimental-red: hsla(0, 100%, 50%, 0.6);
   }
 
+
+  .claude-draggable-item {
+    /* Prevent unwanted mobile behaviors */
+    touch-action: none !important;
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
+    -webkit-tap-highlight-color: transparent;
+    /* Improve performance */
+    will-change: transform;
+    /* Prevent size distortion */
+    transform-origin: 0 0;
+  }
+
+  /* Prevent iOS Safari zoom */
+  :global(meta[name="viewport"]) {
+    content: "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no";
+  }
+
+
+
+
   /* .claude-draggable-item {
     touch-action: none;
     -webkit-user-select: none;
