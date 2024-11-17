@@ -93,7 +93,7 @@
     height: 100px;
     line-height: 100px;
     text-align: center;
-    border-radius: 6px;
+    /* border-radius: 6px; */
     background: green;
     color: #efe;
 
@@ -102,12 +102,13 @@
   }
 
   .baseline-div {
-    width: 200px;
-    height: 80px;
-    line-height: 80px;
+    width: 170px;
+    height: 100px;
+    line-height: 100px;
 
 
     background: #e0e0e0;
+
     -webkit-user-drag: element;
     user-select: none;
 
