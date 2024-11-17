@@ -77,7 +77,7 @@
   />
 </div> -->
 
-<div style="border: 4px solid red;">
+<div style="border: 4px solid green;">
   <slot></slot>
 </div>
 
