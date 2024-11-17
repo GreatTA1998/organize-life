@@ -95,6 +95,7 @@
   .baseline-div {
     width: 200px;
     height: 80px;
+    line-height: 80px;
     background: #e0e0e0;
     -webkit-user-drag: element;
     user-select: none;
