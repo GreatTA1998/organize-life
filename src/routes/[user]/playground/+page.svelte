@@ -90,7 +90,7 @@
   }
 
   .dragdemo {
-    width: 200px;
+    width: 180px;
     height: 100px;
     line-height: 100px;
     text-align: center;
@@ -101,6 +101,13 @@
     -webkit-user-drag: element;
     user-select: none;
   }
+
+  .baseline-div:-webkit-drag {
+    background-color:rgb(255,255,154);
+    width: 190px;
+    height: 100px;
+}
+
 
   .baseline-div {
     width: 190px;
