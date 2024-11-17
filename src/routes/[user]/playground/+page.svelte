@@ -17,6 +17,9 @@
 </script>
 
 <div class="test-container">
+  <div class="peg" style="background: purple;" draggable="true" on:dragstart={handleDragStart}>purple</div>
+
+
   <div class="example">
     <div class="dragdemo" draggable="true" on:dragstart={handleDragStart}>drag me</div>
 
@@ -74,6 +77,13 @@
 </div>
 
 <style>
+.peg {
+  text-align: center;
+    font-weight: bold;
+    border: 1px black solid;
+    width: 75px;
+    margin: 10px;
+}
   .example {
     border: 1px solid #ccc;
     background: #f7f6f5;
@@ -91,11 +101,12 @@
   }
 
   .dragdemo {
-    width: 175px;
+    /* Even 175px will not work, it will slightly shrink */
+    width: 170px;
     height: 100px;
     line-height: 100px;
     text-align: center;
-    /* border-radius: 6px; */
+    border-radius: 6px;
     background: green;
     color: #efe;
 
