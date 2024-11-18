@@ -3,7 +3,8 @@
   import DayHeader from './DayHeader.svelte'
   import CalendarTimestamps from './CalendarTimestamps.svelte'
   import YearAndMonthTile from './YearAndMonthTile.svelte'
-  import MultiPhotoUploader from './MultiPhotoUploader.svelte'
+  import MultiPhotoUploader from '../MultiPhotoUploader.svelte'
+
   import Tasks from '/src/back-end/Tasks'
   import { buildCalendarDataStructures } from '/src/helpers/maintainState.js'
   import { trackWidth, trackHeight } from '/src/helpers/actions.js'
@@ -12,10 +13,8 @@
     tasksScheduledOn,
     user,
     calendarTasks,
-    hasInitialScrolled,
+    hasInitialScrolled
   } from '/src/store'
-
-  export let compactTimestamps
 
   // Video explanation for this component (refer to related videos in the "Two-way infinite scroll" folder)
   // https://www.explanations.io/uRNISfkw0mE404Zn4GgH/ePfUWAU6CXL7leApJ9GP
@@ -24,6 +23,7 @@
   const COLUMN_WIDTH = 200
   const PIXELS_PER_HOUR = 80
   const CORNER_LABEL_HEIGHT = 110
+  let TIME_AXIS_WIDTH = 30
   const middleIdx = Math.floor(TOTAL_COLUMNS / 2)
 
   const c = 4 // 2c = 8, total rendered will be visible columns + (8)(2), so 16 additional columns
@@ -112,7 +112,7 @@
 
         const mergedTasks = removeDuplicateTasks([
           ...newTasks,
-          ...$calendarTasks,
+          ...$calendarTasks
         ])
         buildCalendarDataStructures({ flatArray: mergedTasks })
         resolve('done')
@@ -125,7 +125,7 @@
 
   function removeDuplicateTasks(tasks) {
     return tasks.filter(
-      (task, index, self) => index === self.findIndex(t => t.id === task.id)
+      (task, index, self) => index === self.findIndex((t) => t.id === task.id)
     )
   }
 
@@ -144,7 +144,7 @@
         )
         const mergedTasks = removeDuplicateTasks([
           ...newTasks,
-          ...$calendarTasks,
+          ...$calendarTasks
         ])
         buildCalendarDataStructures({ flatArray: mergedTasks })
         resolve('done')
@@ -184,8 +184,7 @@
 </script>
 
 <div class="calendar-wrapper">
-  <div
-    style="position: absolute; right: 2vw; bottom: 2vw; z-index: 1; 
+  <div style="position: absolute; right: 2vw; bottom: 2vw; z-index: 1; 
     border: 1px solid lightgrey;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15); 
     height: 50px;
@@ -196,45 +195,49 @@
     background-color: hsl(98, 40%, {90 + 2}%, 0.4);"
   >
     <MultiPhotoUploader />
-  </div>
+  </div>  
 
   <YearAndMonthTile
     {leftEdgeIdx}
     {calOriginDT}
+    exactWidth={TIME_AXIS_WIDTH}
     {exactHeight}
     {isShowingDockingArea}
-    on:toggle-docking-area={() =>(isShowingDockingArea = !isShowingDockingArea)}
+    isCompact={true}
+    on:toggle-docking-area={() => (isShowingDockingArea = !isShowingDockingArea)}
   />
 
   <div
     id="scroll-parent"
     bind:this={ScrollParent}
-    use:trackWidth={newWidth => (scrollParentWidth = newWidth)}
-    on:scroll={e => (scrollX = e.target.scrollLeft)}
+    use:trackWidth={(newWidth) => (scrollParentWidth = newWidth)}
+    on:scroll={(e) => (scrollX = e.target.scrollLeft)}
   >
     <div class="scroll-content" style:width="{TOTAL_COLUMNS * COLUMN_WIDTH}px">
       <CalendarTimestamps
+        timestampsColumnWidth={TIME_AXIS_WIDTH}
         pixelsPerHour={PIXELS_PER_HOUR}
         topMargin={exactHeight}
-        {compactTimestamps}
+        compactTimestamps={true}
+        startHour={5}
+        numOfDisplayedHours={19}
       />
-
-      <!-- we use absolute positioning instead of `translateX` because iOS safari drag-drop is glitchy with translated elements -->
       {#if dtOfActiveColumns[0] && $tasksScheduledOn}
         <div
           class="visible-days"
-          style="position: absolute"
+          style="position: absolute;"
           style:left={`${dtOfActiveColumns[0].diff(calOriginDT, 'days').days * COLUMN_WIDTH}px`}
         >
           <div
             class="headers-flexbox"
-            use:trackHeight={newHeight => (exactHeight = newHeight)}
+            use:trackHeight={(newHeight) => (exactHeight = newHeight)}
             class:bottom-border={$tasksScheduledOn}
           >
             {#each dtOfActiveColumns as currentDate, i (currentDate.toMillis() + `${i}`)}
               <DayHeader
                 ISODate={currentDate.toFormat('yyyy-MM-dd')}
                 {isShowingDockingArea}
+                isCompact={true}
                 on:task-update
                 on:task-click
                 on:new-root-task
@@ -245,14 +248,14 @@
           <div class="day-columns">
             {#each dtOfActiveColumns as currentDate (currentDate.toMillis())}
               <DayColumn
-                {requireDoubleClick}
                 calendarBeginningDateClassObject={DateTime.fromISO(
                   currentDate.toFormat('yyyy-MM-dd')
-                ).toJSDate()}
+                ).set({ hour: 5 }).toJSDate()}
                 pixelsPerHour={PIXELS_PER_HOUR}
                 scheduledTasks={$tasksScheduledOn[
                   currentDate.toFormat('yyyy-MM-dd')
                 ]?.hasStartTime ?? []}
+                numOfDisplayedHours={19}
                 on:task-update
                 on:task-click
                 on:new-root-task
@@ -272,7 +275,14 @@
   }
 
   #scroll-parent {
-    overflow-y: scroll; /* Enable vertical scrolling */
+    overflow: auto;
+    position: relative;
+    
+    /* FIRST: do no harm (this property has downsides) But it's a last-resort fallback if there are performance issues */
+    /* will-change: scroll-position; */
+  }
+
+  #scroll-parent {
     -ms-overflow-style: none;  /* Hide scrollbar in IE and Edge */
     scrollbar-width: none;  /* Hide scrollbar in Firefox */
   }
@@ -288,14 +298,6 @@
     display: grid;
     grid-template-rows: auto 1fr;
     position: relative;
-  }
-
-  #scroll-parent {
-    overflow: auto;
-    position: relative;
-
-    /* FIRST: do no harm (this property has downsides) But it's a last-resort fallback if there are performance issues */
-    /* will-change: scroll-position; */
   }
 
   .scroll-content {

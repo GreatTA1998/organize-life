@@ -68,8 +68,8 @@
         on:task-click={(e) => openDetailedCard(e.detail)}
       />
     {:else if activeTabName === 'CALENDAR_VIEW'}
-      <TheFunctionalCalendar
-        requireDoubleClick={true}
+
+      <TheMobileCalendar
         on:new-root-task={(e) => createTaskNode(e.detail)}
         on:task-click={(e) => openDetailedCard(e.detail)}
         on:task-update={(e) => updateTaskNode({
@@ -78,6 +78,8 @@
           })
         }
       />
+    {:else if activeTabName === 'AI_VIEW'}
+      <AI />
     {/if}
   </div>
 
@@ -88,29 +90,7 @@
           summarize
         </span>
         <div class="nav-tab-desc">
-          To-do List
-        </div>
-      </div>
-    </div>
-
-    <div on:click={() => activeTabName = 'TODAY_VIEW'} class="bottom-nav-tab" class:active-nav-tab={activeTabName === 'TODAY_VIEW'}>
-      <div style="text-align: center;">
-        <span class="material-symbols-outlined nav-tab-icon">
-          sunny
-        </span>
-        <div class="nav-tab-desc">
-          Calendar View
-        </div>
-      </div>
-    </div>
-
-    <div class="bottom-nav-tab" on:click={() => activeTabName = 'FUTURE_VIEW'} class:active-nav-tab={activeTabName === 'FUTURE_VIEW'}>
-      <div style="text-align: center;">
-        <span class=" material-icons nav-tab-icon">
-          upcoming
-        </span>
-        <div class="nav-tab-desc">
-          Future Overview
+          To-do
         </div>
       </div>
     </div>
@@ -125,11 +105,33 @@
       class:active-nav-tab={activeTabName === 'CALENDAR_VIEW'}
     >
       <div style="text-align: center;">
-        <span class=" material-icons nav-tab-icon">
-          home
+        <span class="material-symbols-outlined nav-tab-icon">
+          house
         </span>
         <div class="nav-tab-desc">
-          FULL CALENDAR
+          Calendar
+        </div>
+      </div>
+    </div>
+
+    <div class="bottom-nav-tab" on:click={() => activeTabName = 'FUTURE_VIEW'} class:active-nav-tab={activeTabName === 'FUTURE_VIEW'}>
+      <div style="text-align: center;">
+        <span class=" material-icons nav-tab-icon">
+          upcoming
+        </span>
+        <div class="nav-tab-desc">
+          Schedule
+        </div>
+      </div>
+    </div>
+
+    <div class="bottom-nav-tab" on:click={() => activeTabName = 'AI_VIEW'} class:active-nav-tab={activeTabName === 'AI_VIEW'}>
+      <div style="text-align: center;">
+        <span class=" material-symbols-outlined nav-tab-icon">
+          smart_toy
+        </span>
+        <div class="nav-tab-desc">
+          Robot
         </div>
       </div>
     </div>
@@ -137,15 +139,8 @@
 </div>
 
 <script>
-  import TheFunctionalCalendar from '$lib/TheFunctionalCalendar/TheFunctionalCalendar.svelte'
-
-  import { 
-    getRandomID, 
-    getDateInMMDD, 
-    getDateInDDMMYYYY,
-  } from '/src/helpers/everythingElse.js'
-  import { user, todoMemoryTree, hasInitialScrolled } from '/src/store'
-  import { onDestroy, onMount } from 'svelte'
+  import TheMobileCalendar from '$lib/TheFunctionalCalendar/TheMobileCalendar.svelte'
+  import AI from '$lib/AI/AI.svelte'
   import ScheduleView from '$lib/MobileMode/ScheduleView.svelte'
   import ListView from '$lib/MobileMode/ListView.svelte'
   import CalendarView from '$lib/MobileMode/CalendarView.svelte'
@@ -153,11 +148,15 @@
   import DetailedCardPopup from '$lib/DetailedCardPopup/DetailedCardPopup.svelte'
   import MultiPhotoUploader from '$lib/TheFunctionalCalendar/MultiPhotoUploader.svelte'
   import FloatingButtonWrapper from './FloatingButtonWrapper.svelte'
+
+  import { getRandomID, getDateInMMDD } from '/src/helpers/everythingElse.js'
+  import { user, todoMemoryTree, hasInitialScrolled } from '/src/store'
+  import { onDestroy, onMount } from 'svelte'
   import { createTaskNode, updateTaskNode, deleteTaskNode } from '/src/helpers/crud.js'
   import { fetchMobileTodoTasks, fetchMobileCalTasks, fetchMobileFutureOverviewTasks } from '$lib/MainPage/handleTasks.js'
 
   let isTesting = false
-  let activeTabName = 'TODO_VIEW'
+  let activeTabName = 'CALENDAR_VIEW' // probably the new user default, butthen persists the user's preference e.g. I prefer the to-do
   let unsub
   
   let isUsingVoice = false
@@ -189,6 +188,7 @@
     createTaskNode({ id: getRandomID(), newTaskObj })
   }
 
+  // should be a function exposed by the `GrandTreeTodoReusableList` component
   function createNewTodo ({ name }) {
     const dueInHowManyDays = 7
     const d = new Date()
@@ -200,7 +200,7 @@
     }
 
     if ($todoMemoryTree.length > 0) {
-      newTaskObj.orderValue = (0 + $todoMemoryTree[0].orderValue) / 2 
+      newTaskObj.orderValue = (0 + $todoMemoryTree[0].orderValue) / 1.1
     } 
     // if it's the first task, the orderValue is initialized to `maxOrder`
 
@@ -253,17 +253,21 @@
     flex-grow: 1;
     flex-shrink: 1;
 
-    color: rgb(120, 120, 120);
+    color: rgb(110, 110, 110);
+
+    padding-top: 4px;
+    padding-bottom: 4px;
   }
 
   .active-nav-tab {
     color: rgb(0, 0, 0);
-    font-weight: 600;
-    border-top: 2px solid rgb(0, 0, 0);
+    font-weight: 500;
+    border-top: 0px solid rgb(0, 0, 0);
   }
 
   .nav-tab-desc {
     font-size: 12px;
+    margin-top: -4px;
   }
 
   .nav-tab-icon {

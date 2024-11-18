@@ -13,10 +13,11 @@
 
 <script>
   import { DateTime, Interval } from 'luxon'
-  import { onMount, onDestroy, tick } from 'svelte'
+  import { onMount, onDestroy } from 'svelte'
   import { hasInitialScrolled } from '/src/store'
 
   export let pixelsPerMinute
+  export let calendarBeginningDateClassObject
 
   let CurrentTimeIndicator
   let intervalID = ''
@@ -57,9 +58,10 @@
   }
 
   function computeTimeIndicatorOffset () {
-    const now = DateTime.now()
-    const startOfDay = now.startOf('day')
-    const i = Interval.fromDateTimes(startOfDay, now)
+    const i = Interval.fromDateTimes(
+      DateTime.fromJSDate(calendarBeginningDateClassObject),
+      DateTime.now()
+    )
     const minutesDifference = i.length() / (1000 * 60)
     return minutesDifference * pixelsPerMinute
   } 

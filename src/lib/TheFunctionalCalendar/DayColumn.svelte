@@ -15,24 +15,25 @@
     yPosWithinBlock,
     whatIsBeingDraggedFullObj,
     whatIsBeingDraggedID,
-    whatIsBeingDragged,
-  } from '/src/store'
-  import ReusableCreateTaskDirectly from '$lib/ReusableCreateTaskDirectly.svelte'
-  import ReusableCalendarColumnTimeIndicator from '$lib/ReusableCalendarColumnTimeIndicator.svelte'
-  export let scheduledTasks = []
-  export let timestamps = []
-  export let pixelsPerHour
+    whatIsBeingDragged
+  } from "/src/store";
+  import ReusableCreateTaskDirectly from "$lib/ReusableCreateTaskDirectly.svelte";
+  import ReusableCalendarColumnTimeIndicator from "$lib/ReusableCalendarColumnTimeIndicator.svelte"
+
+  export let scheduledTasks = [];
+
+  export let pixelsPerHour;
   export let calendarBeginningDateClassObject
-  export let requireDoubleClick = false
+  export let numOfDisplayedHours = 24
+
   let timeBlockDurationInMinutes = 60
-  let numOfHourBlocksDisplayed = 24
-  let OverallContainer
-  const dispatch = createEventDispatcher()
-  let isDirectlyCreatingTask = false
-  let formFieldTopPadding = 40
-  let yPosition
-  let reusableTaskTemplates = null
-  let pixelsPerMinute = pixelsPerHour / 60
+  let OverallContainer;
+  const dispatch = createEventDispatcher();
+  let isDirectlyCreatingTask = false;
+  let formFieldTopPadding = 40;
+  let yPosition;
+  let reusableTaskTemplates = null;
+  let pixelsPerMinute = pixelsPerHour / 60;
 
   $: resultantDateClassObject = getResultantDateClassObject(yPosition)
 
@@ -64,23 +65,10 @@
     return offset
   }
 
-  let timer
   function handleNewTaskClick(e) {
-    if (!requireDoubleClick) {
-      isDirectlyCreatingTask = true
-      yPosition = copyGetTrueY(e)
-      return
-    } else if (timer) {
-      clearTimeout(timer)
-      timer = null
-      isDirectlyCreatingTask = true
-      yPosition = copyGetTrueY(e)
-      return
-    } else {
-      timer = setTimeout(() => {
-        timer = null
-      }, 200)
-    }
+    isDirectlyCreatingTask = true
+    yPosition = copyGetTrueY(e)
+    return
   }
 
   let highlightedMinute = null
@@ -173,7 +161,7 @@
   <!-- TO-DO: refator and deprecate this code somehow-->
   <div
     class="calendar-day-container"
-    style="height: {numOfHourBlocksDisplayed *
+    style="height: {numOfDisplayedHours *
       timeBlockDurationInMinutes *
       pixelsPerMinute}px; 
       margin-bottom: 1px; 
@@ -184,7 +172,7 @@
     on:click|self={handleNewTaskClick}
   >
     {#if $whatIsBeingDraggedFullObj}
-      {#each timestamps as _}
+      {#each {length: numOfDisplayedHours} as _, i}
         <div
           class="my-helper-gridline"
           style="height: 1px; margin-bottom: {pixelsPerMinute * 60 - 1}px;"
@@ -262,8 +250,14 @@
       "Scrolling is hard to achieve with purely a state-driven way"
     -->
     <!-- A wood-colored line that indicates the current time -->
-    {#if DateTime.fromJSDate(calendarBeginningDateClassObject).toFormat('yyyy-MM-dd') === DateTime.now().toFormat('yyyy-MM-dd')}
-      <ReusableCalendarColumnTimeIndicator {pixelsPerMinute} />
+    {#if 
+      DateTime.fromJSDate(calendarBeginningDateClassObject).toFormat('yyyy-MM-dd')
+      === DateTime.now().toFormat('yyyy-MM-dd')
+    }
+      <ReusableCalendarColumnTimeIndicator
+        {pixelsPerMinute}
+        {calendarBeginningDateClassObject}
+      />
     {/if}
   </div>
 </div>
