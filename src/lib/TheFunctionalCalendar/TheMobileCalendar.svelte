@@ -16,8 +16,6 @@
     hasInitialScrolled
   } from '/src/store'
 
-  export let compactTimestamps
-
   // Video explanation for this component (refer to related videos in the "Two-way infinite scroll" folder)
   // https://www.explanations.io/uRNISfkw0mE404Zn4GgH/ePfUWAU6CXL7leApJ9GP
 
