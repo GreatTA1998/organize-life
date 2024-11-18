@@ -23,9 +23,7 @@
           person_profiles: 'always' // or 'always' to create profiles for anonymous users as well
         })
       } else {
-        goto(`/${resultUser.uid}/playground`)
-        // DNAGER: REMOVED TEMPORARILY FOR TESTING
-        // goto(`/${resultUser.uid}/${isMobile() ? 'mobile' : ''}`)
+        goto(`/${resultUser.uid}/${isMobile() ? 'mobile' : ''}`)
         user.set({
           phoneNumber: resultUser.phoneNumber || '',
           uid: resultUser.uid
@@ -62,7 +60,7 @@
   }
 </script>
 
-<!-- <div
+<div
   id="loading-screen-logo-start"
   style="z-index: 99999; background: white; width: 100vw; height: 100vh"
   class="center"
@@ -76,9 +74,9 @@
     alt="logo"
     style="width: 48px; height: 48px;"
   />
-</div> -->
+</div>
 
-<div style="border: 4px solid green;">
+<div>
   <slot></slot>
 </div>
 
