@@ -40,7 +40,7 @@
 </h4>
 <div style="padding: 48px;">
   <div style="font-size: 32px; margin-bottom: 48px;">Templates</div>
-  <div style="display: flex; width: 90vw; justify-content: space-between;">
+  <div style="display: flex; justify-content: space-evenly;">
     <TemplateColumn templates={quickTasks} crontab="" />
     <TemplateColumn templates={weeklyTasks} crontab="0 0 * * 0" />
     <TemplateColumn templates={monthlyTasks} crontab="0 0 0 * *" />
