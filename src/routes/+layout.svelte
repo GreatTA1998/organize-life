@@ -76,7 +76,7 @@
   />
 </div>
 
-<div style="border: 2px solid red; overflow: none;">
+<div>
   <slot></slot>
 </div>
 
