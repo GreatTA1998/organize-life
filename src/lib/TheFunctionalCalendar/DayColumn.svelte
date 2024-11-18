@@ -21,7 +21,7 @@
   import ReusableCalendarColumnTimeIndicator from "$lib/ReusableCalendarColumnTimeIndicator.svelte"
 
   export let scheduledTasks = [];
-  export let timestamps = [];
+  export let timestamps = Array.from({ length: 24 }, (_, i) => i);
 
   export let pixelsPerHour;
   export let calendarBeginningDateClassObject
