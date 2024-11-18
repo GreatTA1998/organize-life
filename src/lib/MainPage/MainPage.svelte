@@ -204,7 +204,7 @@
       />
     </div>
     <div
-      style="width: 100%; background: hsl(98, 40%, 96%); display: {(
+      style="width: 100%; height: 100%; background: hsl(98, 40%, 96%); display: {(
         currentMode === 'Templates'
       ) ?
         'block'

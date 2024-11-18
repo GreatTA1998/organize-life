@@ -114,12 +114,14 @@
 
 <style src="./Column.css">
   .template-column {
-    width: 200px;
+    min-height: 200px;
+    width: 250px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Add shadow */
     border-radius: 8px; /* Optional: Add rounded corners */
     padding: 10px; /* Optional: Add some padding */
     /* background-color: white; */
   }
+
   .day-of-week-circle {
     border-radius: 2px;
     background-color: rgb(223, 223, 223);
