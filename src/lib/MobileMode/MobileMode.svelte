@@ -68,8 +68,7 @@
         on:task-click={(e) => openDetailedCard(e.detail)}
       />
     {:else if activeTabName === 'CALENDAR_VIEW'}
-      <TheFunctionalCalendar
-        compactTimestamps={true}
+      <TheMobileCalendar
         on:new-root-task={(e) => createTaskNode(e.detail)}
         on:task-click={(e) => openDetailedCard(e.detail)}
         on:task-update={(e) => updateTaskNode({
@@ -126,7 +125,7 @@
 </div>
 
 <script>
-  import TheFunctionalCalendar from '$lib/TheFunctionalCalendar/TheFunctionalCalendar.svelte'
+  import TheMobileCalendar from '$lib/TheFunctionalCalendar/TheMobileCalendar.svelte'
 
   import { 
     getRandomID, 
@@ -242,17 +241,21 @@
     flex-grow: 1;
     flex-shrink: 1;
 
-    color: rgb(120, 120, 120);
+    color: rgb(110, 110, 110);
+
+    padding-top: 4px;
+    padding-bottom: 4px;
   }
 
   .active-nav-tab {
     color: rgb(0, 0, 0);
-    font-weight: 600;
-    border-top: 2px solid rgb(0, 0, 0);
+    font-weight: 500;
+    border-top: 0px solid rgb(0, 0, 0);
   }
 
   .nav-tab-desc {
     font-size: 12px;
+    margin-top: -4px;
   }
 
   .nav-tab-icon {

@@ -4,7 +4,6 @@
   import CalendarTimestamps from './CalendarTimestamps.svelte'
   import YearAndMonthTile from './YearAndMonthTile.svelte'
   import MultiPhotoUploader from '../MultiPhotoUploader.svelte'
-  import FloatingButtonWrapper from '../MobileMode/FloatingButtonWrapper.svelte'
 
   import Tasks from '/src/back-end/Tasks'
   import { buildCalendarDataStructures } from '/src/helpers/maintainState.js'
@@ -26,6 +25,7 @@
   const COLUMN_WIDTH = 200
   const PIXELS_PER_HOUR = 80
   const CORNER_LABEL_HEIGHT = 110
+  let TIME_AXIS_WIDTH = 30
   const middleIdx = Math.floor(TOTAL_COLUMNS / 2)
 
   const c = 4 // 2c = 8, total rendered will be visible columns + (8)(2), so 16 additional columns
@@ -202,9 +202,11 @@
   <YearAndMonthTile
     {leftEdgeIdx}
     {calOriginDT}
+    exactWidth={TIME_AXIS_WIDTH}
     {exactHeight}
     {isShowingDockingArea}
-    on:toggle-docking-area={() =>(isShowingDockingArea = !isShowingDockingArea)}
+    isCompact={true}
+    on:toggle-docking-area={() => (isShowingDockingArea = !isShowingDockingArea)}
   />
 
   <div
@@ -215,9 +217,12 @@
   >
     <div class="scroll-content" style:width="{TOTAL_COLUMNS * COLUMN_WIDTH}px">
       <CalendarTimestamps
+        timestampsColumnWidth={TIME_AXIS_WIDTH}
         pixelsPerHour={PIXELS_PER_HOUR}
         topMargin={exactHeight}
-        {compactTimestamps}
+        compactTimestamps={true}
+        startHour={5}
+        numOfDisplayedHours={19}
       />
       {#if dtOfActiveColumns[0] && $tasksScheduledOn}
         <div
@@ -233,6 +238,7 @@
               <DayHeader
                 ISODate={currentDate.toFormat('yyyy-MM-dd')}
                 {isShowingDockingArea}
+                isCompact={true}
                 on:task-update
                 on:task-click
                 on:new-root-task
@@ -245,11 +251,12 @@
               <DayColumn
                 calendarBeginningDateClassObject={DateTime.fromISO(
                   currentDate.toFormat('yyyy-MM-dd')
-                ).toJSDate()}
+                ).set({ hour: 5 }).toJSDate()}
                 pixelsPerHour={PIXELS_PER_HOUR}
                 scheduledTasks={$tasksScheduledOn[
                   currentDate.toFormat('yyyy-MM-dd')
                 ]?.hasStartTime ?? []}
+                numOfDisplayedHours={19}
                 on:task-update
                 on:task-click
                 on:new-root-task
@@ -269,7 +276,14 @@
   }
 
   #scroll-parent {
-    overflow-y: scroll; /* Enable vertical scrolling */
+    overflow: auto;
+    position: relative;
+    
+    /* FIRST: do no harm (this property has downsides) But it's a last-resort fallback if there are performance issues */
+    /* will-change: scroll-position; */
+  }
+
+  #scroll-parent {
     -ms-overflow-style: none;  /* Hide scrollbar in IE and Edge */
     scrollbar-width: none;  /* Hide scrollbar in Firefox */
   }
@@ -285,14 +299,6 @@
     display: grid;
     grid-template-rows: auto 1fr;
     position: relative;
-  }
-
-  #scroll-parent {
-    overflow: auto;
-    position: relative;
-    
-    /* FIRST: do no harm (this property has downsides) But it's a last-resort fallback if there are performance issues */
-    /* will-change: scroll-position; */
   }
 
   .scroll-content {

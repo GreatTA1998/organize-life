@@ -1,16 +1,18 @@
 <script>
+  export let timestampsColumnWidth = 64
   export let pixelsPerHour
 
   export let topMargin
   export let compactTimestamps = false
+  export let numOfDisplayedHours = 24
+  export let startHour = 0
 
-  let numOfHourBlocksDisplayed = 24
   let timesOfDay = getTimesOfDay(compactTimestamps)
 
   function getTimesOfDay () {
     const temp = [];
-    let currentHour = 0;
-    for (let i = 0; i < numOfHourBlocksDisplayed; i++) {
+    let currentHour = startHour;
+    for (let i = 0; i < numOfDisplayedHours; i++) {
       if (currentHour === 24) {
         currentHour = 0;
       }
@@ -26,7 +28,7 @@
   }
 </script>
 
-<div class="timestamps" style="margin-top: {topMargin}px;">
+<div class="timestamps" style="--timestamps-column-width: {timestampsColumnWidth}px; margin-top: {topMargin}px;">
   {#each timesOfDay as timestamp, i (timestamp)}
     <div
       class="timestamp-number"
@@ -38,10 +40,6 @@
 </div>
 
 <style>
-  :root {
-    --timestamps-column-width: 32px;
-  }
-
   .timestamps {
     position: sticky;
     left: 0;
@@ -53,7 +51,7 @@
   }
 
   .timestamp-number {
-    padding-left: var(--calendar-left-padding);
+    text-align: center;
     color: #6d6d6d;
     background-color: var(--calendar-bg-color);
     z-index: 2;

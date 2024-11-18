@@ -24,10 +24,10 @@
   export let timestamps = [];
 
   export let pixelsPerHour;
-  export let calendarBeginningDateClassObject;
+  export let calendarBeginningDateClassObject
+  export let numOfDisplayedHours = 24
 
   let timeBlockDurationInMinutes = 60
-  let numOfHourBlocksDisplayed = 24;
   let OverallContainer;
   const dispatch = createEventDispatcher();
   let isDirectlyCreatingTask = false;
@@ -158,7 +158,7 @@
    <!-- TO-DO: refator and deprecate this code somehow-->
   <div
     class="calendar-day-container"
-    style="height: {numOfHourBlocksDisplayed *
+    style="height: {numOfDisplayedHours *
       timeBlockDurationInMinutes *
       pixelsPerMinute}px; 
       margin-bottom: 1px; 
@@ -256,6 +256,7 @@
     }
       <ReusableCalendarColumnTimeIndicator
         {pixelsPerMinute}
+        {calendarBeginningDateClassObject}
       />
     {/if}
   </div>
