@@ -218,7 +218,7 @@
         topMargin={exactHeight}
       />
 
-      <!-- style:transform={`translateX(${dtOfActiveColumns[0].diff(calOriginDT, 'days').days * COLUMN_WIDTH}px)`} -->
+      <!-- we use absolute positioning instead of `translateX` because iOS safari drag-drop is glitchy with translated elements -->
       {#if dtOfActiveColumns[0] && $tasksScheduledOn}
         <div
           class="visible-days"
