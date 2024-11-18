@@ -33,12 +33,14 @@
 /* https://stackoverflow.com/questions/30636930/disable-web-page-navigation-on-swipeback-and-forward?rq=1 */
 html, body {
   margin: 0; 
+  border: 2px solid blue;
   /* height: 100%; */
 
   overscroll-behavior-x: none;
   /* prevents iOS adding mysterious white space on the bottom to create a bouncy effect */
   overflow: hidden;
 }
+
 
 .simple-flex {
   display: flex;
