@@ -1,11 +1,11 @@
 <script>
   import { templates, user } from '../../store'
   import Tasks from '../../back-end/Tasks'
+  import User from '../../back-end/User'
   import text from './text'
   import GPT from '../../back-end/GPT.js'
   import { onMount, tick } from 'svelte'
   import { DateTime } from 'luxon'
-  import { savedAIQuestions } from '../../store'
   export let aiPanelWidth
   let TheChatInput
   let isThinking = false
@@ -15,25 +15,26 @@
     lastMessage.scrollIntoView({ behavior: 'smooth', block: 'end' })
   }
 
+  $: user.subscribe(value => {
+    state = { ...state, userID: value.uid, savedAIQuestions: value.savedAIQuestions }
+  })
+
   const DefaultDateRange = {
     startDate: DateTime.now().minus({ month: 6 }).toISODate(),
     endDate: DateTime.now().plus({ month: 6 }).toISODate(),
   }
 
   let state = {
-    userID: '',
+    userID: $user.uid,
     chat: [{ role: 'assistant', content: text.example }],
     currentInput: '',
     tasksJSON: '',
-    templatesJSON: [],
+    templatesJSON: $templates,
     DateRange: DefaultDateRange,
+    savedAIQuestions: $user.savedAIQuestions || [],
   }
 
   const setState = newState => (state = newState)
-
-  $: user.subscribe(value => {
-    state = { ...state, userID: value.uid }
-  })
 
   $: if (TheChatInput) {
     requestAnimationFrame(() => {
@@ -45,21 +46,23 @@
   let selectedSuggestionIndex = -1
   $: filteredSuggestions =
     state.currentInput ?
-      $savedAIQuestions.filter(q =>
+      state.savedAIQuestions.filter(q =>
         q.toLowerCase().includes(state.currentInput.toLowerCase())
       )
     : []
 
   function toggleSaveMessage(message) {
-    const index = $savedAIQuestions.indexOf(message)
-    if (index !== -1) {
-      $savedAIQuestions = [
-        ...$savedAIQuestions.slice(0, index),
-        ...$savedAIQuestions.slice(index + 1),
-      ]
-    } else {
-      $savedAIQuestions = [...$savedAIQuestions, message]
-    }
+    const index = state.savedAIQuestions.indexOf(message)
+    const savedAIQuestions =
+      index !== -1 ?
+        [
+          ...state.savedAIQuestions.slice(0, index),
+          ...state.savedAIQuestions.slice(index + 1),
+        ]
+      : [...state.savedAIQuestions, message]
+
+    setState({ ...state, savedAIQuestions })
+    User.update(state.userID, { savedAIQuestions: state.savedAIQuestions })
   }
 
   function handleKeydown(event) {
@@ -133,7 +136,7 @@
             class="star-icon"
             on:click={() => toggleSaveMessage(message.content)}
           >
-            {#if $savedAIQuestions.includes(message.content)}
+            {#if state.savedAIQuestions.includes(message.content)}
               ★
             {:else}
               ☆

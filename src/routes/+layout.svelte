@@ -26,7 +26,12 @@
         goto(`/${resultUser.uid}/${isMobile() ? 'mobile' : ''}`)
         user.set({
           phoneNumber: resultUser.phoneNumber || '',
-          uid: resultUser.uid
+          uid: resultUser.uid,
+          savedAIQuestions: [],
+          FCMTokens: [],
+          isSubscriber: false,
+          maxOrderValue: 0,
+          email: resultUser.email || '',
         })
         // handle the snapshot listener
         const ref = doc(db, '/users/' + resultUser.uid)

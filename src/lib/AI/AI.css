@@ -92,8 +92,6 @@
     max-width: 80%;
   }
 
-
-
   .elementToFadeInAndOut {
     animation: fadeInOut 1.4s ease-out 99 forwards;
   }
@@ -111,7 +109,7 @@
   }
   .suggestions-list {
     padding: 6px;
-    max-height: 150px;
+    max-height: 800px;
     overflow-y: auto;
     box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.08);
     border-radius: 12px;
