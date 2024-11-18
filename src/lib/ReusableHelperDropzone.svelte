@@ -85,7 +85,7 @@
       const topOfOrderDoc = roomsInThisLevel[0]
       if (topOfOrderDoc) {
         // halve the value so it never gets to 0 
-        newVal = (topOfOrderDoc.orderValue || 3) / 2
+        newVal = (topOfOrderDoc.orderValue || 3) / 1.1
       } else {
         // you're dragging a new subtask into a parent that previously had ZERO children, which is valid
         newVal = 3

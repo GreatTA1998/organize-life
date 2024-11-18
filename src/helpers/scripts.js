@@ -10,6 +10,25 @@ import {
 import { reconstructTreeInMemory} from '/src/helpers/dataStructures.js'
 
 
+export async function fixOrderValueZero () {
+  const allUsers = await getFirestoreCollection(`/users`)
+  for (const user of allUsers) {
+    const userTasks = await getFirestoreCollection(`/users/${user.uid}/tasks`)
+    let counter = 0
+    let output = []
+    for (const task of userTasks) {
+      if (task.orderValue === 0) {
+        counter += 1
+        output.push(Math.random())
+        updateFirestoreDoc(`/users/${user.uid}/tasks/${task.id}`, {
+          orderValue: Math.random()
+        })
+      }
+    }
+    console.log('for user =', user.email, counter, output)
+  }
+}
+
 export async function findActiveUsers () {
   const allUsers = await getFirestoreCollection(`/users`)
   for (const user of allUsers) {
