@@ -1,15 +1,15 @@
 <script>
-  import { DateTime } from "luxon";
+  import { DateTime } from 'luxon'
   import Templates from '/src/back-end/Templates'
   import {
     computeMillisecsDifference,
     ensureTwoDigits,
     getHHMM,
-  } from "/src/helpers/everythingElse.js";
-  import ReusableTaskElement from "$lib/ReusableTaskElement.svelte";
-  import ReusablePhotoTaskElement from "$lib/ReusablePhotoTaskElement.svelte";
-  import ReusableIconTaskElement from "$lib/ReusableIconTaskElement.svelte";
-  import { onMount, createEventDispatcher, onDestroy } from "svelte";
+  } from '/src/helpers/everythingElse.js'
+  import ReusableTaskElement from '$lib/ReusableTaskElement.svelte'
+  import ReusablePhotoTaskElement from '$lib/ReusablePhotoTaskElement.svelte'
+  import ReusableIconTaskElement from '$lib/ReusableIconTaskElement.svelte'
+  import { onMount, createEventDispatcher, onDestroy } from 'svelte'
   import {
     user,
     yPosWithinBlock,
@@ -39,11 +39,12 @@
 
   onMount(async () => {
     // task template dropdown
-    const temp = await Templates.getAll({ userID: $user.uid, includeStats: false })
-    reusableTaskTemplates = temp;
-  });
-
-  onDestroy(() => {});
+    const temp = await Templates.getAll({
+      userID: $user.uid,
+      includeStats: false,
+    })
+    reusableTaskTemplates = temp
+  })
 
   function copyGetTrueY(e) {
     return (
@@ -51,25 +52,31 @@
       OverallContainer.scrollTop -
       OverallContainer.getBoundingClientRect().top -
       OverallContainer.style.paddingTop
-    );
+    )
   }
 
   // computes the physical offset, within origin based on d1
   function computeOffsetGeneral({ d1, d2, pixelsPerMinute }) {
-    const millisecsDifference = computeMillisecsDifference(d1, d2);
+    const millisecsDifference = computeMillisecsDifference(d1, d2)
 
     // translate time difference to a physical distance
-    const minutesDifference = millisecsDifference / (1000 * 60);
-    const offset = minutesDifference * pixelsPerMinute;
-    return offset;
+    const minutesDifference = millisecsDifference / (1000 * 60)
+    const offset = minutesDifference * pixelsPerMinute
+    return offset
   }
 
-  let highlightedMinute = null;
+  function handleNewTaskClick(e) {
+    isDirectlyCreatingTask = true
+    yPosition = copyGetTrueY(e)
+    return
+  }
+
+  let highlightedMinute = null
 
   function dragover_handler(e) {
-    e.preventDefault();
-    e.stopPropagation();
-    e.dataTransfer.dropEffect = "move";
+    e.preventDefault()
+    e.stopPropagation()
+    e.dataTransfer.dropEffect = 'move'
   }
 
   /**
@@ -88,40 +95,40 @@
   // How it works:
   //   1. Do origin + new difference to get the date object
   //   2. use the new date object to generate `startTime` and `startDate`
-  function drop_handler (e) {
-    const id = e.dataTransfer.getData("text/plain");
-    if (!id) return; // it means we're adjusting the duration but it triggers a drop event, and a dragend event must be followed by a drop event
+  function drop_handler(e) {
+    const id = e.dataTransfer.getData('text/plain')
+    if (!id) return // it means we're adjusting the duration but it triggers a drop event, and a dragend event must be followed by a drop event
 
-    e.preventDefault();
-    e.stopPropagation();
-    highlightedMinute = null;
+    e.preventDefault()
+    e.stopPropagation()
+    highlightedMinute = null
 
     // `trueY` is the end position of the mouse
-    const finalMousePosY = copyGetTrueY(e);
+    const finalMousePosY = copyGetTrueY(e)
 
     // origin
-    const calendarStartAsMs = calendarBeginningDateClassObject.getTime();
+    const calendarStartAsMs = calendarBeginningDateClassObject.getTime()
 
     // account for dragging the block from really low or from really high up
-    const trueY = finalMousePosY - $yPosWithinBlock;
-    yPosWithinBlock.set(0);
+    const trueY = finalMousePosY - $yPosWithinBlock
+    yPosWithinBlock.set(0)
 
     // resultant time based on difference difference
-    const resultantDateClassObject = getResultantDateClassObject(trueY);
-    const d = resultantDateClassObject;
+    const resultantDateClassObject = getResultantDateClassObject(trueY)
+    const d = resultantDateClassObject
     const hhmm =
-      ensureTwoDigits(d.getHours()) + ":" + ensureTwoDigits(d.getMinutes());
+      ensureTwoDigits(d.getHours()) + ':' + ensureTwoDigits(d.getMinutes())
     const mmdd =
-      ensureTwoDigits(d.getMonth() + 1) + "/" + ensureTwoDigits(d.getDate());
-    
+      ensureTwoDigits(d.getMonth() + 1) + '/' + ensureTwoDigits(d.getDate())
+
     const [MM, DD] = mmdd.split('/')
 
-    dispatch('task-update', { 
+    dispatch('task-update', {
       id,
       keyValueChanges: {
         startTime: hhmm,
-        startDateISO: `${d.getFullYear()}-${MM}-${DD}`
-      }
+        startDateISO: `${d.getFullYear()}-${MM}-${DD}`,
+      },
     })
 
     whatIsBeingDraggedFullObj.set(null)
@@ -130,31 +137,28 @@
   }
 
   function getResultantDateClassObject(trueY) {
-    const calendarStartAsMs = calendarBeginningDateClassObject.getTime();
+    const calendarStartAsMs = calendarBeginningDateClassObject.getTime()
 
-    const totalHoursDistance = trueY / pixelsPerHour;
-    const totalMsDistance = totalHoursDistance * 60 * 60 * 1000;
+    const totalHoursDistance = trueY / pixelsPerHour
+    const totalMsDistance = totalHoursDistance * 60 * 60 * 1000
 
     // Add them together: https://stackoverflow.com/a/12795802/7812829
-    const resultantTimeInMs = calendarStartAsMs + totalMsDistance;
-    const resultantDateClassObject = new Date(resultantTimeInMs);
-    return resultantDateClassObject;
+    const resultantTimeInMs = calendarStartAsMs + totalMsDistance
+    const resultantDateClassObject = new Date(resultantTimeInMs)
+    return resultantDateClassObject
   }
 
-  function getJSDateFromTask (task) {
+  function getJSDateFromTask(task) {
     const dateTimeString = task.startDateISO + 'T' + task.startTime
     return new Date(dateTimeString)
   }
 </script>
 
 <!-- https://github.com/sveltejs/svelte/issues/6016 -->
-<div
-  bind:this={OverallContainer}
-  class="overall-container"
->
+<div bind:this={OverallContainer} class="overall-container">
   <!-- NOTE: this is a tall rectangular container that only encompasses the timestamps -->
   <!-- svelte-ignore a11y-click-events-have-key-events -->
-   <!-- TO-DO: refator and deprecate this code somehow-->
+  <!-- TO-DO: refator and deprecate this code somehow-->
   <div
     class="calendar-day-container"
     style="height: {numOfDisplayedHours *
@@ -163,12 +167,9 @@
       margin-bottom: 1px; 
       color: #6D6D6D;
     "
-    on:drop={(e) => drop_handler(e)}
-    on:dragover={(e) => dragover_handler(e)}
-    on:click|self={(e) => {
-      isDirectlyCreatingTask = true;
-      yPosition = copyGetTrueY(e);
-    }}
+    on:drop={e => drop_handler(e)}
+    on:dragover={e => dragover_handler(e)}
+    on:click|self={handleNewTaskClick}
   >
     {#if $whatIsBeingDraggedFullObj}
       {#each {length: numOfDisplayedHours} as _, i}
@@ -184,10 +185,10 @@
         style="
           position: absolute; 
           top: {computeOffsetGeneral({
-            d1: calendarBeginningDateClassObject,
-            d2: getJSDateFromTask(task),
-            pixelsPerMinute,
-          })}px;
+          d1: calendarBeginningDateClassObject,
+          d2: getJSDateFromTask(task),
+          pixelsPerMinute,
+        })}px;
           left: 0;
           right: 0;
           margin-left: auto;

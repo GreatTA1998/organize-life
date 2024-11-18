@@ -8,33 +8,34 @@
   export let templates
   export let crontab
   let draggedTemplate
-  const templateWidthInPx = 180
+  const templateWidthInPx = 100
   const dayOfWeekSymbol = ['S', 'M', 'T', 'W', 'T', 'F', 'S']
-
 
   function handleDrop(newOrderValue) {
     updateTemplate({
       templateID: draggedTemplate.id,
       keyValueChanges: { orderValue: newOrderValue },
-      oldTemplate: templates.find(template => template.id === draggedTemplate.id)
+      oldTemplate: templates.find(
+        template => template.id === draggedTemplate.id
+      ),
     })
   }
 </script>
 
-<div>
+<div class="template-column">
   <AddTemplate {crontab} defaultOrderValue={templates.length} />
 
   {#each templates as template, i (template.id)}
     {#if i === 0}
       <ReusableSimpleDropzone
-        on:new-order-value={(e) => handleDrop(e.detail)}
+        on:new-order-value={e => handleDrop(e.detail)}
         aboveOrder={0}
         belowOrder={templates[0].orderValue}
       />
       <!-- general case drop-zone: must be between 2 templates-->
     {:else if i > 0 && i < templates.length}
       <ReusableSimpleDropzone
-        on:new-order-value={(e) => handleDrop(e.detail)}
+        on:new-order-value={e => handleDrop(e.detail)}
         aboveOrder={templates[i - 1].orderValue}
         belowOrder={templates[i].orderValue}
       />
@@ -46,7 +47,7 @@
         on:click={() => setIsPopupOpen({ newVal: true })}
         style="display: flex; align-items: center; cursor: pointer;"
         draggable="true"
-        on:dragstart|self={(e) => (draggedTemplate = template)}
+        on:dragstart|self={e => (draggedTemplate = template)}
       >
         {#if template.iconURL}
           <!-- svelte-ignore a11y-missing-attribute -->
@@ -59,51 +60,51 @@
           <div style="font-size: 16px; font-color: rgb(120, 120, 120)">
             {template.name}
           </div>
-          {#if Templates.getPeriodFromCrontab(template.crontab)==="weekly"}
-          <div style="display: flex; margin-top: 4px;">
-            {#each dayOfWeekSymbol as _, i}
-              <div
-                class="day-of-week-circle"
-                class:highlighted={template.crontab
-                  .split(' ')[4]
-                  .split(',')
-                  .includes((i + 1).toString())}
-              ></div>
-            {/each}
-          </div>
-          {/if}
-          {#if template.totalTasksCompleted}
-          <div style="margin-left: 8px;">
-            <div
-              style="display: flex; align-items: center; margin-top: 8px;
-              margin-bottom: 0px; max-width: {templateWidthInPx}px;"
-            >
-              {#each { length: template.totalTasksCompleted } as _, i}
+          {#if Templates.getPeriodFromCrontab(template.crontab) === 'weekly'}
+            <div style="display: flex; margin-top: 4px;">
+              {#each dayOfWeekSymbol as _, i}
                 <div
-                  style="background: green; border-radius: 4px; width: {getDisplayLength(
-                    { template, templateWidthInPx }
-                  )}px;
-                  height: 3px; margin-right: 2px;"
-                />
+                  class="day-of-week-circle"
+                  class:highlighted={template.crontab
+                    .split(' ')[4]
+                    .split(',')
+                    .includes((i + 1).toString())}
+                ></div>
               {/each}
             </div>
-            <div
-              style="font-weight: 400; font-size: 14px; margin-top: 8px; color:
+          {/if}
+          {#if template.totalTasksCompleted}
+            <div style="margin-left: 8px;">
+              <div
+                style="display: flex; align-items: center; margin-top: 8px;
+              margin-bottom: 0px; max-width: {templateWidthInPx}px;"
+              >
+                {#each { length: template.totalTasksCompleted } as _, i}
+                  <div
+                    style="background: green; border-radius: 4px; width: {getDisplayLength(
+                      { template, templateWidthInPx }
+                    )}px;
+                  height: 3px; margin-right: 2px;"
+                  />
+                {/each}
+              </div>
+              <div
+                style="font-weight: 400; font-size: 14px; margin-top: 8px; color:
               green"
-            >
-            {Math.round((template.totalMinutesSpent / 60) * 10) / 10} hr            </div>
-          </div>
-        {/if}
+              >
+                {Math.round((template.totalMinutesSpent / 60) * 10) / 10} hr
+              </div>
+            </div>
+          {/if}
         </div>
 
         <!-- Time spent statistics -->
-       
       </div>
     </EditTemplatePopup>
 
     {#if i === templates.length - 1}
       <ReusableSimpleDropzone
-        on:new-order-value={(e) => handleDrop(e.detail)}
+        on:new-order-value={e => handleDrop(e.detail)}
         aboveOrder={templates[i].orderValue}
         belowOrder={templates[i].orderValue + 1}
       />
@@ -112,6 +113,15 @@
 </div>
 
 <style src="./Column.css">
+  .template-column {
+    min-height: 200px;
+    width: 250px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Add shadow */
+    border-radius: 8px; /* Optional: Add rounded corners */
+    padding: 10px; /* Optional: Add some padding */
+    /* background-color: white; */
+  }
+
   .day-of-week-circle {
     border-radius: 2px;
     background-color: rgb(223, 223, 223);

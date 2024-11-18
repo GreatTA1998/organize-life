@@ -1,15 +1,15 @@
-import { DateTime } from "luxon";
 import OpenAI from "openai";
 const client = new OpenAI({
   apiKey: import.meta.env.VITE_PUBLIC_BROWSER_NAME,
   dangerouslyAllowBrowser: true,
 });
+import { systemPrompt } from "./prompt.js";
 
-async function chat(tasks, chat) {
+async function chat({ tasksJSON, templatesJSON, chat }) {
   const messages = [
     {
       role: "system",
-      content: `Today is ${DateTime.now().toISODate()}. This is a JSON of user Tasks and events. analyse the data and share interesting and actionable insights into their lives. ${tasks}`,
+      content: `${systemPrompt} Respond in html format, include html tags like <h4> or <ul> or <li>. Do not use markdown like # or * or any other markdown formatting. user tasks:${tasksJSON}, user Templates:${templatesJSON}`,
     },
     ...chat,
   ];

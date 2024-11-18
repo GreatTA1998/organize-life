@@ -68,6 +68,7 @@
         on:task-click={(e) => openDetailedCard(e.detail)}
       />
     {:else if activeTabName === 'CALENDAR_VIEW'}
+
       <TheMobileCalendar
         on:new-root-task={(e) => createTaskNode(e.detail)}
         on:task-click={(e) => openDetailedCard(e.detail)}
@@ -145,7 +146,7 @@
   import CalendarView from '$lib/MobileMode/CalendarView.svelte'
   import VoiceKeywordDetect from '$lib/VoiceKeywordDetect.svelte'
   import DetailedCardPopup from '$lib/DetailedCardPopup/DetailedCardPopup.svelte'
-  import MultiPhotoUploader from '$lib/MultiPhotoUploader.svelte'
+  import MultiPhotoUploader from '$lib/TheFunctionalCalendar/MultiPhotoUploader.svelte'
   import FloatingButtonWrapper from './FloatingButtonWrapper.svelte'
 
   import { getRandomID, getDateInMMDD } from '/src/helpers/everythingElse.js'

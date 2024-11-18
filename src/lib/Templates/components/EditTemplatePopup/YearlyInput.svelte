@@ -2,13 +2,21 @@
   import { updateTemplate } from '/src/store'
   export let template
 
-  let yearlyDate = ''
+  const getDateFormatFromCrontab = crontab => {
+    const [minute, hour, day, month] = crontab.split(' ')
+    return day !== '0' ? `${month}-${day}` : "MM-DD"
+  }
+  let yearlyDate = getDateFormatFromCrontab(template.crontab)
   function validateAndSaveYearlyDate() {
     const dateRegex = /^(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$/
     if (dateRegex.test(yearlyDate)) {
       const [month, day] = yearlyDate.split('-')
       const crontab = `0 0 ${day} ${month} *`
-      updateTemplate({ templateID: template.id, keyValueChanges: { crontab: crontab }, oldTemplate: template })
+      updateTemplate({
+        templateID: template.id,
+        keyValueChanges: { crontab: crontab },
+        oldTemplate: template,
+      })
     } else {
       alert('Please enter a valid date in MM-DD format')
     }
@@ -19,7 +27,7 @@
   <input
     type="text"
     bind:value={yearlyDate}
-    placeholder="MM-DD"
+    placeholder= "MM-DD"
     pattern="\d{2}-\d{2}"
     title="Please enter a date in MM-DD format"
   />

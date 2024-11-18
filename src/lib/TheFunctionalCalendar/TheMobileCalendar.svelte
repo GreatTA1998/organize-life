@@ -3,7 +3,7 @@
   import DayHeader from './DayHeader.svelte'
   import CalendarTimestamps from './CalendarTimestamps.svelte'
   import YearAndMonthTile from './YearAndMonthTile.svelte'
-  import MultiPhotoUploader from '../MultiPhotoUploader.svelte'
+  import MultiPhotoUploader from './MultiPhotoUploader.svelte'
 
   import Tasks from '/src/back-end/Tasks'
   import { buildCalendarDataStructures } from '/src/helpers/maintainState.js'

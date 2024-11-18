@@ -11,10 +11,10 @@ const firebaseConfig = {
   measurementId: "G-EZSLE84PYQ",
 };
 
-const app = initializeApp(firebaseConfig);
-const appSource = initializeApp(firebaseConfig);
-const db = getFirestore(app, "schema-compliant");
+const app = initializeApp(firebaseConfig)
+const appSource = initializeApp(firebaseConfig)
+const db = getFirestore(app, "schema-compliant")
 // const sourceDB = getFirestore(appSource, "asian-alliance");
 // const destinationDB = db
 
-export { app, db};
+export { app, db }

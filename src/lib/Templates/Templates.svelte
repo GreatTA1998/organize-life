@@ -36,12 +36,11 @@
   Known Bugs:
   <ul>
     <li> If you deselect all the days, it does not delete tasks from the calendar, to handle: delete template or just set a new day of the week</li>
-    <li> Yearly does not work </li>
   </ul>
 </h4>
 <div style="padding: 48px;">
   <div style="font-size: 32px; margin-bottom: 48px;">Templates</div>
-  <div style="display: flex; width: 90vw; justify-content: space-between;">
+  <div style="display: flex; justify-content: space-around; flex-wrap: wrap;">
     <TemplateColumn templates={quickTasks} crontab="" />
     <TemplateColumn templates={weeklyTasks} crontab="0 0 * * 0" />
     <TemplateColumn templates={monthlyTasks} crontab="0 0 0 * *" />

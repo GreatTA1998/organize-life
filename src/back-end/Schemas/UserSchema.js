@@ -8,4 +8,5 @@ export default Joi.object({
     phoneNumber: Joi.string().required().allow(""),
     maxOrderValue: Joi.number().required().default(0),
     uid: Joi.string().required(),
+    savedAIQuestions: Joi.array().items(Joi.string()).required().default([]),
 })
