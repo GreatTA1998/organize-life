@@ -1,6 +1,8 @@
 import { writable } from 'svelte/store'
 export { templates, deleteTemplate, updateTemplate } from './templatesStore.js'
 
+export const savedAIQuestions = writable([])
+
 export const todoTasks = writable(null)
 export const calendarTasks = writable(null)
 export const loadingTasks = writable(false);

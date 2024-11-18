@@ -5,6 +5,7 @@
   import GPT from '../../back-end/GPT.js'
   import { onMount, tick } from 'svelte'
   import { DateTime } from 'luxon'
+  import { savedAIQuestions } from '../../store'
   export let aiPanelWidth
   let TheChatInput
   let isThinking = false
@@ -38,6 +39,44 @@
     requestAnimationFrame(() => {
       TheChatInput.focus()
     })
+  }
+
+  let filteredSuggestions = []
+  let selectedSuggestionIndex = -1
+  $: filteredSuggestions =
+    state.currentInput ?
+      $savedAIQuestions.filter(q =>
+        q.toLowerCase().includes(state.currentInput.toLowerCase())
+      )
+    : []
+
+  function toggleSaveMessage(message) {
+    const index = $savedAIQuestions.indexOf(message)
+    if (index !== -1) {
+      $savedAIQuestions = [
+        ...$savedAIQuestions.slice(0, index),
+        ...$savedAIQuestions.slice(index + 1),
+      ]
+    } else {
+      $savedAIQuestions = [...$savedAIQuestions, message]
+    }
+  }
+
+  function handleKeydown(event) {
+    if (event.key === 'ArrowDown') {
+      selectedSuggestionIndex =
+        (selectedSuggestionIndex + 1) % filteredSuggestions.length
+    } else if (event.key === 'ArrowUp') {
+      selectedSuggestionIndex =
+        (selectedSuggestionIndex - 1 + filteredSuggestions.length) %
+        filteredSuggestions.length
+    } else if (event.key === 'Enter' && selectedSuggestionIndex >= 0) {
+      state.currentInput = filteredSuggestions[selectedSuggestionIndex]
+      filteredSuggestions = [] // Clear suggestions after selection
+      selectedSuggestionIndex = -1
+    } else if (event.key === 'Enter') {
+      addMessage()
+    }
   }
 
   onMount(async () => {
@@ -82,11 +121,25 @@
   </div> -->
   <div
     class="chat-box"
-    style="display: flex; flex-direction: column; width: {aiPanelWidth - 10}px; margin-top: 20px;"
+    style="display: flex; flex-direction: column; width: {aiPanelWidth -
+      10}px; margin-top: 20px;"
   >
     {#each state.chat as message, index (message)}
       {#if message.role === 'user'}
-        <div class="user-message">{message.content}</div>
+        <div class="user-message">
+          {message.content}
+          <!-- svelte-ignore a11y-click-events-have-key-events -->
+          <span
+            class="star-icon"
+            on:click={() => toggleSaveMessage(message.content)}
+          >
+            {#if $savedAIQuestions.includes(message.content)}
+              ★
+            {:else}
+              ☆
+            {/if}
+          </span>
+        </div>
       {:else}
         <div class="assistant-message">
           <div
@@ -108,13 +161,30 @@
     {/each}
   </div>
 
+  <!-- svelte-ignore a11y-click-events-have-key-events -->
+  {#if filteredSuggestions.length > 0}
+    <div class="suggestions-list">
+      {#each filteredSuggestions as suggestion, index}
+        <div
+          class:selected={index === selectedSuggestionIndex}
+          on:click={() => {
+            state.currentInput = suggestion
+            filteredSuggestions = []
+            selectedSuggestionIndex = -1
+          }}
+        >
+          {suggestion}
+        </div>
+      {/each}
+    </div>
+  {/if}
   <div class="input-section">
     <input
       bind:this={TheChatInput}
       type="text"
       placeholder="Type your message..."
       bind:value={state.currentInput}
-      on:keydown={e => e.key === 'Enter' && addMessage()}
+      on:keydown={handleKeydown}
     />
 
     <button class="submit-button" on:click={addMessage}>
