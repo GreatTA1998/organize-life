@@ -16,7 +16,7 @@
 <div class:iphone-se-size={isTesting} 
      class:general-mobile-size={!isTesting}
      class:voice-active-highlight={isUsingVoice}
-     style="height: 100dvh; position: relative; display: flex; flex-direction: column; border: 2px solid red;"
+     style="height: 100dvh; position: relative; display: flex; flex-direction: column;"
 >
   <div style="overflow-y: auto;">
     {#if activeTabName === 'TODO_VIEW'}
@@ -89,7 +89,7 @@
           summarize
         </span>
         <div class="nav-tab-desc">
-          To-do List
+          To-do
         </div>
       </div>
     </div>
