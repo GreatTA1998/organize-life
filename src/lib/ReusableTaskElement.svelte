@@ -67,7 +67,7 @@
       <!-- svelte-ignore a11y-missing-attribute -->
       <img src={task.iconURL} style="pointer-events: none; width: 32px; height: 32px;">
     {:else}
-      <div class="task-name truncate-to-one-line" style="color: {isBulletPoint ? '' : 'white'}">
+      <div class="task-name truncate-to-one-line unselectable" style="color: {isBulletPoint ? '' : 'white'}">
         {task.name}
       </div>
     {/if}
@@ -137,6 +137,9 @@
 
   function startAdjustingDuration (e) {
     startY = getTrueY(e)
+    whatIsBeingDraggedFullObj.set({ 
+      isDraggingDuration: true 
+    })
   }
 
   function adjustDuration (e, task) {
@@ -157,6 +160,7 @@
         duration: Math.max(1, task.duration + durationChange) // can't have a 0 duration event
       }      
     })
+    whatIsBeingDraggedFullObj.set(null)
   }
 </script> 
 
@@ -169,14 +173,6 @@
     --experimental-purple: hsla(248, 53%, 58%, 0.6);
     --experimental-red: hsla(0, 100%, 50%, 0.6);
   }
-
-  /* .claude-draggable-item {
-    touch-action: none;
-    -webkit-user-select: none;
-    user-select: none;
-    -webkit-touch-callout: none;
-    -webkit-tap-highlight-color: transparent;
-  } */
 
   .calendar-block {
     width: 100%;
