@@ -95,7 +95,7 @@
     }
 
     if (tasksToDisplay.length > 0) {
-      newRootTaskObj.orderValue = (0 + tasksToDisplay[0].orderValue) / 2
+      newRootTaskObj.orderValue = (0 + tasksToDisplay[0].orderValue) / 1.1
     } // otherwise the default `orderValue` will be `maxOrder`, handled by `applyTaskSchema`
 
     dispatch('new-root-task', {

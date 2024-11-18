@@ -187,6 +187,7 @@
     createTaskNode({ id: getRandomID(), newTaskObj })
   }
 
+  // should be a function exposed by the `GrandTreeTodoReusableList` component
   function createNewTodo ({ name }) {
     const dueInHowManyDays = 7
     const d = new Date()
@@ -198,7 +199,7 @@
     }
 
     if ($todoMemoryTree.length > 0) {
-      newTaskObj.orderValue = (0 + $todoMemoryTree[0].orderValue) / 2 
+      newTaskObj.orderValue = (0 + $todoMemoryTree[0].orderValue) / 1.1
     } 
     // if it's the first task, the orderValue is initialized to `maxOrder`
 
