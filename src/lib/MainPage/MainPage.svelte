@@ -7,7 +7,6 @@
     hasInitialScrolled,
   } from '/src/store'
   import Templates from '$lib/Templates/Templates.svelte'
-  import AI from '../AI/AI.svelte'
   import TheSnackbar from '$lib/TheSnackbar.svelte'
   import NavbarAndContentWrapper from '$lib/NavbarAndContentWrapper.svelte'
   import DetailedCardPopup from '$lib/DetailedCardPopup/DetailedCardPopup.svelte'
@@ -15,7 +14,7 @@
     handleSW,
     handleNotificationPermission,
   } from './handleNotifications.js'
-  import { onDestroy, onMount } from 'svelte'
+  import { onMount } from 'svelte'
   import { goto } from '$app/navigation'
   import { getAuth, signOut } from 'firebase/auth'
   import { arrayUnion } from 'firebase/firestore'
@@ -28,48 +27,18 @@
   } from '/src/helpers/crud.js'
   import { findTaskByID } from '/src/helpers/utils.js'
   import { dev } from '$app/environment'
-
+  import AISideMenu from './AISideMenu.svelte'
   let currentMode = 'Week'
+
   let isShowingAI = true
+  const toggleAI = () => (isShowingAI = !isShowingAI)
 
   let clickedTaskID = ''
   let clickedTask = {}
 
-  let unsub
-
   $: if (clickedTaskID) {
     if (clickedTaskID) clickedTask = findTaskByID(clickedTaskID)
     else clickedTask = {}
-  }
-
-  let aiPanelWidth = 50
-  let isResizing = false
-
-  function startResizing(e) {
-    isResizing = true
-    console.log('startResizing', isResizing)
-
-    window.addEventListener('mousemove', handleMouseMove)
-    window.addEventListener('mouseup', stopResizing)
-  }
-
-  function handleMouseMove(e) {
-    if (!isResizing) return
-    // Calculate new width based on mouse position
-    const newWidth = window.innerWidth - e.clientX
-
-    // Set minimum and maximum width constraints
-    aiPanelWidth = Math.min(Math.max(newWidth, 1), 900)
-  }
-
-  function stopResizing() {
-    // if (aiPanelWidth < 100) {
-    //   aiPanelWidth = 320
-    //   // isShowingAI = false
-    // }
-    isResizing = false
-    window.removeEventListener('mousemove', handleMouseMove)
-    window.removeEventListener('mouseup', stopResizing)
   }
 
   onMount(async () => {
@@ -192,14 +161,14 @@
     </div>
 
     <div style="display: flex; gap: 28px; align-items: center;">
-      <!-- <span
+      <span
         on:click={() => (isShowingAI = !isShowingAI)}
         on:keydown
         class="material-symbols-outlined"
         style="font-size: 28px; cursor: pointer;"
       >
         smart_toy
-      </span> -->
+      </span>
       <!-- <PopupCustomerSupport let:setIsPopupOpen>
         <span on:click={() => setIsPopupOpen({ newVal: true })} on:keydown
           class="material-symbols-outlined mika-hover responsive-icon-size"
@@ -225,7 +194,6 @@
           })}
       />
       <TheFunctionalCalendar
-        {isResizing}
         on:new-root-task={e => createTaskNode(e.detail)}
         on:task-click={e => openDetailedCard(e.detail)}
         on:task-update={e =>
@@ -234,67 +202,6 @@
             keyValueChanges: e.detail.keyValueChanges,
           })}
       />
-      <div
-        style="display: {isShowingAI ? 'block' : (
-          'none'
-        )}; flex: 0 0 {aiPanelWidth}px; position: relative; background-color: var(--navbar-bg-color);"
-      >
-        <div
-          class="resize-handle"
-          on:mousedown={startResizing}
-          style="position: absolute; left: 0; top: 0; width: 4px; height: 100%; cursor: ew-resize;"
-        ></div>
-        {#if aiPanelWidth < 150}
-          <!-- svelte-ignore a11y-click-events-have-key-events -->
-          <div
-            class="collapsed-ai-indicator"
-            on:click={() => (aiPanelWidth = 320)}
-            style="
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            padding: 8px;
-          "
-          >
-            <div
-              style="display: flex; flex-direction: column; align-items: center;"
-            >
-              <span class="material-symbols-outlined" style="font-size: 24px;"
-                >chevron_left</span
-              >
-              <span class="material-symbols-outlined" style="font-size: 24px;"
-                >smart_toy</span
-              >
-            </div>
-          </div>
-        {:else}
-          <!-- svelte-ignore a11y-click-events-have-key-events -->
-          <div
-            class="expanded-ai-indicator"
-            on:click={() => (aiPanelWidth = 50)}
-            style="
-        position: absolute;
-        top: 50%;
-        left: 4px;
-        transform: translateY(-50%);
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        padding: 8px;
-        z-index: 1;
-      "
-          >
-            <span class="material-symbols-outlined" style="font-size: 24px;"
-              >chevron_right</span
-            >
-          </div>
-          <AI {aiPanelWidth} />
-        {/if}
-      </div>
     </div>
     <div
       style="width: 100%; background: hsl(98, 40%, 96%); display: {(
@@ -304,6 +211,9 @@
       : 'none'}"
     >
       <Templates />
+    </div>
+    <div style="display: {isShowingAI ? 'flex' : 'none'};">
+      <AISideMenu {isShowingAI} {toggleAI} />
     </div>
   </div>
 </NavbarAndContentWrapper>

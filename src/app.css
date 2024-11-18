@@ -111,8 +111,8 @@ html, body {
 
 /* Notion scrollbar styles */
 ::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
+  width: 0;
+  height: 0;
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {

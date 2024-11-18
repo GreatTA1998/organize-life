@@ -10,7 +10,7 @@
 
   const DefaultDateRange = {
     startDate: DateTime.now().minus({ month: 2 }).toISODate(),
-    endDate: DateTime.now().plus({ month: 2 }).toISODate()
+    endDate: DateTime.now().plus({ month: 2 }).toISODate(),
   }
 
   let state = {
@@ -18,12 +18,12 @@
     chat: [{ role: 'assistant', content: text.example }],
     currentInput: '',
     tasksJSON: '',
-    DateRange: DefaultDateRange
+    DateRange: DefaultDateRange,
   }
 
-  const setState = (newState) => (state = newState)
+  const setState = newState => (state = newState)
 
-  $: user.subscribe((value) => {
+  $: user.subscribe(value => {
     state = { ...state, userID: value.uid }
   })
 
@@ -38,7 +38,7 @@
       state.userID,
       state.DateRange.startDate,
       state.DateRange.endDate
-    ).catch((err) => {
+    ).catch(err => {
       console.error('error in onMount, ', err)
     })
     setState({ ...state, tasksJSON })
@@ -49,30 +49,38 @@
     if (state.currentInput.trim()) {
       setState({
         ...state,
-        chat: [...state.chat, { role: 'user', content: state.currentInput }]
+        chat: [...state.chat, { role: 'user', content: state.currentInput }],
       })
     }
     state.currentInput = ''
     const { role, content } = await GPT.chat(state.tasksJSON, state.chat)
+    console.log('content', content)
     setState({
       ...state,
-      chat: [...state.chat, { role, content }]
+      chat: [...state.chat, { role, content }],
     })
   }
 </script>
 
-<div class="container" style="max-width: {aiPanelWidth - 5}px; overflow-x: hidden;">
-  <div class="chat-box" style="width: {aiPanelWidth - 10}px;">
+<div
+  class="container"
+  style="max-width: {aiPanelWidth - 5}px; overflow-x: hidden;"
+>
+  <div
+    class="chat-box"
+    style="display: flex; flex-direction: column; width: {aiPanelWidth - 10}px;"
+  >
     {#each state.chat as message}
       {#if message.role === 'user'}
-        <div class="message-class">
-          <strong>{message.role}:</strong>
-          {message.content}
-        </div>
+        <div class="user-message">{message.content}</div>
       {:else}
-        <div>
-          <strong>{message.role}:</strong>
-          {@html message.content}
+        <div class="assistant-message">
+          <div class="profile-bubble">
+            <span class="material-symbols-outlined">smart_toy</span>
+          </div>
+          <div class="message-content">
+            {@html message.content}
+          </div>
         </div>
       {/if}
     {/each}
@@ -84,7 +92,7 @@
       type="text"
       placeholder="Type your message..."
       bind:value={state.currentInput}
-      on:keydown={(e) => e.key === 'Enter' && addMessage()}
+      on:keydown={e => e.key === 'Enter' && addMessage()}
     />
 
     <button class="submit-button" on:click={addMessage}>

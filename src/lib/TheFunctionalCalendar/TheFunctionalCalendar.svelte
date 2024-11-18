@@ -3,9 +3,7 @@
   import DayHeader from './DayHeader.svelte'
   import CalendarTimestamps from './CalendarTimestamps.svelte'
   import YearAndMonthTile from './YearAndMonthTile.svelte'
-  import MultiPhotoUploader from '../MultiPhotoUploader.svelte'
-  import FloatingButtonWrapper from '../MobileMode/FloatingButtonWrapper.svelte'
-
+  import MultiPhotoUploader from './MultiPhotoUploader.svelte'
   import Tasks from '/src/back-end/Tasks'
   import { buildCalendarDataStructures } from '/src/helpers/maintainState.js'
   import { trackWidth, trackHeight } from '/src/helpers/actions.js'
@@ -14,8 +12,10 @@
     tasksScheduledOn,
     user,
     calendarTasks,
-    hasInitialScrolled
+    hasInitialScrolled,
   } from '/src/store'
+
+  export let requireDoubleClick = false
 
   // Video explanation for this component (refer to related videos in the "Two-way infinite scroll" folder)
   // https://www.explanations.io/uRNISfkw0mE404Zn4GgH/ePfUWAU6CXL7leApJ9GP
@@ -112,7 +112,7 @@
 
         const mergedTasks = removeDuplicateTasks([
           ...newTasks,
-          ...$calendarTasks
+          ...$calendarTasks,
         ])
         buildCalendarDataStructures({ flatArray: mergedTasks })
         resolve('done')
@@ -125,7 +125,7 @@
 
   function removeDuplicateTasks(tasks) {
     return tasks.filter(
-      (task, index, self) => index === self.findIndex((t) => t.id === task.id)
+      (task, index, self) => index === self.findIndex(t => t.id === task.id)
     )
   }
 
@@ -144,7 +144,7 @@
         )
         const mergedTasks = removeDuplicateTasks([
           ...newTasks,
-          ...$calendarTasks
+          ...$calendarTasks,
         ])
         buildCalendarDataStructures({ flatArray: mergedTasks })
         resolve('done')
@@ -184,7 +184,8 @@
 </script>
 
 <div class="calendar-wrapper">
-  <div style="position: absolute; right: 2vw; bottom: 2vw; z-index: 1; 
+  <div
+    style="position: absolute; right: 2vw; bottom: 2vw; z-index: 1; 
     border: 1px solid lightgrey;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15); 
     height: 50px;
@@ -195,7 +196,7 @@
     background-color: hsl(98, 40%, {90 + 2}%, 0.4);"
   >
     <MultiPhotoUploader />
-  </div>  
+  </div>
 
   <YearAndMonthTile
     {leftEdgeIdx}
@@ -209,8 +210,8 @@
   <div
     id="scroll-parent"
     bind:this={ScrollParent}
-    use:trackWidth={(newWidth) => (scrollParentWidth = newWidth)}
-    on:scroll={(e) => (scrollX = e.target.scrollLeft)}
+    use:trackWidth={newWidth => (scrollParentWidth = newWidth)}
+    on:scroll={e => (scrollX = e.target.scrollLeft)}
   >
     <div class="scroll-content" style:width="{TOTAL_COLUMNS * COLUMN_WIDTH}px">
       <CalendarTimestamps
@@ -224,7 +225,7 @@
         >
           <div
             class="headers-flexbox"
-            use:trackHeight={(newHeight) => (exactHeight = newHeight)}
+            use:trackHeight={newHeight => (exactHeight = newHeight)}
             class:bottom-border={$tasksScheduledOn}
           >
             {#each dtOfActiveColumns as currentDate, i (currentDate.toMillis() + `${i}`)}
@@ -241,6 +242,7 @@
           <div class="day-columns">
             {#each dtOfActiveColumns as currentDate (currentDate.toMillis())}
               <DayColumn
+                {requireDoubleClick}
                 calendarBeginningDateClassObject={DateTime.fromISO(
                   currentDate.toFormat('yyyy-MM-dd')
                 ).toJSDate()}
@@ -277,7 +279,7 @@
   #scroll-parent {
     overflow: auto;
     position: relative;
-    
+
     /* FIRST: do no harm (this property has downsides) But it's a last-resort fallback if there are performance issues */
     /* will-change: scroll-position; */
   }

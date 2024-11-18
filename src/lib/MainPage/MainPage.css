@@ -102,3 +102,67 @@
   .blue-icon {
     color: #0085ff;
   }
+
+  .grip-lines {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    flex-direction: row; 
+    gap: 4px; 
+  }
+  
+  .grip-lines div {
+    height: 16px;
+    /* background-color: #5f5c5c; */
+    background-color: #888;
+    border-radius: 1px;
+  }
+  
+  /* .grip-lines div:nth-child(1) {
+    height: 19px; 
+    width:0.5px;
+    margin-top: -2.5px;
+  }
+  
+  .grip-lines div:nth-child(2) {
+    height: 14px;
+    width: 0.5px
+  }
+  
+  .grip-lines div:nth-child(3) {
+    height: 8px;
+    width: 0.5px;
+    margin-top: 3px;
+  } */
+
+  .grip-lines div:nth-child(1) {
+    height: 19px; 
+    width:1px;
+    margin-top: -2.5px;
+  }
+  
+  .grip-lines div:nth-child(2) {
+    height: 14px;
+    width: 1px
+  }
+  
+  .grip-lines div:nth-child(3) {
+    height: 19px; 
+    width: 1px;
+    margin-top: -2.5px;
+  }
+
+
+  .floating-ai-indicator {
+    position: absolute; right: 2.5vw; bottom: 100px; z-index: 1; 
+    border: 1px solid lightgrey;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15); 
+    height: 50px;
+    width: 50px;
+    border-radius: 30px;  display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: hsl(98, 40%, 92%, 0.4);
+  }
