@@ -159,7 +159,7 @@
   import { fetchMobileTodoTasks, fetchMobileCalTasks, fetchMobileFutureOverviewTasks } from '$lib/MainPage/handleTasks.js'
 
   let isTesting = false
-  let activeTabName = 'TODO_VIEW'
+  let activeTabName = 'CALENDAR_VIEW' // probably the new user default, butthen persists the user's preference e.g. I prefer the to-do
   let unsub
   
   let isUsingVoice = false
