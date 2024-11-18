@@ -77,6 +77,8 @@
           })
         }
       />
+    {:else if activeTabName === 'AI_VIEW'}
+      <AI />
     {/if}
   </div>
 
@@ -102,8 +104,8 @@
       class:active-nav-tab={activeTabName === 'CALENDAR_VIEW'}
     >
       <div style="text-align: center;">
-        <span class=" material-icons nav-tab-icon">
-          home
+        <span class="material-symbols-outlined nav-tab-icon">
+          house
         </span>
         <div class="nav-tab-desc">
           Calendar
@@ -121,11 +123,23 @@
         </div>
       </div>
     </div>
+
+    <div class="bottom-nav-tab" on:click={() => activeTabName = 'AI_VIEW'} class:active-nav-tab={activeTabName === 'AI_VIEW'}>
+      <div style="text-align: center;">
+        <span class=" material-symbols-outlined nav-tab-icon">
+          smart_toy
+        </span>
+        <div class="nav-tab-desc">
+          Robot
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 
 <script>
   import TheMobileCalendar from '$lib/TheFunctionalCalendar/TheMobileCalendar.svelte'
+  import AI from '$lib/AI/AI.svelte'
 
   import { 
     getRandomID, 
