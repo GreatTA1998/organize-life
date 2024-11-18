@@ -16,7 +16,7 @@
 <div class:iphone-se-size={isTesting} 
      class:general-mobile-size={!isTesting}
      class:voice-active-highlight={isUsingVoice}
-     style="height: 100dvh; position: relative; display: flex; flex-direction: column;"
+     style="height: 100svh; position: relative; display: flex; flex-direction: column; border: 2px solid yellow;"
 >
   <div style="overflow-y: auto;">
     {#if activeTabName === 'TODO_VIEW'}
