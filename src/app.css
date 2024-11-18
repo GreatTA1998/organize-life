@@ -33,6 +33,9 @@
 /* https://stackoverflow.com/questions/30636930/disable-web-page-navigation-on-swipeback-and-forward?rq=1 */
 html, body {
   overscroll-behavior-x: none;
+
+  /* prevents iOS adding mysterious white space on the bottom to create a bouncy effect */
+  overflow: hidden;
 }
 
 .simple-flex {
