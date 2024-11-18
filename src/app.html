@@ -5,6 +5,8 @@
 		<meta charset="utf-8" />
 		<meta name="description" content="" />
 
+		
+
 		<!-- https://stackoverflow.com/a/43469640/7812829 -->
 		<!-- NOTE: favicon needs to be a specific dimension, which explains the distortion -->		 
 		<link rel="icon" href="%sveltekit.assets%/trueoutput-square-nobg.png">
@@ -17,8 +19,11 @@
 		<!-- Inter Font -->
 		<link rel="preconnect" href="https://rsms.me/">
 		<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
-
-		<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<!-- 
+		<meta name="viewport" content="width=device-width, initial-scale=1"/> -->
+		
+		<!-- viewport-fit=cover prevents iOS from adding mysterious white space on the bottom to create a bouncy effect -->
+		<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 		%sveltekit.head%
 	</head>
 	<body style="margin: 0; height: 100%;">
