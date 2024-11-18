@@ -245,7 +245,6 @@
           <div class="day-columns">
             {#each dtOfActiveColumns as currentDate (currentDate.toMillis())}
               <DayColumn
-                {requireDoubleClick}
                 calendarBeginningDateClassObject={DateTime.fromISO(
                   currentDate.toFormat('yyyy-MM-dd')
                 ).toJSDate()}
