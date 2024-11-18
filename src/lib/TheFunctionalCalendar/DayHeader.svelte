@@ -49,7 +49,7 @@
 
 <div
   class="day-header sticky-day-of-week-abbreviation"
-  style:padding={isCompact ? '0px 0px 0px 0px' : 'var(--main-content-top-margin) 0px 0px 0px'}
+  style:padding={isCompact ? '0px 0px 0px 0px' : 'var(--main-content-top-margin) 0px 18px 0px'}
   on:click|self={() => (isDirectlyCreatingTask = true)} on:keydown
   on:dragover={(e) => dragover_handler(e)}
   on:drop={(e) => drop_handler(e, ISODate)}
@@ -88,10 +88,10 @@
             {#each $tasksScheduledOn[ISODate].noStartTime.noIcon as flexibleDayTask (flexibleDayTask.id)}
               <div
                 on:click={() => dispatch('task-click', { task: flexibleDayTask })}
-                style="outline: 0px solid red;width: var(--calendar-day-section-width); 
+                style="width: var(--calendar-day-section-width); 
                 font-size: 12px; 
                 display: flex; gap: 4px; 
-                margin-top: 0px; margin-left: 4px; margin-right: 4px; margin-bottom: 4px;
+                margin-top: 0px; margin-left: 4px; margin-right: 4px; margin-bottom: {isCompact ? '4px' : '8px'};
               "
               >
                 <ReusableFlexibleDayTask
