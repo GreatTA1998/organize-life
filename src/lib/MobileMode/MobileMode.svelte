@@ -16,7 +16,7 @@
 <div class:iphone-se-size={isTesting} 
      class:general-mobile-size={!isTesting}
      class:voice-active-highlight={isUsingVoice}
-     style="height: 100dvh; position: relative; display: flex; flex-direction: column;"
+     style="height: 100dvh; position: relative; display: flex; flex-direction: column; border: 2px solid red;"
 >
   <div style="overflow-y: auto;">
     {#if activeTabName === 'TODO_VIEW'}
@@ -140,14 +140,6 @@
 <script>
   import TheMobileCalendar from '$lib/TheFunctionalCalendar/TheMobileCalendar.svelte'
   import AI from '$lib/AI/AI.svelte'
-
-  import { 
-    getRandomID, 
-    getDateInMMDD, 
-    getDateInDDMMYYYY,
-  } from '/src/helpers/everythingElse.js'
-  import { user, todoMemoryTree, hasInitialScrolled } from '/src/store'
-  import { onDestroy, onMount } from 'svelte'
   import ScheduleView from '$lib/MobileMode/ScheduleView.svelte'
   import ListView from '$lib/MobileMode/ListView.svelte'
   import CalendarView from '$lib/MobileMode/CalendarView.svelte'
@@ -155,6 +147,10 @@
   import DetailedCardPopup from '$lib/DetailedCardPopup/DetailedCardPopup.svelte'
   import MultiPhotoUploader from '$lib/MultiPhotoUploader.svelte'
   import FloatingButtonWrapper from './FloatingButtonWrapper.svelte'
+
+  import { getRandomID, getDateInMMDD } from '/src/helpers/everythingElse.js'
+  import { user, todoMemoryTree, hasInitialScrolled } from '/src/store'
+  import { onDestroy, onMount } from 'svelte'
   import { createTaskNode, updateTaskNode, deleteTaskNode } from '/src/helpers/crud.js'
   import { fetchMobileTodoTasks, fetchMobileCalTasks, fetchMobileFutureOverviewTasks } from '$lib/MainPage/handleTasks.js'
 
