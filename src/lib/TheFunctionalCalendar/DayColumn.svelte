@@ -178,7 +178,7 @@
       {/each}
     {/if}
 
-    {#each scheduledTasks as task, i}
+    {#each scheduledTasks as task, i (task.id)}
       <div
         style="
           position: absolute; 
