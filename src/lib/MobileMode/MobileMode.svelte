@@ -47,21 +47,6 @@
           />
         </FloatingButtonWrapper>
       </ListView>
-    {:else if activeTabName === 'TODAY_VIEW'}
-      <CalendarView 
-        let:startTypingNewTask={startTypingNewTask}
-        on:task-click={(e) => openDetailedCard(e.detail)}
-      >
-        <FloatingButtonWrapper on:click={startTypingNewTask} distanceFromBottom={100}>
-          <span id="startButton" class="material-symbols-outlined" style="font-size: 48px; font-weight: 600;">
-            add
-          </span>
-        </FloatingButtonWrapper>
-        
-        <FloatingButtonWrapper>
-          <MultiPhotoUploader/>
-        </FloatingButtonWrapper>
-      </CalendarView>
     {:else if activeTabName === 'FUTURE_VIEW'}
       <ScheduleView
         on:task-duration-adjusted
@@ -140,10 +125,8 @@
   import AI from '$lib/AI/AI.svelte'
   import ScheduleView from '$lib/MobileMode/ScheduleView.svelte'
   import ListView from '$lib/MobileMode/ListView.svelte'
-  import CalendarView from '$lib/MobileMode/CalendarView.svelte'
   import VoiceKeywordDetect from '$lib/VoiceKeywordDetect.svelte'
   import DetailedCardPopup from '$lib/DetailedCardPopup/DetailedCardPopup.svelte'
-  import MultiPhotoUploader from '$lib/MultiPhotoUploader.svelte'
   import FloatingButtonWrapper from './FloatingButtonWrapper.svelte'
 
   import { getRandomID, getDateInMMDD } from '/src/helpers/everythingElse.js'
