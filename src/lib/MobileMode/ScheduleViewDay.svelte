@@ -79,10 +79,10 @@
 
   $: timeIndicatorPosition = findTimeIndicatorPosition()
   
-  $: if (CurrentDayIndicator) {
-    CurrentDayIndicator.scrollIntoView({ behavior: 'instant', block: 'start' })
-  }
-
+  // auto-scroll exposes the white iOS spacing. Also now we display events from today onwards anyway, so no need to re-orient
+  // $: if (CurrentDayIndicator) {
+  //   CurrentDayIndicator.scrollIntoView({ behavior: 'instant', block: 'start' })
+  // }
 
   function isToday () {
     return DateTime.fromISO(simpleDateISO).toFormat('yyyy-MM-dd') === DateTime.now().toFormat('yyyy-MM-dd')
