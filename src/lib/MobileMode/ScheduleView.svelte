@@ -14,6 +14,9 @@
 {/if}
 
 <script>
-  import { uniqueEvents } from '/src/store'
+  import { uniqueEvents, user } from '/src/store'
   import ScheduleViewDay from './ScheduleViewDay.svelte'
+  import { fetchMobileFutureOverviewTasks } from '$lib/MainPage/handleTasks.js'
+
+  fetchMobileFutureOverviewTasks($user.uid)
 </script>

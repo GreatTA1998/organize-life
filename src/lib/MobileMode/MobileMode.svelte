@@ -133,7 +133,7 @@
   import { user, todoMemoryTree, hasInitialScrolled } from '/src/store'
   import { onDestroy, onMount } from 'svelte'
   import { createTaskNode, updateTaskNode, deleteTaskNode } from '/src/helpers/crud.js'
-  import { fetchMobileTodoTasks, fetchMobileCalTasks, fetchMobileFutureOverviewTasks } from '$lib/MainPage/handleTasks.js'
+  import { fetchMobileTodoTasks, fetchMobileCalTasks } from '$lib/MainPage/handleTasks.js'
 
   let isTesting = false
   let activeTabName = 'CALENDAR_VIEW' // probably the new user default, butthen persists the user's preference e.g. I prefer the to-do
@@ -148,10 +148,10 @@
   onMount(async () => {
     fetchMobileTodoTasks($user.uid)
     
-    await fetchMobileCalTasks($user.uid)
+    fetchMobileCalTasks($user.uid)
 
-    // note this function is modified to merge with `mobileCalTasks`
-    fetchMobileFutureOverviewTasks($user.uid)
+    // note, we fetch future events inside that component as a quicckfix, so
+    // it'll react to changes in calendar and todo
   })
 
   onDestroy(() => {

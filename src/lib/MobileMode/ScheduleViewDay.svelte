@@ -1,8 +1,4 @@
 <div style="margin-bottom: 20px;">
-  {#if DateTime.fromISO(simpleDateISO).toFormat('yyyy-MM-dd') === DateTime.now().toFormat('yyyy-MM-dd')}
-    <div bind:this={CurrentDayIndicator} class="current-time-indicator"></div>
-  {/if}
-
   <div style="font-size: 20px; margin-bottom: 6px; color: rgb(10, 10, 10); font-weight: 600;">  
     {DateTime.fromISO(simpleDateISO).toFormat('LLLL d (ccc)')}
   </div>
@@ -36,9 +32,13 @@
     </div>
   {/each}
 
-  {#each tasksThisDay.hasStartTime as task}
+  {#each tasksThisDay.hasStartTime as task, i}
+    {#if i === timeIndicatorPosition}
+      <div bind:this={CurrentDayIndicator} class="current-time-indicator-thin"></div>
+    {/if}
+
     <div
-      on:click={() => dispatch('task-click', { task })} 
+      on:click={() => dispatch('task-click', { task })} on:keydown
       style="display: flex; align-items: center; flex-wrap: nowrap; padding: 2px;"
     >
       <div 
@@ -59,6 +59,10 @@
       </div>
     </div>
   {/each}
+
+  {#if tasksThisDay.hasStartTime.length === findTimeIndicatorPosition()}
+    <div bind:this={CurrentDayIndicator} class="current-time-indicator-thin"></div>
+  {/if}
 </div>
 
 <script>
@@ -71,23 +75,40 @@
   export let simpleDateISO
 
   let CurrentDayIndicator
+  const dispatch = createEventDispatcher()
+
+  $: timeIndicatorPosition = findTimeIndicatorPosition()
   
   $: if (CurrentDayIndicator) {
     CurrentDayIndicator.scrollIntoView({ behavior: 'instant', block: 'start' })
   }
 
-  const dispatch = createEventDispatcher()
+
+  function isToday () {
+    return DateTime.fromISO(simpleDateISO).toFormat('yyyy-MM-dd') === DateTime.now().toFormat('yyyy-MM-dd')
+  }
 
   function getAmPmTime (hhmm) {
     const [hh, mm] = hhmm.split(':')
     const dt = DateTime.fromObject({ hour: Number(hh), minutes: Number(mm) })
     return dt.toFormat('h:mm a')
   }
+
+  // assumes events are sorted by `startTime
+  function findTimeIndicatorPosition () {
+    if (!isToday()) { return -1 }
+
+    let idx = tasksThisDay.hasStartTime.findIndex(
+      event => event.startTime > DateTime.now().toFormat('HH:mm')
+    )
+    if (idx === -1) idx = tasksThisDay.hasStartTime.length
+    return idx
+  }
 </script>
 
 <style>
-  .current-time-indicator {
-    border: 4px solid var(--location-indicator-color); 
+  .current-time-indicator-thin {
+    border: 2px solid var(--location-indicator-color); 
     border-radius: 0px;
     width: 100%; 
     margin-top: 8px; 
