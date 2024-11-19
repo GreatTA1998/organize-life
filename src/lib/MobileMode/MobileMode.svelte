@@ -62,6 +62,8 @@
           })
         }
       />
+    {:else if activeTabName === 'ROUTINES_VIEW'}
+      <Templates />
     {:else if activeTabName === 'AI_VIEW'}
       <AI />
     {/if}
@@ -107,6 +109,17 @@
       </div>
     </div>
 
+    <div class="bottom-nav-tab" on:click={() => activeTabName = 'ROUTINES_VIEW'} class:active-nav-tab={activeTabName === 'ROUTINES_VIEW'}>
+      <div style="text-align: center;">
+        <span class=" material-icons nav-tab-icon">
+          autorenew
+        </span>
+        <div class="nav-tab-desc">
+          Routines
+        </div>
+      </div>
+    </div>
+
     <div class="bottom-nav-tab" on:click={() => activeTabName = 'AI_VIEW'} class:active-nav-tab={activeTabName === 'AI_VIEW'}>
       <div style="text-align: center;">
         <span class=" material-symbols-outlined nav-tab-icon">
@@ -123,6 +136,7 @@
 <script>
   import TheMobileCalendar from '$lib/TheFunctionalCalendar/TheMobileCalendar.svelte'
   import AI from '$lib/AI/AI.svelte'
+  import Templates from '$lib/Templates/Templates.svelte'
   import ScheduleView from '$lib/MobileMode/ScheduleView.svelte'
   import ListView from '$lib/MobileMode/ListView.svelte'
   import VoiceKeywordDetect from '$lib/VoiceKeywordDetect.svelte'
