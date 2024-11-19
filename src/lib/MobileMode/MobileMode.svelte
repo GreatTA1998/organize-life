@@ -96,10 +96,8 @@
 
     <div class="bottom-nav-tab" 
       on:click={() => {
-        if (activeTabName === 'CALENDAR_VIEW') {
-          hasInitialScrolled.set(false)
-        }
-        else activeTabName = 'CALENDAR_VIEW'
+        hasInitialScrolled.set(false)
+        activeTabName = 'CALENDAR_VIEW'
       }} on:keydown
       class:active-nav-tab={activeTabName === 'CALENDAR_VIEW'}
     >
