@@ -1,9 +1,9 @@
-{#if $tasksScheduledOn}
+{#if $uniqueEvents}
   <div style="padding: 24px; display: flex; flex-direction: column; row-gap: 12px;">
-    {#each Object.keys($tasksScheduledOn) as simpleDateISO}
-      {#if $tasksScheduledOn[simpleDateISO]}
+    {#each Object.keys($uniqueEvents) as simpleDateISO}
+      {#if $uniqueEvents[simpleDateISO]}
         <ScheduleViewDay 
-          tasksThisDay={$tasksScheduledOn[simpleDateISO]} 
+          tasksThisDay={$uniqueEvents[simpleDateISO]} 
           {simpleDateISO}
           on:task-click
           on:task-checkbox-change
@@ -14,6 +14,6 @@
 {/if}
 
 <script>
-  import { tasksScheduledOn } from '/src/store'
+  import { uniqueEvents } from '/src/store'
   import ScheduleViewDay from './ScheduleViewDay.svelte'
 </script>

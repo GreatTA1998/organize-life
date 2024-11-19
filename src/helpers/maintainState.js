@@ -5,6 +5,7 @@ import {
   calendarMemoryTree,
   tasksScheduledOn,
   inclusiveWeekTodo,
+  uniqueEvents
 } from "/src/store/index.js";
 import { get } from "svelte/store";
 import {
@@ -71,6 +72,12 @@ export function deleteFromLocalState({ id }) {
       flatArray: get(todoTasks).filter((task) => task.id !== id),
     })
   }
+}
+
+export function buildEventsDataStructures({ flatArray }) {
+  const memoryTree = constructCalendarTrees(flatArray);
+  const dateToTasks = computeDateToTasksDict(memoryTree);
+  uniqueEvents.set(dateToTasks)
 }
 
 export function buildCalendarDataStructures({ flatArray }) {

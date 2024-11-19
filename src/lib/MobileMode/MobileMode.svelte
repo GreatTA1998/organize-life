@@ -102,7 +102,7 @@
           upcoming
         </span>
         <div class="nav-tab-desc">
-          Schedule
+          Events
         </div>
       </div>
     </div>

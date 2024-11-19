@@ -1,5 +1,8 @@
 import { DateTime } from "luxon"
-import { buildCalendarDataStructures, buildTodoDataStructures } from "/src/helpers/maintainState"
+import { 
+  buildTodoDataStructures, 
+  buildCalendarDataStructures, 
+  buildEventsDataStructures } from "/src/helpers/maintainState"
 import Tasks from "/src/back-end/Tasks"
 import { size, cushion } from '/src/helpers/constants.js'
 import { get } from "svelte/store"
@@ -59,9 +62,11 @@ export async function fetchMobileFutureOverviewTasks(uid) {
     today.plus({ years: 2 }).toFormat('yyyy-MM-dd')
   )
 
-  buildCalendarDataStructures({
-    flatArray: [...existingTasks, ...futureTasks]
-  })
+  const mergedTasks = [...existingTasks, ...futureTasks]
+
+  // only show unique events, not routines
+  const filteredFutureTasks = mergedTasks.filter(task => task.templateID === "")
+  buildEventsDataStructures({ flatArray: filteredFutureTasks })
 }
 
 
