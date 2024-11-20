@@ -20,7 +20,7 @@
           class:cross-out-todo={taskObj.isDone} 
           style="margin-top: -1px; margin-left: 0px; cursor: pointer; min-width: 16px; min-height: 16px;"
         >
-          <!-- {taskObj.orderValue}  -->
+          <!-- {taskObj.orderValue} handle 0 values as a quick-fix  -->
           {taskObj.name}
         </div>
       </div>
