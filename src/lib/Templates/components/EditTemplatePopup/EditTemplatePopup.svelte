@@ -67,15 +67,16 @@
         {/if}
 
         <!-- svelte-ignore a11y-click-events-have-key-events -->
-        <span
+        <span on:click|stopPropagation={handleDelete}
           class="material-symbols-outlined"
-          on:click|stopPropagation={handleDelete}
           style="cursor: pointer; margin-left: auto; right: 0px; border: 1px solid grey; border-radius: 24px; padding: 4px;"
         >
           delete
         </span>
       </div>
+
       <EditTime {template} />
+
       <IconsDisplay {template} />
     </div>
   </div>
