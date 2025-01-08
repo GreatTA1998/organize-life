@@ -1,6 +1,7 @@
 <script>
   import ReusableRoundButton from '$lib/ReusableRoundButton.svelte'
   import { updateCrontab } from '../../utils.js'
+
   export let template
   export let crontabIndex = 3
   export let maxDays = 7
@@ -10,10 +11,10 @@
   let selectedDays = template.crontab.split(' ')[crontabIndex].split(',')
   let isEditingPeriodicity = false
 
-function handleSave() {
-  updateCrontab({selectedDays, template, crontabIndex})
-  isEditingPeriodicity = false
-}
+  function handleSave() {
+    updateCrontab({selectedDays, template, crontabIndex})
+    isEditingPeriodicity = false
+  }
 
   function handleSelectDay(i) {
     if (selectedDays.includes(i)) {
@@ -56,18 +57,6 @@ function handleSave() {
 </div>
 
 <style>
-  /* .underlined-input {
-    border: none;
-    border-bottom: 2px solid #313131;
-    outline: none;
-    padding: 4px;
-    padding-bottom: 4px;
-    font-size: 16px;
-    width: 20px;
-    margin: 4px;
-    font-weight: 500;
-  } */
-
   .circle {
     width: 30px;
     height: 30px;

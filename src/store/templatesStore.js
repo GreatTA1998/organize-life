@@ -1,9 +1,9 @@
 import { writable, get } from 'svelte/store'
 import Templates from '../back-end/Templates/index.js'
 import { DateTime } from 'luxon'
-import { deleteFromLocalState, updateLocalState } from '../helpers/maintainState.js';
-import Joi from 'joi';
-import TemplateSchema from '../back-end/Schemas/TemplateSchema.js';
+import { deleteFromLocalState, updateLocalState } from '../helpers/maintainState.js'
+import Joi from 'joi'
+import TemplateSchema from '../back-end/Schemas/TemplateSchema.js'
 import { user, calendarTasks } from './index.js'
 
 export const templates = writable([])
@@ -15,10 +15,10 @@ export function deleteTemplate({ templateID }) {
   deleteFutureTasksLocally(templateID)
 }
 
-export async function updateTemplate({ templateID, keyValueChanges, oldTemplate }) {
-  const currentUser = get(user);
+export async function updateTemplate ({ templateID, keyValueChanges, oldTemplate }) {
+  const currentUser = get(user)
   const newTemplate = buildNewTemplate({ oldTemplate, keyValueChanges })
-  Joi.assert(newTemplate, TemplateSchema);
+  Joi.assert(newTemplate, TemplateSchema)
   templates.update((templates) => templates.map((template) =>
     template.id === templateID ? newTemplate : template
   ))
@@ -31,15 +31,14 @@ export async function updateTemplate({ templateID, keyValueChanges, oldTemplate 
     updates: keyValueChanges,
     newTemplate
   })
-
   
   if (keyValueChanges.crontab) {
     deleteFutureTasksLocally(templateID)
     postFutureTasksLocally(hydratedTasks)
   }
-  const afterNow = (taskISO) => taskISO > DateTime.now().toISO();
+  const afterNow = (taskISO) => taskISO > DateTime.now().toISO()
   const tasksToUpdate = get(calendarTasks).filter(task => task.templateID === templateID && afterNow(fullISODate(task)))
-  tasksToUpdate.forEach(({ id }) => updateLocalState({ id, keyValueChanges }));
+  tasksToUpdate.forEach(({ id }) => updateLocalState({ id, keyValueChanges }))
 }
 
 function updateQuickTasks({ templateID, keyValueChanges, userID, newTemplate }) {

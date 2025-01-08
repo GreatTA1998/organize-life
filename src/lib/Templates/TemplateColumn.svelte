@@ -5,12 +5,13 @@
   import { updateTemplate } from '/src/store'
   import { getDisplayLength } from './utils.js'
   import Templates from '/src/back-end/Templates/index.js'
+
   export let templates
   export let crontab
+
   let draggedTemplate
   const templateWidthInPx = 180
   const dayOfWeekSymbol = ['S', 'M', 'T', 'W', 'T', 'F', 'S']
-
 
   function handleDrop(newOrderValue) {
     updateTemplate({
@@ -59,45 +60,43 @@
           <div style="font-size: 16px; font-color: rgb(120, 120, 120)">
             {template.name}
           </div>
+
           {#if Templates.getPeriodFromCrontab(template.crontab)==="weekly"}
-          <div style="display: flex; margin-top: 4px;">
-            {#each dayOfWeekSymbol as _, i}
-              <div
-                class="day-of-week-circle"
-                class:highlighted={template.crontab
-                  .split(' ')[4]
-                  .split(',')
-                  .includes((i + 1).toString())}
-              ></div>
-            {/each}
-          </div>
-          {/if}
-          {#if template.totalTasksCompleted}
-          <div style="margin-left: 8px;">
-            <div
-              style="display: flex; align-items: center; margin-top: 8px;
-              margin-bottom: 0px; max-width: {templateWidthInPx}px;"
-            >
-              {#each { length: template.totalTasksCompleted } as _, i}
+            <div style="display: flex; margin-top: 4px;">
+              {#each dayOfWeekSymbol as _, i}
                 <div
-                  style="background: green; border-radius: 4px; width: {getDisplayLength(
-                    { template, templateWidthInPx }
-                  )}px;
-                  height: 3px; margin-right: 2px;"
-                />
+                  class="day-of-week-circle"
+                  class:highlighted={template.crontab
+                    .split(' ')[4]
+                    .split(',')
+                    .includes((i + 1).toString())}
+                ></div>
               {/each}
             </div>
-            <div
-              style="font-weight: 400; font-size: 14px; margin-top: 8px; color:
-              green"
-            >
-            {Math.round((template.totalMinutesSpent / 60) * 10) / 10} hr            </div>
-          </div>
-        {/if}
-        </div>
+          {/if}
 
-        <!-- Time spent statistics -->
-       
+          {#if template.totalTasksCompleted}
+            <div style="margin-left: 8px;">
+              <div
+                style="display: flex; align-items: center; margin-top: 8px;
+                margin-bottom: 0px; max-width: {templateWidthInPx}px;"
+              >
+                {#each { length: template.totalTasksCompleted } as _, i}
+                  <div
+                    style="background: green; border-radius: 4px; width: {getDisplayLength(
+                      { template, templateWidthInPx }
+                    )}px;
+                    height: 3px; margin-right: 2px;"
+                  />
+                {/each}
+              </div>
+              <div
+                style="font-weight: 400; font-size: 14px; margin-top: 8px; color: green"
+              >
+              {Math.round((template.totalMinutesSpent / 60) * 10) / 10} hr            </div>
+            </div>
+          {/if}
+        </div>
       </div>
     </EditTemplatePopup>
 
