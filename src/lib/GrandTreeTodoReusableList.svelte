@@ -194,6 +194,9 @@
   }
 </script>
 
+<!-- NOTE: background-color: var(--todo-list-bg-color); is not yet unified,
+ so it IS confusing 
+-->
 <div
   class="todo-list-container"
   style={$$props.style}
@@ -301,7 +304,6 @@
   .todo-list-container {
     /* width: 100%; will cause the strange shifting out of screen bug*/
     height: 100%;
-    background-color: var(--todo-list-bg-color);
     padding-bottom: 16px;
     padding-left: 2vw;
     padding-right: 2vw;

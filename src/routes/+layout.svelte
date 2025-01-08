@@ -42,11 +42,11 @@
     })
   })
 
-  function isMobile() {
+  function isMobile () {
     return window.innerWidth <= 768 // You can adjust the width threshold as needed
   }
 
-  async function initializeNewFirestoreUser(ref, resultUser) {
+  async function initializeNewFirestoreUser (ref, resultUser) {
     return await setDoc(
       ref,
       {

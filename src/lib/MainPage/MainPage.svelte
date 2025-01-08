@@ -1,18 +1,11 @@
 <script>
   import TheFunctionalCalendar from '$lib/TheFunctionalCalendar/TheFunctionalCalendar.svelte'
-  import {
-    mostRecentlyCompletedTaskID,
-    user,
-    showSnackbar,
-    hasInitialScrolled
-  } from '/src/store'
   import Templates from '$lib/Templates/Templates.svelte'
   import AI from '../AI/AI.svelte'
   import TheSnackbar from '$lib/TheSnackbar.svelte'
-  import PopupCustomerSupport from '$lib/PopupCustomerSupport.svelte'
+  import PopupAppSettings from '$lib/PopupAppSettings/index.svelte'
   import NavbarAndContentWrapper from '$lib/NavbarAndContentWrapper.svelte'
   import DetailedCardPopup from '$lib/DetailedCardPopup/DetailedCardPopup.svelte'
-  import MultiPhotoUploader from '$lib/MultiPhotoUploader.svelte'
   import {
     handleSW,
     handleNotificationPermission
@@ -22,7 +15,17 @@
   import { getAuth, signOut } from 'firebase/auth'
   import { arrayUnion } from 'firebase/firestore'
   import NewThisWeekTodo from '$lib/NewThisWeekTodo.svelte'
+
   import { handleInitialTasks } from './handleTasks.js'
+  import { setCalendarTheme } from '/src/helpers/color-utils.js'
+  import {
+    mostRecentlyCompletedTaskID,
+    user,
+    showSnackbar,
+    hasInitialScrolled
+  } from '/src/store'
+  import { themeColors } from '/src/store/colorGradient.js'
+
   import {
     createTaskNode,
     updateTaskNode,
@@ -56,6 +59,15 @@
     handleInitialTasks($user.uid)
   })
 
+  $: setCalendarTheme($user.calendarTheme)
+  $: updateCSSVars($themeColors)
+
+  function updateCSSVars () {
+    document.documentElement.style.setProperty('--todo-list-bg-color', $themeColors.todoList)
+    document.documentElement.style.setProperty('--calendar-bg-color', $themeColors.calendar)
+    document.documentElement.style.setProperty('--navbar-bg-color', $themeColors.navbar)
+  }
+  
   function openDetailedCard({ task }) {
     clickedTaskID = task.id
   }
@@ -122,11 +134,13 @@
     class="top-navbar"
     class:transparent-glow-navbar={currentMode === 'Day'}
   >
-    <img on:click={() => handleLogoClick()} on:keydown
-      src="/trueoutput-square-nobg.png"
-      style="width: 38px; height: 38px; margin-right: 6px; margin-left: -4px; cursor: pointer;"
-      alt=""
-    />
+    <PopupAppSettings let:setIsPopupOpen> 
+      <img on:click={() => setIsPopupOpen({ newVal: true })} on:keydown
+        src="/trueoutput-square-nobg.png"
+        style="width: 38px; height: 38px; margin-right: 6px; margin-left: -4px; cursor: pointer;"
+        alt=""
+      />
+    </PopupAppSettings>
 
     <div class="day-week-toggle-segment">
 
@@ -162,16 +176,9 @@
     </div>
 
     <div style="display: flex; gap: 28px; align-items: center;">
-      <span on:click={() => isShowingAI = !isShowingAI} on:keydown class="material-symbols-outlined" style="font-size: 28px; cursor: pointer;">
+      <button on:click={() => isShowingAI = !isShowingAI} class="material-symbols-outlined" style="font-size: 28px; cursor: pointer;">
         smart_toy
-      </span>
-      <!-- <PopupCustomerSupport let:setIsPopupOpen>
-        <span on:click={() => setIsPopupOpen({ newVal: true })} on:keydown
-          class="material-symbols-outlined mika-hover responsive-icon-size"
-        >
-          contact_support
-        </span>
-      </PopupCustomerSupport> -->
+      </button>
     </div>
   </div>
 

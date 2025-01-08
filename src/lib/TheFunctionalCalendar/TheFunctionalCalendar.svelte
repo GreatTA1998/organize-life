@@ -185,16 +185,7 @@
 </script>
 
 <div class="calendar-wrapper">
-  <div style="position: absolute; right: 2vw; bottom: 2vw; z-index: 1; 
-    border: 1px solid lightgrey;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15); 
-    height: 50px;
-    width: 50px;
-    border-radius: 30px;  display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: hsl(98, 40%, {90 + 2}%, 0.4);"
-  >
+  <div class="floating-button" style="background-color: hsl(98, 40%, {90 + 2}%, 0.4);">
     <MultiPhotoUploader />
   </div>  
 
@@ -287,6 +278,9 @@
     display: grid;
     grid-template-rows: auto 1fr;
     position: relative;
+
+    /* this is key, otherwise it doesn't count as a stacking context  */
+    z-index: 0;
   }
 
   #scroll-parent {
@@ -322,5 +316,20 @@
 
   .bottom-border {
     border-bottom: 1px solid lightgrey;
+  }
+
+  .floating-button {
+    position: absolute; 
+    right: 2vw; 
+    bottom: 2vw; 
+    z-index: 1; 
+    border: 1px solid lightgrey;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15); 
+    height: 50px;
+    width: 50px;
+    border-radius: 30px;  
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 </style>

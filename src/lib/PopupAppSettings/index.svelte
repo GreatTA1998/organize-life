@@ -1,3 +1,22 @@
+<script>
+  import { showSnackbar, user } from '/src/store'
+  import { clickOutside } from '/src/helpers/everythingElse.js'
+  import ColorSettings from './ColorSettings.svelte'
+  import TimeRangeSettings from './TimeRangeSettings.svelte'
+
+  let isPopupOpen = false
+
+  function setIsPopupOpen ({ newVal }) {
+    isPopupOpen = newVal
+  }
+
+  function copyEmailToClipboard () {
+    navigator.clipboard.writeText("elton@explanations.io")
+    showSnackbar.set(true)
+    setTimeout(() => showSnackbar.set(false), 3000)
+  }
+</script>
+
 <slot {setIsPopupOpen}>
 
 </slot>
@@ -5,6 +24,10 @@
 {#if isPopupOpen}
   <div class="fullscreen-invisible-modular-popup-layer">
     <div class="detailed-card-popup" use:clickOutside on:click_outside={() => isPopupOpen = false}>
+      <ColorSettings />
+
+      <TimeRangeSettings />
+
       <div style="display: flex; align-items: center;">
         <div style="font-size: 28px;">Have a problem?</div>
       </div>
@@ -29,10 +52,10 @@
         </span>
 
         <div style="font-weight: 500; margin-right: 12px;">
-        elton@explanations.app
+          elton@explanations.io
         </div>
 
-        <div on:click={copyEmailToClipboard} style="color: #cc7837; border-radius: 24px; border: 2px solid #cc7837; cursor: pointer; display: flex; align-items: center; padding: 6px 8px; font-size: 24px;">
+        <div on:click={copyEmailToClipboard} on:keydown style="color: #cc7837; border-radius: 24px; border: 2px solid #cc7837; cursor: pointer; display: flex; align-items: center; padding: 6px 8px; font-size: 24px;">
           <div style="font-size: 14px; margin-right: 4px; color: #cc7837; font-weight: 600;">
             Copy email
           </div>
@@ -45,24 +68,6 @@
   </div>
 {/if}
 
-<script>
-  import { showSnackbar } from '/src/store'
-  import { clickOutside } from '/src/helpers/everythingElse.js'
-
-
-  let isPopupOpen = false
-
-  function setIsPopupOpen ({ newVal }) {
-    isPopupOpen = newVal
-  }
-
-  function copyEmailToClipboard () {
-    navigator.clipboard.writeText("elton@explanations.app")
-    showSnackbar.set(true)
-    setTimeout(() => showSnackbar.set(false), 3000)
-  }
-</script>
-
 <style>
   .detailed-card-popup {
     position: fixed;
@@ -72,7 +77,7 @@
     transform: translate(-50%, -50%);
     width: 58%;
     overflow-y: auto;
-    z-index: 3;
+    z-index: 6;
     min-width: 360px;
     
     height: fit-content;
@@ -84,5 +89,4 @@
   /*    border: 1px solid #000; box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);*/
     -webkit-box-shadow:  0px 0px 0px 9999px rgba(0, 0, 0, 0.5);
   }
-
 </style>
