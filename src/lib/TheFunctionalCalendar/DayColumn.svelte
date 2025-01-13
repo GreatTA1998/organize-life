@@ -1,46 +1,47 @@
 <script>
-  import { DateTime } from "luxon";
+  import { DateTime } from "luxon"
   import Templates from '/src/back-end/Templates'
   import {
     computeMillisecsDifference,
     ensureTwoDigits,
     getHHMM,
   } from "/src/helpers/everythingElse.js";
-  import ReusableTaskElement from "$lib/ReusableTaskElement.svelte";
-  import ReusablePhotoTaskElement from "$lib/ReusablePhotoTaskElement.svelte";
-  import ReusableIconTaskElement from "$lib/ReusableIconTaskElement.svelte";
-  import { onMount, createEventDispatcher, onDestroy } from "svelte";
+  import { getMinutesDiff } from "/src/helpers/calendarTimestamps.js"
+
+  import ReusableTaskElement from "$lib/ReusableTaskElement.svelte"
+  import ReusablePhotoTaskElement from "$lib/ReusablePhotoTaskElement.svelte"
+  import ReusableIconTaskElement from "$lib/ReusableIconTaskElement.svelte"
+  import { onMount, createEventDispatcher, onDestroy } from "svelte"
   import {
     user,
     yPosWithinBlock,
     whatIsBeingDraggedFullObj,
     whatIsBeingDraggedID,
     whatIsBeingDragged
-  } from "/src/store";
-  import ReusableCreateTaskDirectly from "$lib/ReusableCreateTaskDirectly.svelte";
+  } from "/src/store"
+  import ReusableCreateTaskDirectly from "$lib/ReusableCreateTaskDirectly.svelte"
   import ReusableCalendarColumnTimeIndicator from "$lib/ReusableCalendarColumnTimeIndicator.svelte"
 
-  export let scheduledTasks = [];
-
-  export let pixelsPerHour;
+  export let scheduledTasks = []
+  export let pixelsPerHour
   export let calendarBeginningDateClassObject
   export let numOfDisplayedHours = 24
 
-  let timeBlockDurationInMinutes = 60
-  let OverallContainer;
-  const dispatch = createEventDispatcher();
-  let isDirectlyCreatingTask = false;
-  let formFieldTopPadding = 40;
-  let yPosition;
-  let reusableTaskTemplates = null;
-  let pixelsPerMinute = pixelsPerHour / 60;
+  const minutesDiff = getMinutesDiff({ calEarliestHHMM: '07:15', calLatestHHMM: '23:15' })
+  let OverallContainer
+  let isDirectlyCreatingTask = false
+  let formFieldTopPadding = 40
+  let yPosition
+  let reusableTaskTemplates = null
+  let pixelsPerMinute = pixelsPerHour / 60
+  const dispatch = createEventDispatcher()
 
   $: resultantDateClassObject = getResultantDateClassObject(yPosition)
 
   onMount(async () => {
     // task template dropdown
     const temp = await Templates.getAll({ userID: $user.uid, includeStats: false })
-    reusableTaskTemplates = temp;
+    reusableTaskTemplates = temp
   });
 
   onDestroy(() => {});
@@ -51,7 +52,7 @@
       OverallContainer.scrollTop -
       OverallContainer.getBoundingClientRect().top -
       OverallContainer.style.paddingTop
-    );
+    )
   }
 
   // computes the physical offset, within origin based on d1
@@ -109,10 +110,8 @@
     // resultant time based on difference difference
     const resultantDateClassObject = getResultantDateClassObject(trueY);
     const d = resultantDateClassObject;
-    const hhmm =
-      ensureTwoDigits(d.getHours()) + ":" + ensureTwoDigits(d.getMinutes());
-    const mmdd =
-      ensureTwoDigits(d.getMonth() + 1) + "/" + ensureTwoDigits(d.getDate());
+    const hhmm = ensureTwoDigits(d.getHours()) + ":" + ensureTwoDigits(d.getMinutes());
+    const mmdd = ensureTwoDigits(d.getMonth() + 1) + "/" + ensureTwoDigits(d.getDate());
     
     const [MM, DD] = mmdd.split('/')
 
@@ -148,33 +147,26 @@
 </script>
 
 <!-- https://github.com/sveltejs/svelte/issues/6016 -->
-<div
-  bind:this={OverallContainer}
-  class="overall-container"
->
-  <!-- NOTE: this is a tall rectangular container that only encompasses the timestamps -->
-  <!-- TO-DO: refator and deprecate this code somehow-->
-  <div
-    class="calendar-day-container unselectable"
-    style="height: {numOfDisplayedHours *
-      timeBlockDurationInMinutes *
-      pixelsPerMinute}px; 
-      margin-bottom: 1px; 
-      color: #6D6D6D;
-    "
-    on:drop={(e) => drop_handler(e)}
-    on:dragover={(e) => dragover_handler(e)}
-    on:click|self={(e) => {
+<div bind:this={OverallContainer} class="overall-container">
+  <!-- 
+    margin-bottom: 1px; 
+    color: #6D6D6D; 
+  -->
+  <div class="calendar-day-container unselectable"
+    style="height: {minutesDiff * pixelsPerMinute}px;"
+    on:drop={e => drop_handler(e)}
+    on:dragover={e => dragover_handler(e)}
+    on:click|self={e => {
       isDirectlyCreatingTask = true;
       yPosition = copyGetTrueY(e);
     }} on:keydown
   >
     {#if $whatIsBeingDraggedFullObj}
       {#each {length: numOfDisplayedHours} as _, i}
-        <div
-          class="my-helper-gridline"
+        <div class="my-helper-gridline" 
           style="height: 1px; margin-bottom: {pixelsPerMinute * 60 - 1}px;"
-        ></div>
+        >
+        </div>
       {/each}
     {/if}
 

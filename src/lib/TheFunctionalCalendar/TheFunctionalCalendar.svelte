@@ -198,8 +198,7 @@
     on:toggle-docking-area={() => isShowingDockingArea = !isShowingDockingArea}
   />
 
-  <div
-    id="scroll-parent"
+  <div id="scroll-parent"
     bind:this={ScrollParent}
     use:trackWidth={(newWidth) => (scrollParentWidth = newWidth)}
     on:scroll={(e) => (scrollX = e.target.scrollLeft)}
@@ -213,20 +212,17 @@
 
       <!-- we use absolute positioning instead of `translateX` because iOS safari drag-drop is glitchy with translated elements -->
       {#if dtOfActiveColumns[0] && $tasksScheduledOn}
-        <div
-          class="visible-days"
+        <div class="visible-days"
           style="position: absolute"
           style:left={`${dtOfActiveColumns[0].diff(calOriginDT, 'days').days * COLUMN_WIDTH}px`}
         >
-          <div
+          <div use:trackHeight={newHeight => exactHeight = newHeight}
             class="headers-flexbox"
             class:bottom-border={$tasksScheduledOn}
-            use:trackHeight={(newHeight) => (exactHeight = newHeight)}
           >
             {#each dtOfActiveColumns as currentDate, i (currentDate.toMillis() + `${i}`)}
-              <DayHeader
+              <DayHeader ISODate={currentDate.toFormat('yyyy-MM-dd')}
                 {isCompact}
-                ISODate={currentDate.toFormat('yyyy-MM-dd')}
                 {isShowingDockingArea}
                 on:task-update
                 on:task-click
@@ -240,11 +236,13 @@
               <DayColumn
                 calendarBeginningDateClassObject={DateTime.fromISO(
                   currentDate.toFormat('yyyy-MM-dd')
-                ).toJSDate()}
+                ).set({ 
+                  hour: Number('07:15'.split(':')[0]), 
+                  minutes: Number('23:15'.split(':')[1]) 
+                })
+                .toJSDate()}
                 pixelsPerHour={PIXELS_PER_HOUR}
-                scheduledTasks={$tasksScheduledOn[
-                  currentDate.toFormat('yyyy-MM-dd')
-                ]?.hasStartTime ?? []}
+                scheduledTasks={$tasksScheduledOn[currentDate.toFormat('yyyy-MM-dd')]?.hasStartTime ?? []}
                 on:task-update
                 on:task-click
                 on:new-root-task

@@ -1,50 +1,40 @@
 <script>
   import { user } from '/src/store'
   import { MOBILE_TIME_AXIS_WIDTH, DESKTOP_TIME_AXIS_WIDTH } from '/src/helpers/constants.js'
+  import { getTimestamps, getMinutesDiff } from '/src/helpers/calendarTimestamps.js'
 
   export let pixelsPerHour
   export let topMargin
   export let isCompact = false
-  export let numOfDisplayedHours = 24
-  export let startHour = 0
 
   let timestampsColumnWidth = isCompact ? MOBILE_TIME_AXIS_WIDTH : DESKTOP_TIME_AXIS_WIDTH
 
-  let timesOfDay = getTimesOfDay()
+  let timesOfDay = getTimestamps({ calEarliestHHMM: '07:15', calLatestHHMM: '23:15' })
+  const minutesDiff = getMinutesDiff({ calEarliestHHMM: '07:15', calLatestHHMM: '23:15' })
 
   $: if ($user) {
-    timesOfDay = getTimesOfDay()
+    timesOfDay = getTimestamps({ calEarliestHHMM: '07:15', calLatestHHMM: '23:15' })
   }
 
-  function getTimesOfDay () {
-    const temp = [];
+  getTimestamps({ calEarliestHHMM: '07:15', calLatestHHMM: '23:15' })
 
-    const earliestHHMM = $user.earliestHHMM || '00:00'
-    const startHour = Number(earliestHHMM.split(':')[0])
+  function getTopOffset (timestamp) {
+    return (timeToMinutes(timestamp) - timeToMinutes('07:15')) * (pixelsPerHour / 60)
+  }
 
-    let currentHour = startHour;
-
-    for (let i = 0; i < numOfDisplayedHours; i++) {
-      if (currentHour === 24) {
-        currentHour = 0;
-      }
-      let timestamp = currentHour <  10 ? `0${currentHour}` : `${currentHour}`
-      if (!isCompact) {
-        timestamp = timestamp + ':00'
-      }
-      temp.push(timestamp)
-
-      currentHour += 1;
-    }
-    return temp;
+  function timeToMinutes (time) {
+    const [hours, minutes] = time.split(':').map(Number)
+    return hours * 60 + minutes
   }
 </script>
 
-<div class="timestamps" style="--timestamps-column-width: {timestampsColumnWidth}px; margin-top: {topMargin}px;">
+<div class="timestamps" style="
+  height: {minutesDiff * (pixelsPerHour / 60)}px;
+  --timestamps-column-width: {timestampsColumnWidth}px; 
+  margin-top: {topMargin}px;"
+>
   {#each timesOfDay as timestamp, i (timestamp)}
-    <div class="timestamp-number"
-      style="height: {pixelsPerHour}px;"
-    >
+    <div class="absolute-timestamp" style="top: {getTopOffset(timestamp)}px;">
       {timestamp.substring(0, 5)}
     </div>
   {/each}
@@ -61,7 +51,9 @@
     width: var(--timestamps-column-width);
   }
 
-  .timestamp-number {
+  .absolute-timestamp {
+    position: absolute;
+    width: 100%; /* because <div> no longer fills to its parent's width if it's absolutely positioned  */
     text-align: center;
     color: #6d6d6d;
     background-color: var(--calendar-bg-color);
