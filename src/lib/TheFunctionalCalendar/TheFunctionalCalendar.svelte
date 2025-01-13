@@ -16,7 +16,7 @@
     hasInitialScrolled
   } from '/src/store'
 
-  export let compactTimestamps
+  export let isCompact = false
 
   // Video explanation for this component (refer to related videos in the "Two-way infinite scroll" folder)
   // https://www.explanations.io/uRNISfkw0mE404Zn4GgH/ePfUWAU6CXL7leApJ9GP
@@ -190,11 +190,12 @@
   </div>  
 
   <YearAndMonthTile
+    {isCompact}
     {leftEdgeIdx}
     {calOriginDT}
     {exactHeight}
     {isShowingDockingArea}
-    on:toggle-docking-area={() =>(isShowingDockingArea = !isShowingDockingArea)}
+    on:toggle-docking-area={() => isShowingDockingArea = !isShowingDockingArea}
   />
 
   <div
@@ -205,9 +206,9 @@
   >
     <div class="scroll-content" style:width="{TOTAL_COLUMNS * COLUMN_WIDTH}px">
       <CalendarTimestamps
+        {isCompact}
         pixelsPerHour={PIXELS_PER_HOUR}
         topMargin={exactHeight}
-        {compactTimestamps}
       />
 
       <!-- we use absolute positioning instead of `translateX` because iOS safari drag-drop is glitchy with translated elements -->
@@ -219,11 +220,12 @@
         >
           <div
             class="headers-flexbox"
-            use:trackHeight={(newHeight) => (exactHeight = newHeight)}
             class:bottom-border={$tasksScheduledOn}
+            use:trackHeight={(newHeight) => (exactHeight = newHeight)}
           >
             {#each dtOfActiveColumns as currentDate, i (currentDate.toMillis() + `${i}`)}
               <DayHeader
+                {isCompact}
                 ISODate={currentDate.toFormat('yyyy-MM-dd')}
                 {isShowingDockingArea}
                 on:task-update

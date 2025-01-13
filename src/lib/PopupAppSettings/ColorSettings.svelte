@@ -20,7 +20,7 @@
   <button on:click={() => updateFirestoreDoc(`/users/${$user.uid}`, { calendarTheme: 'sunshineOrange' })} 
     class="color-square" style:background-color={sunshineOrange}
   >
-    Sunshine Orange
+    Distant sunrise
   </button>
 </div>
 

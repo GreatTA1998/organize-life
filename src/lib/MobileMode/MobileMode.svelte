@@ -53,7 +53,8 @@
         on:task-click={(e) => openDetailedCard(e.detail)}
       />
     {:else if activeTabName === 'CALENDAR_VIEW'}
-      <TheMobileCalendar
+      <TheFunctionalCalendar
+        isCompact
         on:new-root-task={(e) => createTaskNode(e.detail)}
         on:task-click={(e) => openDetailedCard(e.detail)}
         on:task-update={(e) => updateTaskNode({
@@ -61,14 +62,14 @@
             keyValueChanges: e.detail.keyValueChanges
           })
         }
-      />
+      />    
     {:else if activeTabName === 'AI_VIEW'}
       <AI />
     {/if}
   </div>
 
   <div class="bottom-navbar">
-    <div on:click={() => activeTabName = 'TODO_VIEW'} class="bottom-nav-tab" class:active-nav-tab={activeTabName === 'TODO_VIEW'}>
+    <button on:click={() => activeTabName = 'TODO_VIEW'} class="bottom-nav-tab" class:active-nav-tab={activeTabName === 'TODO_VIEW'}>
       <div style="text-align: center;">
         <span class="material-symbols-outlined nav-tab-icon">
           summarize
@@ -77,13 +78,13 @@
           To-do
         </div>
       </div>
-    </div>
+    </button>
 
-    <div class="bottom-nav-tab" 
+    <button class="bottom-nav-tab" 
       on:click={() => {
         hasInitialScrolled.set(false)
         activeTabName = 'CALENDAR_VIEW'
-      }} on:keydown
+      }}
       class:active-nav-tab={activeTabName === 'CALENDAR_VIEW'}
     >
       <div style="text-align: center;">
@@ -94,9 +95,9 @@
           Calendar
         </div>
       </div>
-    </div>
+    </button>
 
-    <div class="bottom-nav-tab" on:click={() => activeTabName = 'FUTURE_VIEW'} class:active-nav-tab={activeTabName === 'FUTURE_VIEW'}>
+    <button class="bottom-nav-tab" on:click={() => activeTabName = 'FUTURE_VIEW'} class:active-nav-tab={activeTabName === 'FUTURE_VIEW'}>
       <div style="text-align: center;">
         <span class=" material-icons nav-tab-icon">
           upcoming
@@ -105,9 +106,9 @@
           Events
         </div>
       </div>
-    </div>
+    </button>
 
-    <div class="bottom-nav-tab" on:click={() => activeTabName = 'AI_VIEW'} class:active-nav-tab={activeTabName === 'AI_VIEW'}>
+    <button class="bottom-nav-tab" on:click={() => activeTabName = 'AI_VIEW'} class:active-nav-tab={activeTabName === 'AI_VIEW'}>
       <div style="text-align: center;">
         <span class=" material-symbols-outlined nav-tab-icon">
           smart_toy
@@ -116,12 +117,12 @@
           Robot
         </div>
       </div>
-    </div>
+    </button>
   </div>
 </div>
 
 <script>
-  import TheMobileCalendar from '$lib/TheFunctionalCalendar/TheMobileCalendar.svelte'
+  import TheFunctionalCalendar from '$lib/TheFunctionalCalendar/TheFunctionalCalendar.svelte'
   import AI from '$lib/AI/AI.svelte'
   import ScheduleView from '$lib/MobileMode/ScheduleView.svelte'
   import ListView from '$lib/MobileMode/ListView.svelte'
@@ -135,6 +136,9 @@
   import { createTaskNode, updateTaskNode, deleteTaskNode } from '/src/helpers/crud.js'
   import { fetchMobileTodoTasks, fetchMobileCalTasks } from '$lib/MainPage/handleTasks.js'
 
+  import { themeColors } from '/src/store/colorGradient.js'
+  import { setCalendarTheme } from '/src/helpers/color-utils.js'
+
   let isTesting = false
   let activeTabName = 'CALENDAR_VIEW' // probably the new user default, butthen persists the user's preference e.g. I prefer the to-do
   let unsub
@@ -144,6 +148,15 @@
   
   let isDetailedCardOpen = false
   let clickedTask = {}
+
+  $: setCalendarTheme($user.calendarTheme)
+  $: updateCSSVars($themeColors)
+
+  function updateCSSVars () {
+    document.documentElement.style.setProperty('--todo-list-bg-color', $themeColors.todoList)
+    document.documentElement.style.setProperty('--calendar-bg-color', $themeColors.calendar)
+    document.documentElement.style.setProperty('--navbar-bg-color', $themeColors.navbar)
+  }
 
   onMount(async () => {
     fetchMobileTodoTasks($user.uid)

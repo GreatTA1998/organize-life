@@ -1,23 +1,35 @@
 <script>
-  export let timestampsColumnWidth = 64
-  export let pixelsPerHour
+  import { user } from '/src/store'
+  import { MOBILE_TIME_AXIS_WIDTH, DESKTOP_TIME_AXIS_WIDTH } from '/src/helpers/constants.js'
 
+  export let pixelsPerHour
   export let topMargin
-  export let compactTimestamps = false
+  export let isCompact = false
   export let numOfDisplayedHours = 24
   export let startHour = 0
 
-  let timesOfDay = getTimesOfDay(compactTimestamps)
+  let timestampsColumnWidth = isCompact ? MOBILE_TIME_AXIS_WIDTH : DESKTOP_TIME_AXIS_WIDTH
+
+  let timesOfDay = getTimesOfDay()
+
+  $: if ($user) {
+    timesOfDay = getTimesOfDay()
+  }
 
   function getTimesOfDay () {
     const temp = [];
+
+    const earliestHHMM = $user.earliestHHMM || '00:00'
+    const startHour = Number(earliestHHMM.split(':')[0])
+
     let currentHour = startHour;
+
     for (let i = 0; i < numOfDisplayedHours; i++) {
       if (currentHour === 24) {
         currentHour = 0;
       }
       let timestamp = currentHour <  10 ? `0${currentHour}` : `${currentHour}`
-      if (!compactTimestamps) {
+      if (!isCompact) {
         timestamp = timestamp + ':00'
       }
       temp.push(timestamp)
@@ -30,8 +42,7 @@
 
 <div class="timestamps" style="--timestamps-column-width: {timestampsColumnWidth}px; margin-top: {topMargin}px;">
   {#each timesOfDay as timestamp, i (timestamp)}
-    <div
-      class="timestamp-number"
+    <div class="timestamp-number"
       style="height: {pixelsPerHour}px;"
     >
       {timestamp.substring(0, 5)}
