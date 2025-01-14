@@ -1,13 +1,13 @@
 <script>
   import { user } from '/src/store'
-  import { MOBILE_TIME_AXIS_WIDTH, DESKTOP_TIME_AXIS_WIDTH } from '/src/helpers/constants.js'
+  import { WIDTHS } from '/src/helpers/constants.js'
   import { getTimestamps, getMinutesDiff } from '/src/helpers/calendarTimestamps.js'
 
   export let pixelsPerHour
   export let topMargin
   export let isCompact = false
 
-  let timestampsColumnWidth = isCompact ? MOBILE_TIME_AXIS_WIDTH : DESKTOP_TIME_AXIS_WIDTH
+  let timestampsColumnWidth = isCompact ? WIDTHS.MOBILE_TIME_AXIS : WIDTHS.DESKTOP_TIME_AXIS
 
   let timesOfDay = getTimestamps({ calEarliestHHMM: '07:15', calLatestHHMM: '23:15' })
   const minutesDiff = getMinutesDiff({ calEarliestHHMM: '07:15', calLatestHHMM: '23:15' })

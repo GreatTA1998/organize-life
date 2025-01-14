@@ -1,9 +1,9 @@
 <script>
+  import TopNavbar from './TopNavbar.svelte'
   import TheFunctionalCalendar from '$lib/TheFunctionalCalendar/TheFunctionalCalendar.svelte'
   import Templates from '$lib/Templates/Templates.svelte'
   import AI from '../AI/AI.svelte'
   import TheSnackbar from '$lib/TheSnackbar.svelte'
-  import PopupAppSettings from '$lib/PopupAppSettings/index.svelte'
   import NavbarAndContentWrapper from '$lib/NavbarAndContentWrapper.svelte'
   import DetailedCardPopup from '$lib/DetailedCardPopup/DetailedCardPopup.svelte'
   import {
@@ -11,18 +11,16 @@
     handleNotificationPermission
   } from './handleNotifications.js'
   import { onDestroy, onMount } from 'svelte'
-  import { goto } from '$app/navigation'
-  import { getAuth, signOut } from 'firebase/auth'
   import { arrayUnion } from 'firebase/firestore'
   import NewThisWeekTodo from '$lib/NewThisWeekTodo.svelte'
 
   import { handleInitialTasks } from './handleTasks.js'
   import { setCalendarTheme } from '/src/helpers/color-utils.js'
+  import { translateJSConstantsToCSSVariables } from '/src/helpers/constants.js'
   import {
     mostRecentlyCompletedTaskID,
     user,
     showSnackbar,
-    hasInitialScrolled
   } from '/src/store'
   import { themeColors } from '/src/store/colorGradient.js'
 
@@ -46,6 +44,9 @@
     if (clickedTaskID) clickedTask = findTaskByID(clickedTaskID)
     else clickedTask = {}
   }
+  
+  $: setCalendarTheme($user.calendarTheme)
+  $: updateCSSVars($themeColors)
 
   onMount(async () => {
     if (!dev) {
@@ -59,25 +60,17 @@
     handleInitialTasks($user.uid)
   })
 
-  $: setCalendarTheme($user.calendarTheme)
-  $: updateCSSVars($themeColors)
-
+  // TO-DO: unify this function with the one for MobileMode, and with constants.js
   function updateCSSVars () {
     document.documentElement.style.setProperty('--todo-list-bg-color', $themeColors.todoList)
     document.documentElement.style.setProperty('--calendar-bg-color', $themeColors.calendar)
     document.documentElement.style.setProperty('--navbar-bg-color', $themeColors.navbar)
+
+    translateJSConstantsToCSSVariables()
   }
   
   function openDetailedCard({ task }) {
     clickedTaskID = task.id
-  }
-
-  function handleLogoClick() {
-    if (confirm('Log out and return to home page tutorials?')) {
-      const auth = getAuth()
-      signOut(auth).catch(console.error)
-      goto('/')
-    }
   }
 
   // TO-DO: should probably deprecate
@@ -98,11 +91,11 @@
 {#if clickedTaskID}
   <DetailedCardPopup
     taskObject={clickedTask}
-    on:task-update={(e) => updateTaskNode(e.detail)}
-    on:task-click={(e) => openDetailedCard(e.detail)}
+    on:task-update={e => updateTaskNode(e.detail)}
+    on:task-click={e => openDetailedCard(e.detail)}
     on:card-close={() => (clickedTaskID = '')}
-    on:task-delete={(e) => deleteTaskNode(e.detail)}
-    on:task-checkbox-change={(e) =>
+    on:task-delete={e => deleteTaskNode(e.detail)}
+    on:task-checkbox-change={e =>
       updateTaskNode({
         id: e.detail.id,
         keyValueChanges: { isDone: e.detail.isDone }
@@ -130,56 +123,11 @@
 {/if}
 
 <NavbarAndContentWrapper>
-  <div slot="navbar"
-    class="top-navbar"
-    class:transparent-glow-navbar={currentMode === 'Day'}
-  >
-    <PopupAppSettings let:setIsPopupOpen> 
-      <img on:click={() => setIsPopupOpen({ newVal: true })} on:keydown
-        src="/trueoutput-square-nobg.png"
-        style="width: 38px; height: 38px; margin-right: 6px; margin-left: -4px; cursor: pointer;"
-        alt=""
-      />
-    </PopupAppSettings>
-
-    <div class="day-week-toggle-segment">
-
-      <!-- pressing home recalibrates you to today's region -->
-      <div 
-        on:click={async () => {
-          if (currentMode === 'Week') {
-            hasInitialScrolled.set(false)
-          }
-          currentMode = 'Week'
-        }} on:keydown
-        class="ux-tab-item"
-        class:active-ux-tab={currentMode === 'Week'}
-        class:transparent-inactive-tab={currentMode === 'Day'}
-      >
-        <span class="material-symbols-outlined" style="font-size: 32px;">
-          house
-        </span>
-      </div>
-
-      <div on:click={() => (currentMode = 'Templates')} on:keydown
-        class="ux-tab-item"
-        class:active-ux-tab={currentMode === 'Templates'}
-        class:transparent-inactive-tab={currentMode === 'Day'}
-      >
-        <span class:blue-icon={currentMode === 'Dashboard'}
-          class="material-symbols-outlined"
-          style="font-size: 32px;"
-        >
-          autorenew
-        </span>
-      </div>
-    </div>
-
-    <div style="display: flex; gap: 28px; align-items: center;">
-      <button on:click={() => isShowingAI = !isShowingAI} class="material-symbols-outlined" style="font-size: 28px; cursor: pointer;">
-        smart_toy
-      </button>
-    </div>
+  <div slot="navbar">
+    <TopNavbar {currentMode} 
+      on:tab-click={e => currentMode = e.detail}
+      on:robot-click={() => isShowingAI = !isShowingAI}
+    />
   </div>
 
   <div slot="content" style="display: flex; flex-grow: 1; height: 100%;">
@@ -215,5 +163,3 @@
     </div>
   </div>
 </NavbarAndContentWrapper>
-
-<style src="./MainPage.css"></style>

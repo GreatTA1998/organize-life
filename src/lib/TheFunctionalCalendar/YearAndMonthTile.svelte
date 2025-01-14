@@ -1,7 +1,7 @@
 <script>
   import { tasksScheduledOn } from '/src/store'
   import { createEventDispatcher } from 'svelte'
-  import { MOBILE_TIME_AXIS_WIDTH, DESKTOP_TIME_AXIS_WIDTH } from '/src/helpers/constants.js'
+  import { WIDTHS } from '/src/helpers/constants.js'
 
   export let exactHeight
   export let monthName
@@ -10,7 +10,7 @@
   export let calOriginDT
   export let isCompact = false
 
-  let exactWidth = isCompact ? MOBILE_TIME_AXIS_WIDTH : DESKTOP_TIME_AXIS_WIDTH
+  let exactWidth = isCompact ? WIDTHS.MOBILE_TIME_AXIS : WIDTHS.DESKTOP_TIME_AXIS
 
   const dispatch = createEventDispatcher()
 
@@ -49,7 +49,7 @@
 <style>
   .desktop-descriptive {
     font-size: 16px;
-    margin-top: var(--main-content-top-margin); 
+    margin-top: var(--height-main-content-top-margin); 
     margin-left: var(--calendar-left-padding);
     flex-direction: column;
   }

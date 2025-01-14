@@ -263,7 +263,7 @@
     display: block;
     align-items: center;
     position: absolute;
-    width: var(--calendar-day-section-width);
+    width: var(--width-calendar-day-section);
     pointer-events: none;
   }
 
@@ -273,7 +273,7 @@
     height: fit-content;
     overflow-y: hidden;
     overflow-x: hidden;
-    width: var(--calendar-day-section-width);
+    width: var(--width-calendar-day-section);
     background-color: var(--calendar-bg-color);
   }
 

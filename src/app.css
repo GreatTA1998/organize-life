@@ -1,5 +1,4 @@
 :root {
-  --navbar-height: 60px;
   --accent-color: rgb(92, 101, 22);
   --base-color: rgb(0, 89, 125);
   --sub-color: rgb(172, 160, 78);
@@ -10,12 +9,7 @@
 
   --task-action-subtle-color: rgb(120, 120, 120);
 
-  --main-content-top-margin: min(4vh, 36px);
-
   --calendar-section-left-spacing: 2vw;
-
-  --calendar-day-section-width: 200px;
-  /* max(10vw, 120px);  */
 }
 
 * {
@@ -96,21 +90,6 @@ button {
   -o-user-select: none;
   user-select: none;
 }
-
-.top-navbar {
-  height: var(--navbar-height);
-  display: flex; 
-  align-items: center; 
-  padding-left: 2vw; 
-  padding-right: 2vw;
-  border-bottom: 1px solid lightgrey;
-  background-color: var(--navbar-bg-color);
-
-  /* background holder has z-index 0 but somehow z-index 1 is not enough to cover it */
-  z-index: 2;
-  position: relative;
-}
-
 
  /*
     A full size invisible container to cover the entire screen for modularity purposes, 

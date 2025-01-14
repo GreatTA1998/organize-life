@@ -5,6 +5,7 @@
     sortByUnscheduledThenByOrderValue,
     convertDDMMYYYYToDateClassObject
   } from '/src/helpers/everythingElse.js'
+  import { HEIGHTS } from '/src/helpers/constants.js'
   import UXFormField from '$lib/UXFormField.svelte'
   import ReusableHelperDropzone from '$lib/ReusableHelperDropzone.svelte'
   import RecursiveTaskElement from '$lib/RecursiveTaskElement.svelte'
@@ -255,7 +256,7 @@
         }}
         colorForDebugging="purple"
         {dueInHowManyDays}
-        heightInPx={36}
+        heightInPx={HEIGHTS.ROOT_DROPZONE}
       />
 
       {#each tasksToDisplay as taskObj, i (taskObj.id)}
@@ -286,7 +287,7 @@
           }}
           colorForDebugging="purple"
           {dueInHowManyDays}
-          heightInPx={36}
+          heightInPx={HEIGHTS.ROOT_DROPZONE}
         />
       {/each}
 

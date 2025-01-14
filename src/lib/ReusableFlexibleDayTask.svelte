@@ -4,8 +4,7 @@
   Note, the HTML checkbox tick color literally cannot be changed, but it will be automatically white if it "decides" that our chosen background color is dark enough, 
   or vice versa
  -->
-<div 
-  on:click={() => dispatch('task-click', { task })}
+<div on:click={() => dispatch('task-click', { task })}
   draggable="true" 
   on:dragstart|self={(e) => startDragMove(e, task.id)} 
   class:calendar-block={!isBulletPoint}
@@ -59,7 +58,7 @@
  export let task = null
  export let pixelsPerHour = null
  export let fontSizeInPx = 12
- export let cssWidth = 'var(--calendar-day-section-width)'
+ export let cssWidth = 'var(--width-calendar-day-section)'
 
  $: height = (pixelsPerHour / 60) * task.duration
  $: isBulletPoint = height < 20

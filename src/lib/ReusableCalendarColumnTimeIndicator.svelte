@@ -72,7 +72,7 @@
     display: block; 
     align-items: center;
     position: absolute; 
-    width: var(--calendar-day-section-width);
+    width: var(--width-calendar-day-section);
     pointer-events: none;
   }
 </style>
