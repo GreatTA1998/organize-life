@@ -40,6 +40,8 @@
           />
         </div>
 
+        <div style="margin-top: 16px;"></div>
+
         <div style="display: flex; align-items: center; width: 100%;">
           {#if taskObject.imageDownloadURL}
             <div style="display: flex; column-gap: 6px;">
