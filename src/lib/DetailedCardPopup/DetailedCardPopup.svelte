@@ -2,14 +2,13 @@
 <div class="fullscreen-invisible-modular-popup-layer" on:click|self={handleClickOutside} style="z-index: 10;">
   <div class="detailed-card-popup" bind:this={PopupElem}>
     {#if taskObject.imageDownloadURL}
-      <!-- svelte-ignore a11y-missing-attribute -->
       <img 
         bind:this={TaskImageElem}
-        on:click|self={() => isViewingPhoto ? isViewingPhoto = false : ''}
+        on:click|self={() => isViewingPhoto ? isViewingPhoto = false : ''} 
         src={taskObject.imageDownloadURL}
-        class:blurred-image={false}
         class:clear-image={isViewingPhoto}
         style="width: 100%; height: 100%;"
+        alt="Task"
       >
     {/if}
 
