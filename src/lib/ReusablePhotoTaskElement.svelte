@@ -44,8 +44,8 @@
 
    {#if task.iconURL}
      <img src={task.iconURL} style="pointer-events: none; width: 32px; height: 32px;">
-   {:else}
-      <!-- <div style="position: relative; width: 100%; padding-left: 6px; padding-top: 4px;">
+   {:else if task.name}
+      <div style="position: relative; width: 100%; padding-left: 6px; padding-top: 4px;">
         <div 
           class="task-name truncate-to-one-line unselectable" 
           style="
@@ -60,7 +60,7 @@
         <div class="text-overlay" style="position: absolute; top: 0; left: 0; z-index: -1">
             
         </div>   
-     </div> -->
+     </div>
    {/if}
  </div>
  <!-- End of task name flexbox -->
