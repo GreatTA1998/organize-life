@@ -1,58 +1,62 @@
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <div class="fullscreen-invisible-modular-popup-layer" on:click|self={handleClickOutside} style="z-index: 10;">
-  <div class="detailed-card-popup" bind:this={PopupElem}>
-    {#if taskObject.imageDownloadURL}
-      <img 
-        bind:this={TaskImageElem}
-        on:click|self={() => isViewingPhoto ? isViewingPhoto = false : ''} 
-        src={taskObject.imageDownloadURL}
-        class:clear-image={isViewingPhoto}
-        style="width: 100%; height: 100%;"
-        alt="Task"
-      >
-    {/if}
-
-    <div style="padding: 24px;">
-      <div style="display: flex; align-items: center;">
-        <ReusableCheckbox
-          value={taskObject.isDone}
-          on:change={(e) => handleCheckboxChange(e)}
-          zoom={1.2}
-        />
-
-        <input 
-          type="text" 
-          bind:value={titleOfTask} 
-          on:input={(e) => debouncedSaveTitle(e.target.value)}
-          placeholder="Untitled"
-          style="margin-left: 12px; width: 100%; box-sizing: border-box; font-size: 24px;"
+  <div class="detailed-card-popup {journalLayout}-container" bind:this={PopupElem}>
+    <div class="{journalLayout}">
+      {#if taskObject.imageDownloadURL}
+        <img src={taskObject.imageDownloadURL}
+          on:click|self={() => isViewingPhoto ? isViewingPhoto = false : ''} 
+          bind:this={TaskImageElem}
+          class:clear-image={isViewingPhoto}
+          class="{journalLayout}-image"
+          alt="Task"
         >
-      </div>
+      {/if}
 
-      <StartTimeDurationNotify
-        {taskObject}
-        on:task-update
-      />
+      <div class="{journalLayout}-details" style="flex-grow: 1; flex-basis: 0; display: flex; flex-direction: column; row-gap: 2px;">
+        <div style="display: flex; align-items: center; column-gap: 12px;">
+          {#if !taskObject.imageDownloadURL}
+            <ReusableCheckbox value={taskObject.isDone}
+              on:change={(e) => handleCheckboxChange(e)}
+              zoom={1.2}
+            />
+          {/if}
+          <input bind:value={titleOfTask} 
+            on:input={(e) => debouncedSaveTitle(e.target.value)}
+            placeholder="Untitled"
+            type="text" 
+            style="width: 100%; box-sizing: border-box; font-size: 24px;"
+          >
+        </div>
 
-      <div style="width: 100%; margin-top: 24px; margin-bottom: 24px;">
-        <UXFormTextArea fieldLabel="Notes"
-          value={notesAboutTask}
-          on:input={(e) => debouncedSaveNotes(e.detail)}
-          placeholder=""
+        <StartTimeDurationNotify {taskObject}
+          on:task-update
         />
-      </div>
 
-      <div style="margin-top: 0px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
+        <div style="width: 100%;">
+          <UXFormTextArea value={notesAboutTask}
+            on:input={(e) => debouncedSaveNotes(e.detail)}
+            fieldLabel=""
+            placeholder="Notes..."
+          />
+        </div>
+
         <div style="display: flex; align-items: center; width: 100%;">
+          {#if taskObject.imageDownloadURL}
+            <div style="display: flex; column-gap: 6px;">
+              {#each ['side-by-side', 'top-and-below', 'full-photo'] as layout}
+                <button on:click={() => journalLayout = layout} class="material-symbols-outlined">
+                  {getIconNameFor(layout)}
+                </button>
+              {/each}
+            </div>
+          {/if}
+
           <PhotoUpload {taskObject}/>
 
-          <span class="material-symbols-outlined" on:click|stopPropagation={confirmDelete} 
-            style="cursor: pointer; margin-left: auto; right: 0px; border: 1px solid grey; border-radius: 24px; padding: 4px;"
-          >
+          <button on:click|stopPropagation={confirmDelete} class="delete-button material-symbols-outlined">
             delete
-          </span>
+          </button>          
         </div>
-      </div>
 
         <div style="font-size: 1rem; margin-top: 16px; margin-bottom: 12px; font-weight: 400;">
           Tree History
@@ -64,16 +68,13 @@
             originalPopupTask={taskObject}
             on:task-click
             on:task-checkbox-change
-          >
-
-          </RecursiveBulletPoint>
+          />
         </div>
+      </div>
+      <!-- End of task details container -->
     </div>
-    <!-- End of padding container -->
   </div>
-  <!-- End of detailed-card-popup -->
 </div>
-<!-- End of modular invisible layer -->
 
 <script>
 import { createEventDispatcher, onMount, onDestroy, tick } from 'svelte'
@@ -91,51 +92,80 @@ export let taskObject
 let TaskImageElem
 let PopupElem
 
-$: currentDeadlineValue = (taskObject.deadlineDate || '') + (taskObject.deadlineDate && taskObject.deadlineTime ? " " : "") + (taskObject.deadlineTime || '')
-
-const dispatch = createEventDispatcher()
-
+let journalLayout = 'side-by-side'
 // don't delete yet, as these might be needed for input element bindings
 let notesAboutTask = taskObject.notes || ''
 let titleOfTask = taskObject.name || ''
 let isViewingPhoto = false
+const dispatch = createEventDispatcher()
+
+let fullPhotoWidth
+let fullPhotoHeight 
 
 onMount(() => {
   if (taskObject.imageDownloadURL) {
-    // solution based on Claude
-    TaskImageElem.onload = () => {
-      const marginFactor = 0.9
-      const viewportHeight = marginFactor * window.innerHeight
-      const viewportWidth = marginFactor * window.innerWidth
-
-      const { naturalWidth, naturalHeight } = TaskImageElem
-
-      const imageAspectRatio = naturalWidth / naturalHeight
-      const viewportAspectRatio = viewportWidth / viewportHeight
-
-      let maxWidth, maxHeight
-
-      if (imageAspectRatio > viewportAspectRatio) {
-        // Image is wider than the viewport, so scale based on width
-        maxWidth = viewportWidth
-        maxHeight = Math.floor(viewportWidth / imageAspectRatio)
-      } else {
-        // Image is taller than the viewport, so scale based on height
-        maxHeight = viewportHeight
-        maxWidth = Math.floor(viewportHeight * imageAspectRatio)
-      }
-
-      PopupElem.style.width = maxWidth + 'px'
-      PopupElem.style.height = maxHeight + 'px'
-
-      return { maxWidth, maxHeight }
-    }
+    computePhotoFullDisplaySize()
   }
 })
 
-onDestroy(() => {
-  
-})
+$: if (PopupElem &&journalLayout === 'full-photo') {
+  setPopupToFullPhotoSize()
+}
+
+$: if (PopupElem && journalLayout !== 'full-photo') {
+  resetPopupCSS()
+}
+
+onDestroy(() => {})
+
+function setPopupToFullPhotoSize () {
+  PopupElem.style.width = fullPhotoWidth + 'px'
+  PopupElem.style.height = fullPhotoHeight + 'px'
+}
+
+function resetPopupCSS () {
+  PopupElem.style.width = ''
+  PopupElem.style.height = ''
+}
+
+function getIconNameFor (layout) {
+  if (layout === 'side-by-side') {
+    return 'splitscreen_left'
+  } else if (layout === 'top-and-below') {
+    return 'splitscreen_top'
+  } else if (layout === 'full-photo') {
+    return 'fullscreen_portrait'
+  }
+}
+
+function computePhotoFullDisplaySize () {
+   // solution based on Claude
+   TaskImageElem.onload = () => {
+    const marginFactor = 0.9
+    const viewportHeight = marginFactor * window.innerHeight
+    const viewportWidth = marginFactor * window.innerWidth
+
+    const { naturalWidth, naturalHeight } = TaskImageElem
+
+    const imageAspectRatio = naturalWidth / naturalHeight
+    const viewportAspectRatio = viewportWidth / viewportHeight
+
+    let maxWidth, maxHeight
+
+    if (imageAspectRatio > viewportAspectRatio) {
+      // Image is wider than the viewport, so scale based on width
+      maxWidth = viewportWidth
+      maxHeight = Math.floor(viewportWidth / imageAspectRatio)
+    } else {
+      // Image is taller than the viewport, so scale based on height
+      maxHeight = viewportHeight
+      maxWidth = Math.floor(viewportHeight * imageAspectRatio)
+    }
+
+    fullPhotoWidth = maxWidth
+    fullPhotoHeight = maxHeight
+  }
+}
 
 // the other place to pay attention to is <RecursiveTaskElement/>
 // but the idea is still the same, provide an "undo"
