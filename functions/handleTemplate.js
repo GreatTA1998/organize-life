@@ -9,8 +9,8 @@ const handleTemplate = async (template) => {
     const period = getPeriodFromCrontab(template.crontab);
     if(period !== 'yearly' && period !== 'monthly' && period !== 'weekly') return;
     const offset = getPeriodFromCrontab(template.crontab) === 'yearly' ? { years: 2 } : { months: 2 };
-    const startDate = DateTime.fromISO(template.lastGeneratedTask).setZone(template.timeZone).set({ hour: '00', minute: '00', second: '00', millisecond: '000' });
-    const endDate = DateTime.now().setZone(template.timeZone).set({ hour: '00', minute: '00', second: '00', millisecond: '000' }).plus(offset);
+    const startDate = DateTime.fromISO(template.lastGeneratedTask).setZone(template.timeZone)
+    const endDate = DateTime.now().setZone(template.timeZone).plus(offset);
     const tasksArray = await buildFutureTasks({ template, startDateJS: new Date(startDate), endDateJS: new Date(endDate), userID: template.userID, templateID: template.id });
     if(!tasksArray.length) return;
     tasksArray.forEach(async task => {
@@ -23,16 +23,11 @@ const handleTemplate = async (template) => {
 async function buildFutureTasks({ template, startDateJS, endDateJS }){
     return new Promise(async (resolve, reject) => {
       try {
-        if (startDateJS > endDateJS) {
-            functions.logger.info('Start date is after end date, swapping dates');
-            [startDateJS, endDateJS] = [endDateJS, startDateJS];
-          }
         const interval = parseExpression(template.crontab, { currentDate: startDateJS, endDate: endDateJS, iterator: true, tz: template.timeZone, maxIterations: 1000 });
         const generatedTasks = [];
         while (true) {
-            console.log('interval ', interval)
           const cronObj = interval.next();
-          const ISODate = DateTime.fromJSDate(new Date(cronObj.value.toString())).toFormat('yyyy-MM-dd')
+          const ISODate = DateTime.fromJSDate(new Date(cronObj.value.toString())).setZone(template.timeZone).toFormat('yyyy-MM-dd')
           const task = buildTaskFromTemplate(template, ISODate, template.id);
           generatedTasks.push(task);
           if (cronObj.done) {
@@ -44,8 +39,12 @@ async function buildFutureTasks({ template, startDateJS, endDateJS }){
           }
         }
       } catch (error) {
-        console.error('error building future tasks', error)
-        resolve([]);
+        if (error.message.includes('Out of the timespan range')) {
+          resolve([]);
+        } else {
+          console.error('error building future tasks', error);
+          resolve([]);
+        }
       }
     })
   }

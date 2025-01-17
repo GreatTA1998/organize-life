@@ -41,7 +41,9 @@ async function handleAllTemplates() {
 async function getAllTemplates() {
   const templates = [];
   const usersSnapshot = await db
-    .collection('users').get();
+    .collection('users')   
+    // .where('email', '==', 'marsalius1@gmail.com') // Test user
+    .get();
   
   for (const userDoc of usersSnapshot.docs) {
     const templatesSnapshot = await db
@@ -54,12 +56,11 @@ async function getAllTemplates() {
       templates.push({ userID: userDoc.id, id: templateDoc.id, ...templateDoc.data() });
     });
   }
-  
   return templates;
 }
 
-// for manual excecution
-//   exports.templates = onRequest({ region: 'asia-northeast1' }, 
+// // for manual excecution
+// exports.templates = onRequest({ region: 'asia-northeast1' }, 
 //   async (req, res) => {
 //     functions.logger.info('periodicTasks function excecuting');
 //   try {
