@@ -11,6 +11,9 @@ const getPeriodFromCrontab = (crontab) => {
   if (crontab === '') return 'quick';
   const parts = crontab.split(' ');
   if (parts.length !== 5) throw new Error('Invalid crontab format', crontab, parts);
+  if(crontab === '0 0 * * 0') return 'pre-weekly';
+  if(crontab === '0 0 0 0 *') return 'pre-yearly';
+  if(crontab === '"0 0 0 * *') return 'pre-monthly';
   const [minute, hour, dayOfMonth, month, dayOfWeek] = parts;
   if (dayOfMonth !== '*' && month !== '*' && dayOfWeek === '*') return 'yearly';
   if (dayOfMonth !== '*' && month === '*' && dayOfWeek === '*') return 'monthly';
@@ -74,9 +77,6 @@ const postFutureTasks = async ({ userID, id, newTemplate }) => {
     const tasksArray = await buildFutureTasks({ template: newTemplate, startDateJS: new Date(startDate), endDateJS: new Date(endDate), userID, templateID: id });
     console.log('tasksArray', tasksArray)
     const hydratedTasks = [];
-    // there is a phantom bug where sometimes the tasks are not set,
-    // adding this somehow fixes it, TODO: figure out why
-    // setDoc(doc(db, 'users', userID, 'tasks', '112312312345'), {name: '123123123'});
     tasksArray.forEach(async task => {
       const taskID = getRandomID()
       setDoc(doc(db, "users", userID, 'tasks', taskID), task)
