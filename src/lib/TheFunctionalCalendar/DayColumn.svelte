@@ -153,10 +153,9 @@
   class="overall-container"
 >
   <!-- NOTE: this is a tall rectangular container that only encompasses the timestamps -->
-  <!-- svelte-ignore a11y-click-events-have-key-events -->
-   <!-- TO-DO: refator and deprecate this code somehow-->
+  <!-- TO-DO: refator and deprecate this code somehow-->
   <div
-    class="calendar-day-container"
+    class="calendar-day-container unselectable"
     style="height: {numOfDisplayedHours *
       timeBlockDurationInMinutes *
       pixelsPerMinute}px; 
@@ -168,7 +167,7 @@
     on:click|self={(e) => {
       isDirectlyCreatingTask = true;
       yPosition = copyGetTrueY(e);
-    }}
+    }} on:keydown
   >
     {#if $whatIsBeingDraggedFullObj}
       {#each {length: numOfDisplayedHours} as _, i}
@@ -179,7 +178,7 @@
       {/each}
     {/if}
 
-    {#each scheduledTasks as task, i}
+    {#each scheduledTasks as task, i (task.id)}
       <div
         style="
           position: absolute; 

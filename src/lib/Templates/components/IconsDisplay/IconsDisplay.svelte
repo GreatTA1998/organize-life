@@ -19,8 +19,7 @@
 </script>
 {#if !$user.isSubscriber}
   <!-- svelte-ignore a11y-click-events-have-key-events -->
-  <div
-    on:click={() => (isShowingPremiumPopup = !isShowingPremiumPopup)}
+  <div on:click={() => (isShowingPremiumPopup = !isShowingPremiumPopup)}
     style=""
     class="premium-intro-button"
   >

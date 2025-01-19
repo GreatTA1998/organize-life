@@ -33,15 +33,17 @@
     colorPickerColor = colorUpdate;
   }
 
-  function handleSave() {    
+  function handleSave () {    
     const dataURL = canvas.toDataURL()
-    Icons.uploadIconDataURL({
-      createdBy: $user.uid,
-      id: getRandomID(),
-      name,
-      dataURL,
-      isShareable,
-      tags
+    Icons.uploadIconDataURL({ 
+      id: getRandomID(), 
+      iconObject: {
+        createdBy: $user.uid,
+        name,
+        dataURL,
+        isShareable,
+        tags
+      }
     })
       .then((newIcon) => {
         $doodleIcons = [...$doodleIcons, newIcon]

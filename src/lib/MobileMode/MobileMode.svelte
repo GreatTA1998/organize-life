@@ -47,21 +47,6 @@
           />
         </FloatingButtonWrapper>
       </ListView>
-    {:else if activeTabName === 'TODAY_VIEW'}
-      <CalendarView 
-        let:startTypingNewTask={startTypingNewTask}
-        on:task-click={(e) => openDetailedCard(e.detail)}
-      >
-        <FloatingButtonWrapper on:click={startTypingNewTask} distanceFromBottom={100}>
-          <span id="startButton" class="material-symbols-outlined" style="font-size: 48px; font-weight: 600;">
-            add
-          </span>
-        </FloatingButtonWrapper>
-        
-        <FloatingButtonWrapper>
-          <MultiPhotoUploader/>
-        </FloatingButtonWrapper>
-      </CalendarView>
     {:else if activeTabName === 'FUTURE_VIEW'}
       <ScheduleView
         on:task-duration-adjusted
@@ -96,10 +81,8 @@
 
     <div class="bottom-nav-tab" 
       on:click={() => {
-        if (activeTabName === 'CALENDAR_VIEW') {
-          hasInitialScrolled.set(false)
-        }
-        else activeTabName = 'CALENDAR_VIEW'
+        hasInitialScrolled.set(false)
+        activeTabName = 'CALENDAR_VIEW'
       }} on:keydown
       class:active-nav-tab={activeTabName === 'CALENDAR_VIEW'}
     >
@@ -119,7 +102,7 @@
           upcoming
         </span>
         <div class="nav-tab-desc">
-          Schedule
+          Events
         </div>
       </div>
     </div>
@@ -142,17 +125,15 @@
   import AI from '$lib/AI/AI.svelte'
   import ScheduleView from '$lib/MobileMode/ScheduleView.svelte'
   import ListView from '$lib/MobileMode/ListView.svelte'
-  import CalendarView from '$lib/MobileMode/CalendarView.svelte'
   import VoiceKeywordDetect from '$lib/VoiceKeywordDetect.svelte'
   import DetailedCardPopup from '$lib/DetailedCardPopup/DetailedCardPopup.svelte'
-  import MultiPhotoUploader from '$lib/MultiPhotoUploader.svelte'
   import FloatingButtonWrapper from './FloatingButtonWrapper.svelte'
 
   import { getRandomID, getDateInMMDD } from '/src/helpers/everythingElse.js'
   import { user, todoMemoryTree, hasInitialScrolled } from '/src/store'
   import { onDestroy, onMount } from 'svelte'
   import { createTaskNode, updateTaskNode, deleteTaskNode } from '/src/helpers/crud.js'
-  import { fetchMobileTodoTasks, fetchMobileCalTasks, fetchMobileFutureOverviewTasks } from '$lib/MainPage/handleTasks.js'
+  import { fetchMobileTodoTasks, fetchMobileCalTasks } from '$lib/MainPage/handleTasks.js'
 
   let isTesting = false
   let activeTabName = 'CALENDAR_VIEW' // probably the new user default, butthen persists the user's preference e.g. I prefer the to-do
@@ -167,10 +148,10 @@
   onMount(async () => {
     fetchMobileTodoTasks($user.uid)
     
-    await fetchMobileCalTasks($user.uid)
+    fetchMobileCalTasks($user.uid)
 
-    // note this function is modified to merge with `mobileCalTasks`
-    fetchMobileFutureOverviewTasks($user.uid)
+    // note, we fetch future events inside that component as a quicckfix, so
+    // it'll react to changes in calendar and todo
   })
 
   onDestroy(() => {

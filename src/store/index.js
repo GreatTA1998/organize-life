@@ -44,5 +44,6 @@ export const yPosWithinBlock = writable(0)
 
 export const todoMemoryTree = writable(null)
 export const calendarMemoryTree = writable(null)
+export const uniqueEvents = writable(null)
 
 export const daysToRender = writable([])

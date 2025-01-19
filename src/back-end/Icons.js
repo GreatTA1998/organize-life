@@ -7,7 +7,9 @@ import {
     uploadString,
     deleteObject
 } from "firebase/storage";
-import IconSchema from "./Schemas/IconSchema.js";
+import IconSchema from "./Schemas/IconSchema.js"
+import Joi from 'joi'
+
 async function getAvailable(uid) {
     const q = query(
         collection(db, "icons"),
@@ -20,14 +22,14 @@ async function getAvailable(uid) {
     return querySnapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
 }
 
-async function uploadIconDataURL(iconObject) {
-    const url = await storeIconToBucket(iconObject.id, iconObject.dataURL);
+async function uploadIconDataURL ({ id, iconObject }) {
+    const url = await storeIconToBucket(id, iconObject.dataURL);
     delete iconObject.dataURL;
-    Joi.assert({...iconObject, url}, IconSchema);
-    return setDoc(doc(db, "icons", iconObject.id), {
+    Joi.assert({...iconObject, url}, IconSchema)
+    return setDoc(doc(db, "icons", id), {
         ...iconObject,
         url,
-    }).then(() => ({ ...iconObject, url }));
+    }).then(() => ({ ...iconObject, url }))
 }
 
 async function deleteRecursively({ id, uid, url }) {
